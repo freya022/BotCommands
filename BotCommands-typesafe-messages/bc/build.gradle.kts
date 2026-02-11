@@ -7,6 +7,8 @@ plugins {
     id("publish-conventions")
 }
 
+val byteBuddyAgent: Configuration by configurations.creating
+
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
@@ -20,6 +22,7 @@ dependencies {
 
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
+    byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 }
 
 setMainJvmTarget(target = 24)
@@ -32,6 +35,8 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
 }
 
 publishedProjectEnvironment {
