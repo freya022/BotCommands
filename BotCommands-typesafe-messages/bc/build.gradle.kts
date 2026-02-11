@@ -18,10 +18,8 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
-    testImplementation(libs.bundles.test)
-
-    testImplementation(libs.mockk)
-    testImplementation(libs.logback.classic)
+    // JUnit + Mockk + Logback
+    testImplementation(projects.testCommons)
 }
 
 setMainJvmTarget(target = 24)

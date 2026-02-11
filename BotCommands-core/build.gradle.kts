@@ -120,14 +120,9 @@ dependencies {
 
     // -------------------- TEST DEPENDENCIES --------------------
 
-    testImplementation(libs.bundles.test)
-
-    // Mocking
-    testImplementation(libs.mockk)
+    // JUnit + Mockk + Logback
+    testImplementation(projects.testCommons)
     byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
-
-    // Logging
-    testImplementation(libs.logback.classic)
 
     // Database
     testImplementation(libs.h2)
@@ -136,7 +131,6 @@ dependencies {
 
     testImplementation(projects.botCommandsMethodAccessors.classfile)
 
-    // Test stuff
     testImplementation(libs.kotlin.metadata)
 }
 

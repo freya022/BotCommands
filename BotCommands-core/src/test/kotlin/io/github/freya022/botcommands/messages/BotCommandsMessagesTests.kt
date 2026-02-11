@@ -2,7 +2,7 @@
 
 package io.github.freya022.botcommands.messages
 
-import io.github.freya022.botcommands.api.core.BotCommands
+import dev.freya02.botcommands.helpers.AbstractIntegrationTest
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.DefaultMessages
 import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.helpers.utils.createTest
 import io.github.freya022.botcommands.internal.core.messages.autoconfigure.BotCommandsMessagesFactoryAutoConfiguration
 import io.mockk.every
 import io.mockk.mockk
@@ -28,11 +27,11 @@ import kotlin.test.Test
 import kotlin.test.assertIsNot
 import kotlin.test.fail
 
-class BotCommandsMessagesTests {
+class BotCommandsMessagesTests : AbstractIntegrationTest() {
 
     @Test
     fun `Adapter is used when custom DefaultMessagesFactory type is used`() {
-        val context = BotCommands.createTest {
+        val context = createTest {
             services {
                 registerServiceSupplier<DefaultMessagesFactory> {
                     object : DefaultMessagesFactory {
@@ -49,7 +48,7 @@ class BotCommandsMessagesTests {
 
     @Test
     fun `Adapter is used when custom DefaultMessages JSON exists`() {
-        val context = BotCommands.createTest {
+        val context = createTest {
             services {
                 registerServiceSupplier<BotCommandsMessagesFactoryAutoConfiguration> {
                     mockk {
@@ -68,7 +67,7 @@ class BotCommandsMessagesTests {
 
     @Test
     fun `All messages have defaults`() {
-        val context = BotCommands.createTest {
+        val context = createTest {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
                 registerServiceSupplier<DefaultBotCommandsMessagesFactory>(

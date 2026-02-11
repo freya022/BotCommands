@@ -1,12 +1,11 @@
 package io.github.freya022.botcommands.arch
 
+import dev.freya02.botcommands.helpers.AbstractIntegrationTest
 import io.github.classgraph.AnnotationClassRef
 import io.github.classgraph.AnnotationInfo
 import io.github.classgraph.ClassGraph
-import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.helpers.utils.createTest
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
 import io.mockk.mockkClass
 import org.junit.jupiter.api.BeforeAll
@@ -16,7 +15,7 @@ import org.junit.jupiter.params.provider.FieldSource
 import kotlin.reflect.KClass
 import kotlin.test.assertSame
 
-object AutoConfigurationOverrideTest {
+object AutoConfigurationOverrideTest : AbstractIntegrationTest() {
 
     private lateinit var autoconfiguredTypes: Set<KClass<*>>
 
@@ -63,7 +62,7 @@ object AutoConfigurationOverrideTest {
     @FieldSource("autoconfiguredTypes")
     fun `Can override auto configured services`(autoconfiguredType: KClass<Any>) {
         val expected = mockkClass(autoconfiguredType, relaxed = true)
-        val context = BotCommands.createTest {
+        val context = createTest {
             services {
                 registerServiceSupplier(primaryType = autoconfiguredType) { expected }
             }

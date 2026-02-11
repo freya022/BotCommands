@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.helpers
+package dev.freya02.botcommands.helpers
 
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.events.BReadyEvent

@@ -2,6 +2,7 @@ rootProject.name = "BotCommands"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+include(":test-commons")
 include(":BotCommands-core")
 include(
     ":BotCommands-method-accessors",

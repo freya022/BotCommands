@@ -73,7 +73,7 @@ kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = 
 kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
@@ -97,5 +97,5 @@ trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
 test = [
     "junit",
     "junit-params",
-    "kotlin-test",
+    "kotlin-test-junit5",
 ]
