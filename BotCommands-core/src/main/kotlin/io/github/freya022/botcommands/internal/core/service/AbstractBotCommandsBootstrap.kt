@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.events.PreLoadEvent
 import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.BContextImpl
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import kotlinx.coroutines.runBlocking
 import kotlin.time.DurationUnit
@@ -18,6 +19,8 @@ abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : Bot
     protected val logger = objectLogger()
 
     protected fun init() {
+        MethodAccessorFactoryProvider.clearCache()
+
         measure("Scanned reflection metadata") {
             ReflectionMetadata.runScan(config, this)
         }

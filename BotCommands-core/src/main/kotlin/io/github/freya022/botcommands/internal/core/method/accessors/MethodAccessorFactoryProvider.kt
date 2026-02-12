@@ -11,7 +11,7 @@ import kotlin.reflect.KFunction
 
 internal object MethodAccessorFactoryProvider {
 
-    private lateinit var accessorFactory: MethodAccessorFactory
+    private lateinit var accessorFactory: CachingMethodAccessorFactory
     private val staticAccessors: MutableMap<KFunction<*>, MethodAccessor<*>> = hashMapOf()
 
     internal fun getAccessorFactory(): MethodAccessorFactory {
@@ -24,6 +24,12 @@ internal object MethodAccessorFactoryProvider {
         }
 
         return accessorFactory
+    }
+
+    internal fun clearCache() {
+        if (::accessorFactory.isInitialized) {
+            accessorFactory.clearCache()
+        }
     }
 
     @OptIn(ExperimentalMethodAccessorsApi::class)
