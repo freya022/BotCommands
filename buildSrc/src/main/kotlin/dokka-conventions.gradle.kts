@@ -11,7 +11,7 @@ val effectiveTag = publishedEnvironment.effectiveTag
 
 dokka {
     dokkaSourceSets.configureEach {
-        jdkVersion = 17
+        jdkVersion = 25
 
         perPackageOption {
             matchingRegex = ".*internal.*"
