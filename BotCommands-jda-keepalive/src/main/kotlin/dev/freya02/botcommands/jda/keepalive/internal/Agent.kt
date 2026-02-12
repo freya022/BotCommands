@@ -4,7 +4,10 @@ import com.sun.tools.attach.VirtualMachine
 import dev.freya02.botcommands.jda.keepalive.internal.exceptions.AlreadyLoadedClassesException
 import dev.freya02.botcommands.jda.keepalive.internal.exceptions.AttachSelfDeniedException
 import dev.freya02.botcommands.jda.keepalive.internal.exceptions.IllegalAgentContainerException
-import dev.freya02.botcommands.jda.keepalive.internal.transformer.*
+import dev.freya02.botcommands.jda.keepalive.internal.transformer.CD_JDABuilder
+import dev.freya02.botcommands.jda.keepalive.internal.transformer.CD_JDAImpl
+import dev.freya02.botcommands.jda.keepalive.internal.transformer.JDABuilderTransformer
+import dev.freya02.botcommands.jda.keepalive.internal.transformer.JDAImplTransformer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import java.lang.instrument.Instrumentation
 import java.lang.management.ManagementFactory
@@ -21,7 +24,6 @@ internal object Agent {
     internal val transformers = mapOf(
         CD_JDABuilder to JDABuilderTransformer,
         CD_JDAImpl to JDAImplTransformer,
-        CD_JDAService to JDAServiceTransformer,
 //        CD_BContextImpl to BContextImplTransformer,
     )
 

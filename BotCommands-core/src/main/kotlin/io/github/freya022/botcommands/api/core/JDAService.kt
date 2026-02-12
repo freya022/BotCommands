@@ -12,6 +12,8 @@ import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLi
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.annotations.MissingServiceMessage
+import io.github.freya022.botcommands.internal.core.JDAServiceHook
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -117,7 +119,34 @@ abstract class JDAService {
     internal fun onReadyEvent(event: BReadyEvent, eventManager: IEventManager) {
         _eventManager = eventManager
 
-        createJDA(event, eventManager)
+        val hook = getReadyHook()
+        if (hook != null) {
+            hook.onReadyEvent(event, eventManager, ::createJDA)
+        } else {
+            createJDA(event, eventManager)
+        }
+    }
+
+    private fun getReadyHook(): JDAServiceHook? {
+        // Try to see if there's a replacement of the 'onReadyEvent' function
+        //  this is originally made for the JDA keep-alive module
+        val hooksIter = ServiceLoader.load(JDAServiceHook::class.java).iterator()
+        val hook = try {
+            if (!hooksIter.hasNext())
+                return null
+            hooksIter.next()
+        } catch (e: ServiceConfigurationError) {
+            objectLogger().warn(e) { "Could not load JDA service hook, running normally" }
+            return null
+        }
+        // There must be only one!
+        try {
+            if (hooksIter.hasNext())
+                throwInternal("Cannot have more than a single JDAService hook")
+        } catch (e: ServiceConfigurationError) {
+            objectLogger().warn(e) { "Could not check single-ness of JDA service hooks" }
+        }
+        return hook
     }
 
     /**
