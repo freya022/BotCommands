@@ -24,7 +24,6 @@ internal object Agent {
     internal val transformers = mapOf(
         CD_JDABuilder to JDABuilderTransformer,
         CD_JDAImpl to JDAImplTransformer,
-//        CD_BContextImpl to BContextImplTransformer,
     )
 
     private val lock = ReentrantLock()

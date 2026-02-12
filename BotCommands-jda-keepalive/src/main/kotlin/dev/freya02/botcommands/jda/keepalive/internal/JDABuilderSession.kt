@@ -1,8 +1,6 @@
 package dev.freya02.botcommands.jda.keepalive.internal
 
-import dev.freya02.botcommands.jda.keepalive.api.config.jdaKeepAliveConfig
 import dev.freya02.botcommands.jda.keepalive.internal.utils.isJvmShuttingDown
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.StatusChangeEvent
@@ -68,7 +66,6 @@ internal class JDABuilderSession private constructor(
      * [scheduleShutdownSignalFunction] will be called with [afterShutdownSignal] if JDA does get shut down,
      * but if JDA is reused, only [afterShutdownSignal] is used.
      */
-    @DynamicCall
     fun onScheduleShutdownSignal(scheduleShutdownSignalFunction: Runnable, afterShutdownSignal: () -> Unit) {
         this.scheduleShutdownSignal = ScheduleShutdownSignalWrapper(scheduleShutdownSignalFunction, afterShutdownSignal)
     }
@@ -148,11 +145,6 @@ internal class JDABuilderSession private constructor(
         fun getSession(key: String): JDABuilderSession {
             return sessions[key] ?: error("No JDABuilderSession exists for key '$key'")
         }
-
-        // TODO think about whether the cache key is required or not
-        @JvmStatic
-        @DynamicCall
-        fun getCacheKey(context: BContext): String? = context.config.jdaKeepAliveConfig.cacheKey
 
         @JvmStatic
         @DynamicCall

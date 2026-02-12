@@ -32,12 +32,12 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 @RequiresApplicationCommands
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
+    private val config: BApplicationConfig,
+    private val applicationCommandsContext: ApplicationCommandsContextImpl,
     private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
     private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
 ) {
     private val logger = KotlinLogging.logger {  }
-
-    private val applicationCommandsContext = context.applicationCommandsContext
 
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()
@@ -109,7 +109,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
-        val guildsToUpdate = context.applicationConfig.guildsToUpdate
+        val guildsToUpdate = config.guildsToUpdate
         if (guildsToUpdate.isNotEmpty()) {
             if (guild.idLong !in guildsToUpdate) {
                 logger.trace { "Skipping application command updates in ${guild.name} (${guild.id}) as it is not in ${BApplicationConfig::guildsToUpdate.reference}" }

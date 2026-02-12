@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.BotOwners
@@ -10,14 +12,14 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.BShutdownEvent
 import io.github.freya022.botcommands.api.core.events.BStatusChangeEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
+import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
-import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -46,7 +49,7 @@ import kotlin.time.toJavaDuration
 private val logger = KotlinLogging.loggerOf<BContext>()
 
 @BService
-internal class BContextImpl internal constructor(
+class BContextImpl internal constructor(
     override val config: BConfig,
     override val serviceContainer: ServiceContainer,
     override val botOwners: BotOwners
@@ -61,9 +64,9 @@ internal class BContextImpl internal constructor(
 
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
-    override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
+    override val textCommandsContext: TextCommandsContext by serviceContainer.lazy()
 
-    override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()
+    override val applicationCommandsContext: ApplicationCommandsContext by serviceContainer.lazy()
 
     private val bcRegex = Regex("at ${Regex.escape("io.github.freya022.botcommands.")}(?:api|internal)[.a-z]*\\.(.+)")
     private var nextExceptionDispatch: Long = 0
@@ -193,20 +196,34 @@ internal class BContextImpl internal constructor(
      * then fires a [BShutdownEvent] and shuts down all coroutine scopes.
      */
     private fun scheduleShutdownSignal(jda: JDA) {
+        fun doScheduleShutdownSignal() {
+            doScheduleShutdownSignal(jda, afterShutdown = ::shutdownCoroutineScopes)
+        }
+
+        val hook = ShutdownHook.getOrNull()
+        if (hook != null) {
+            hook.onShutdown(
+                context = this,
+                originalCall = ::doScheduleShutdownSignal,
+                afterShutdown = ::shutdownCoroutineScopes,
+            )
+        } else {
+            doScheduleShutdownSignal()
+        }
+    }
+
+    private fun doScheduleShutdownSignal(jda: JDA, afterShutdown: () -> Unit) {
         fun signalShutdown() = runBlocking {
             statusLock.withLock {
                 if (status == Status.SHUTDOWN)
-                    return@runBlocking shutdownCoroutineScopes()
+                    return@runBlocking afterShutdown()
             }
             setStatus(Status.SHUTDOWN)
             eventDispatcher.dispatchEvent(BShutdownEvent(this@BContextImpl))
             // Shutdown the pools *after* dispatching
-            shutdownCoroutineScopes()
+            afterShutdown()
         }
 
-        // TODO this never fires shutdown events when the keep alive is used, as JDA is not shutdown
-        //  do we send fake shutdowns?
-        //  do we transform this method to directly run 'signalShutdown'? maybe this can be an internal hoop api instead of a transform
         val shards = jda.shardManager?.shards ?: listOf(jda)
         val countdown = AtomicInteger(shards.size)
         shards.forEach {
@@ -301,6 +318,34 @@ internal class BContextImpl internal constructor(
             executor?.shutdownNow()
         } else {
             executor?.shutdown()
+        }
+    }
+
+    interface ShutdownHook {
+        fun onShutdown(context: BContext, originalCall: () -> Unit, afterShutdown: () -> Unit)
+
+        companion object {
+            internal fun getOrNull(): ShutdownHook? {
+                // Try to see if there's a replacement of the 'onReadyEvent' function
+                //  this is originally made for the JDA keep-alive module
+                val hooksIter = ServiceLoader.load(ShutdownHook::class.java).iterator()
+                val hook = try {
+                    if (!hooksIter.hasNext())
+                        return null
+                    hooksIter.next()
+                } catch (e: ServiceConfigurationError) {
+                    objectLogger().warn(e) { "Could not load shutdown hook, running normally" }
+                    return null
+                }
+                // There must be only one!
+                try {
+                    if (hooksIter.hasNext())
+                        throwInternal("Cannot have more than a single shutdown hook")
+                } catch (e: ServiceConfigurationError) {
+                    objectLogger().warn(e) { "Could not check single-ness of shutdown hooks" }
+                }
+                return hook
+            }
         }
     }
 }
