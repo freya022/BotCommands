@@ -96,7 +96,9 @@ private class ReflectionMetadataScanner private constructor(
         add(CommandsPresenceChecker())
         add(ResolverSupertypeChecker())
         add(HandlersPresenceChecker())
-        add(AppEmojiContainerProcessor)
+        if (config.appEmojisConfig.enable) {
+            add(AppEmojiContainerProcessor)
+        }
 
         ServiceLoader.load(ClassGraphProcessorProvider::class.java).forEach {
             addAll(it.getProcessors(config))
