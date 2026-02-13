@@ -56,3 +56,8 @@ interface BComponentsConfigConfigurer : BConfigurer<BComponentsConfigBuilder>
  * Configurer for [BCoroutineScopesConfig].
  */
 interface BCoroutineScopesConfigConfigurer : BConfigurer<BCoroutineScopesConfigBuilder>
+
+/**
+ * Configurer for [LocalComponentsConfig].
+ */
+interface LocalComponentsConfigConfigurer : BConfigurer<LocalComponentsConfigBuilder>

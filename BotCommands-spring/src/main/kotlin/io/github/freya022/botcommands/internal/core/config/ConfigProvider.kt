@@ -19,7 +19,8 @@ internal open class ConfigProvider {
         applicationConfiguration: BotCommandsApplicationConfiguration, applicationConfigurers: List<BApplicationConfigConfigurer>,
         modalsConfiguration: BotCommandsModalsConfiguration, modalsConfigurers: List<BModalsConfigConfigurer>,
         componentsConfiguration: BotCommandsComponentsConfiguration, componentsConfigurers: List<BComponentsConfigConfigurer>,
-        coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>
+        coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>,
+        localComponentsConfiguration: BotCommandsLocalComponentsConfiguration, localComponentsConfigurers: List<LocalComponentsConfigConfigurer>,
     ): BConfig =
         BConfigBuilder()
             .applyConfig(coreConfiguration)
@@ -33,6 +34,12 @@ internal open class ConfigProvider {
                 modalsConfig.applyConfig(modalsConfiguration).configure(modalsConfigurers)
                 componentsConfig.applyConfig(componentsConfiguration).configure(componentsConfigurers)
                 coroutineScopesConfig.configure(coroutineConfigurers)
+                if (localComponentsConfiguration.enable) {
+                    registerLocalComponents {
+                        applyConfig(localComponentsConfiguration)
+                        configure(localComponentsConfigurers)
+                    }
+                }
             }
             .configure(coreConfigurers)
             .build()
@@ -67,6 +74,10 @@ internal open class ConfigProvider {
 
     @Bean
     internal open fun bCoroutineScopesConfig(config: BConfig): BCoroutineScopesConfig = config.coroutineScopesConfig
+
+    @Bean
+    @Primary
+    internal open fun localComponentsConfig(config: BConfig): LocalComponentsConfig? = config.getConfigOrNull()
 
     private fun <T : Any> T.configure(configurers: List<BConfigurer<T>>) = apply {
         configurers.forEach { configConfigurer -> configConfigurer.configure(this) }

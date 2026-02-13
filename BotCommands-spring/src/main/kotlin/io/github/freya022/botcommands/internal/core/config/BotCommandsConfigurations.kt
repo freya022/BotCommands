@@ -231,4 +231,13 @@ internal fun BComponentsConfigBuilder.applyConfig(configuration: BotCommandsComp
     enable = configuration.enable
 }
 
+@ConfigurationProperties(prefix = "botcommands.local-components", ignoreUnknownFields = false)
+internal class BotCommandsLocalComponentsConfiguration(
+    val enable: Boolean = false,
+) : LocalComponentsConfigProps
+
+internal fun LocalComponentsConfigBuilder.applyConfig(configuration: BotCommandsLocalComponentsConfiguration) = apply {
+
+}
+
 private fun unusable(): Nothing = throw UnsupportedOperationException("Cannot be used")
