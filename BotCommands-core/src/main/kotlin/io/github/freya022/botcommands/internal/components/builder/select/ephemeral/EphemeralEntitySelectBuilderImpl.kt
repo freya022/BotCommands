@@ -54,8 +54,8 @@ internal class EphemeralEntitySelectBuilderImpl internal constructor(
         check(!built) { "Cannot build components more than once" }
         built = true
 
-        componentController.withNewComponent(this) { internalId, componentId ->
-            return EntitySelectMenuImpl(componentController, internalId, jdaBuild(componentId))
+        return componentController.withNewComponent(this) { internalId, componentId ->
+            EntitySelectMenuImpl(componentController, internalId, jdaBuild(componentId))
         }
     }
 }
