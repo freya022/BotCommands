@@ -3,11 +3,9 @@ package io.github.freya022.botcommands.internal.components.controller
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.exceptions.ComponentTimeoutException
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.internal.components.handler.ComponentTimeoutExecutor
-import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
@@ -23,13 +21,12 @@ private val logger = KotlinLogging.logger { }
 @RequiresComponents
 internal class ComponentTimeoutManager(
     private val context: BContext,
-    serviceContainer: ServiceContainer,
     private val continuationManager: ComponentContinuationManager,
-    private val componentRepository: ComponentRepository,
+    componentController: LazyService<ComponentController>,
     private val componentTimeoutExecutor: ComponentTimeoutExecutor,
 ) {
     private val exceptionHandler = ExceptionHandler(context, logger)
-    private val componentController: ComponentController by serviceContainer.lazy()
+    private val componentController: ComponentController by componentController
     private val timeoutMap = hashMapOf<Int, Job>()
 
     internal fun scheduleTimeout(id: Int, expirationTimestamp: Instant) {
@@ -45,7 +42,7 @@ internal class ComponentTimeoutManager(
             //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
             timeoutMap.remove(id)
 
-            val component = componentRepository.getComponent(id)
+            val component = componentController.getComponent(id)
                 ?: return logger.warn { "Component $id was still timeout scheduled after being deleted" }
 
             //Will also cancel timeouts of related components
