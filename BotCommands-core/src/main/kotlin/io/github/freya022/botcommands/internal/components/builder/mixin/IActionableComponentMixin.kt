@@ -6,6 +6,8 @@ import io.github.freya022.botcommands.api.components.builder.IPersistentActionab
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolder
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
+import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
+import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 internal interface IActionableComponentMixin<T : IActionableComponent<T>> : IActionableComponent<T>,
@@ -18,8 +20,14 @@ internal interface IActionableComponentMixin<T : IActionableComponent<T>> : IAct
 
 internal interface IPersistentActionableComponentMixin<T : IPersistentActionableComponent<T>> :
         IPersistentActionableComponent<T>,
-        IActionableComponentMixin<T>
+        IActionableComponentMixin<T> {
+
+    override val handler: PersistentHandler?
+}
 
 internal interface IEphemeralActionableComponentMixin<T : IEphemeralActionableComponent<T, E>, E : GenericComponentInteractionCreateEvent> :
         IEphemeralActionableComponent<T, E>,
-        IActionableComponentMixin<T>
+        IActionableComponentMixin<T> {
+
+    override val handler: EphemeralHandler<*>?
+}

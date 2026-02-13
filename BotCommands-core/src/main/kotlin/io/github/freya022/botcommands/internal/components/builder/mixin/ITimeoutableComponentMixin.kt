@@ -5,6 +5,8 @@ import io.github.freya022.botcommands.api.components.builder.IPersistentTimeouta
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.internal.components.builder.BuilderInstanceHolder
 import io.github.freya022.botcommands.internal.components.data.timeout.ComponentTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
+import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import kotlin.time.Duration
 
 internal interface ITimeoutableComponentMixin<T : ITimeoutableComponent<T>> : ITimeoutableComponent<T>,
@@ -16,8 +18,14 @@ internal interface ITimeoutableComponentMixin<T : ITimeoutableComponent<T>> : IT
 
 internal interface IPersistentTimeoutableComponentMixin<T : IPersistentTimeoutableComponent<T>> :
         IPersistentTimeoutableComponent<T>,
-        ITimeoutableComponentMixin<T>
+        ITimeoutableComponentMixin<T> {
+
+    override val timeout: PersistentTimeout?
+}
 
 internal interface IEphemeralTimeoutableComponentMixin<T : IEphemeralTimeoutableComponent<T>> :
         IEphemeralTimeoutableComponent<T>,
-        ITimeoutableComponentMixin<T>
+        ITimeoutableComponentMixin<T> {
+
+    override val timeout: EphemeralTimeout?
+}
