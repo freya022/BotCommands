@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.internal.components.repositories
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.db.*
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
+import io.github.freya022.botcommands.internal.components.annotations.RequiresPersistentComponents
 import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
 import io.github.freya022.botcommands.internal.components.builder.mixin.IComponentBuilderMixin
@@ -39,7 +39,7 @@ import kotlin.time.toJavaInstant
 private val logger = KotlinLogging.logger { }
 
 @BService
-@RequiresComponents
+@RequiresPersistentComponents
 internal class ComponentRepository(
     private val database: InternalDatabase,
     private val componentTimeoutRepository: ComponentTimeoutRepository,

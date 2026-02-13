@@ -1,16 +1,16 @@
 package io.github.freya022.botcommands.internal.components.repositories
 
-import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.mapToArray
+import io.github.freya022.botcommands.internal.components.annotations.RequiresPersistentComponents
 import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 @BService
-@RequiresComponents
+@RequiresPersistentComponents
 internal class ComponentTimeoutRepository(
     private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers
 ) {
