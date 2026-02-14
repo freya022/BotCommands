@@ -7,8 +7,8 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentType
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerOption
-import io.github.freya022.botcommands.internal.components.timeout.persistent.TimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.shortSignature

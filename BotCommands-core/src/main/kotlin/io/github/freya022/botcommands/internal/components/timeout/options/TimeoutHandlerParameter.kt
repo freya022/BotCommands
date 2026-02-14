@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components.timeout.options
 
-import io.github.freya022.botcommands.internal.components.timeout.persistent.TimeoutDescriptor
+import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.options.CommandOptions

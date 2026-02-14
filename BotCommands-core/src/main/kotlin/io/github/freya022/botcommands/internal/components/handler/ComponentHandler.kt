@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.handler.options.ComponentHandlerOption
-import io.github.freya022.botcommands.internal.components.handler.persistent.ComponentHandlerContainer
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent

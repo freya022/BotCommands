@@ -1,13 +1,13 @@
-package io.github.freya022.botcommands.internal.components.timeout.persistent
+package io.github.freya022.botcommands.internal.components.timeout
 
 import io.github.freya022.botcommands.api.components.annotations.ComponentTimeoutHandler
 import io.github.freya022.botcommands.api.components.annotations.GroupTimeoutHandler
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.annotations.getEffectiveName
 import io.github.freya022.botcommands.api.components.data.ComponentTimeoutData
 import io.github.freya022.botcommands.api.components.data.GroupTimeoutData
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.internal.components.annotations.RequiresPersistentComponents
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsM
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
 
 @BService
-@RequiresPersistentComponents
+@RequiresComponents
 internal class TimeoutHandlers(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
 
     private val components: Map<String, TimeoutDescriptor<ComponentTimeoutData>> =

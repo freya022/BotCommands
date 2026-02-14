@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.handler.persistent
+package io.github.freya022.botcommands.internal.components.handler
 
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.core.service.getService
