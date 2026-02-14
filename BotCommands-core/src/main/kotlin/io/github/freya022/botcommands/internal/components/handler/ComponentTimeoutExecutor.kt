@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
+import io.github.freya022.botcommands.internal.components.data.timeout.ComponentTimeout
 import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.timeout.TimeoutDescriptor
@@ -29,10 +30,7 @@ internal class ComponentTimeoutExecutor internal constructor(
     private val timeoutHandlers: TimeoutHandlers,
 ) {
 
-    suspend fun handleTimeout(component: ComponentData) {
-        val timeout = component.timeout
-            ?: throwInternal("Component ${component.internalId} was scheduled for timeout but has no timeout")
-
+    suspend fun handleTimeout(component: ComponentData, timeout: ComponentTimeout) {
         when (timeout) {
             is EphemeralTimeout -> handleEphemeralTimeout(timeout)
             is PersistentTimeout -> handlePersistentTimeout(component, timeout)

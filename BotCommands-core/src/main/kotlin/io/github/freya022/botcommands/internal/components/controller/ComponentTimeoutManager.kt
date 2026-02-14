@@ -48,8 +48,10 @@ internal class ComponentTimeoutManager(
             //Will also cancel timeouts of related components
             componentController.deleteComponent(component, throwTimeouts = true)
 
-            // Run user code
-            componentTimeoutExecutor.handleTimeout(component)
+            // Run user code, if set
+            component.timeout?.let { timeout ->
+                componentTimeoutExecutor.handleTimeout(component, timeout)
+            }
         } catch (e: Exception) {
             handleTimeoutException(id, e)
         }
