@@ -74,9 +74,18 @@ internal class ComponentRepository(
         }
 
         // The 42.7.5 driver is required for byte[] support in setObject
-        check(metadata.driverVersion >= "42.7.5") {
-            "Using components require a version of the PostgreSQL driver higher or equal to 42.7.5"
+        val driverVersion = metadata.driverVersion
+        val versionComponents = driverVersion.split('.').mapNotNull { it.toIntOrNull() }
+        if (versionComponents.size != 3) {
+            return logger.warn { "Unexpected PostgreSQL driver version: $driverVersion ; skipping check" }
         }
+
+        val (major, minor, patch) = versionComponents
+        if (major > 42) return
+        if (major == 42 && minor > 7) return
+        if (major == 42 && minor == 7 && patch >= 5) return
+
+        error("Using components require a version of the PostgreSQL driver higher or equal to 42.7.5")
     }
 
     suspend fun getPersistentComponentTimeouts(): List<PersistentComponentTimeout> {
