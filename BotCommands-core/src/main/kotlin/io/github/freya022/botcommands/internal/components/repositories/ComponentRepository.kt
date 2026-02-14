@@ -27,14 +27,14 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
 import java.sql.DatabaseMetaData
 import java.sql.Timestamp
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 
 private val logger = KotlinLogging.logger { }
 

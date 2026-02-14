@@ -22,7 +22,6 @@ konsist = "0.17.3"
 kotlin = "2.3.10"
 kotlin-logging = "7.0.3"
 kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.6.1"
 kotlinx-serialization = "1.9.0"
 ksp = "2.2.20-2.0.4"
 logback-classic = "1.5.16"
@@ -76,7 +75,6 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 ksp-aa = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }

@@ -24,7 +24,7 @@ import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 private const val PREFIX = "BotCommands-Components-"
 private const val PREFIX_LENGTH = PREFIX.length

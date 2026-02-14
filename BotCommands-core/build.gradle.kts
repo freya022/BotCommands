@@ -49,8 +49,6 @@ dependencies {
 
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
-    api(libs.kotlinx.datetime)
-
     // Deserialization
     api(libs.jackson.databind)
     api(libs.jackson.module.kotlin)

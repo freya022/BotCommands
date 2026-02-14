@@ -13,12 +13,12 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.context.message.GuildMessageEvent
 import io.github.freya022.botcommands.api.components.Buttons
 import kotlinx.coroutines.future.await
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toJavaInstant
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaInstant
 
 @Command
 class MessageContextDeleteIncluding(
