@@ -117,6 +117,8 @@ class ButtonFactory internal constructor(
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
+     * This is not available when 'local components' (i.e. without a database) are used.
+     *
      * @see Components
      */
     @CheckReturnValue
@@ -127,6 +129,8 @@ class ButtonFactory internal constructor(
      * Creates a persistent button.
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
+     *
+     * This is not available when 'local components' (i.e. without a database) are used.
      *
      * @see Components
      */

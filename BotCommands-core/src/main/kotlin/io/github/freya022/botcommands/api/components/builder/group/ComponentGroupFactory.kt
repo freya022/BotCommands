@@ -43,6 +43,8 @@ class ComponentGroupFactory internal constructor(
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
+     * This is not available when 'local components' (i.e. without a database) are used.
+     *
      * @see Components
      */
     @CheckReturnValue
@@ -53,6 +55,8 @@ class ComponentGroupFactory internal constructor(
      * Creates a persistent component group.
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
+     *
+     * This is not available when 'local components' (i.e. without a database) are used.
      *
      * @see Components
      */

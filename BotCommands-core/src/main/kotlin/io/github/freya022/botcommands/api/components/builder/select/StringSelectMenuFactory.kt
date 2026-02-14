@@ -44,6 +44,8 @@ class StringSelectMenuFactory internal constructor(
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
      *
+     * This is not available when 'local components' (i.e. without a database) are used.
+     *
      * @see Components
      */
     @CheckReturnValue
@@ -54,6 +56,8 @@ class StringSelectMenuFactory internal constructor(
      * Creates a persistent string select menu.
      *
      * As a reminder, a [default timeout][Components.defaultPersistentTimeout] is set.
+     *
+     * This is not available when 'local components' (i.e. without a database) are used.
      *
      * @see Components
      */
