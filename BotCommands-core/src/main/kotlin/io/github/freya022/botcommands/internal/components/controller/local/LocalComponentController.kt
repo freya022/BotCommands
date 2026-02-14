@@ -15,7 +15,7 @@ import kotlinx.datetime.Instant
 
 @BService
 @RequiresLocalComponents
-internal class LocalComponentControllerImpl(
+internal class LocalComponentController(
     override val context: BContext,
     override val continuationManager: ComponentContinuationManager,
     override val timeoutManager: ComponentTimeoutManager,
