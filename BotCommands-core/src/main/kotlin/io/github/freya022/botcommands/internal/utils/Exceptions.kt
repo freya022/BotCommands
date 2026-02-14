@@ -5,8 +5,6 @@ import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.internal.core.exceptions.InternalException
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -14,7 +12,9 @@ import java.lang.reflect.InvocationTargetException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 internal fun throwInternal(message: String): Nothing =
     throw InternalException(message)

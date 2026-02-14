@@ -3,8 +3,8 @@ package io.github.freya022.botcommands.internal.components.data
 import io.github.freya022.botcommands.internal.components.ComponentType
 import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.data.timeout.ComponentTimeout
-import kotlinx.datetime.Instant
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 internal class ComponentGroupData internal constructor(
     override val internalId: Int,

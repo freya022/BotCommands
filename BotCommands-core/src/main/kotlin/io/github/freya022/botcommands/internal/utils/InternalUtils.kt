@@ -2,8 +2,6 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -11,7 +9,9 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 internal fun String.toDiscordString(): String {
     val sb: StringBuilder = StringBuilder()

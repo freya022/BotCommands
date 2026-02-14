@@ -4,8 +4,6 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.toBoxed
 import io.github.freya022.botcommands.internal.utils.findErasureOfAt
 import io.github.freya022.botcommands.internal.utils.rethrow
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.*
@@ -13,6 +11,8 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.typeOf
+import kotlin.time.Instant
+import kotlin.time.toKotlinInstant
 
 /**
  * Utility class to iterate over a [ResultSet],
