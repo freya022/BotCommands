@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
+import kotlinx.datetime.Instant
 
 internal sealed interface ActionComponentData : ComponentData {
     val constraints: InteractionConstraints
@@ -12,4 +13,8 @@ internal sealed interface ActionComponentData : ComponentData {
     val rateLimitReference: ComponentRateLimitReference?
     val handler: ComponentHandler?
     val group: ComponentGroupData?
+
+    fun withGroup(group: ComponentGroupData): ActionComponentData
+
+    fun withExpiration(expiresAt: Instant): ActionComponentData
 }

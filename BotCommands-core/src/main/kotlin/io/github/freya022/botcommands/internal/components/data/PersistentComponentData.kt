@@ -25,4 +25,40 @@ internal class PersistentComponentData(
 ) : ActionComponentData {
     override val lifetimeType: LifetimeType
         get() = LifetimeType.PERSISTENT
+
+    override fun withGroup(group: ComponentGroupData): PersistentComponentData {
+        require(this.group == null) {
+            "Attempted to override a group with another"
+        }
+
+        return PersistentComponentData(
+            internalId,
+            componentType,
+            expiresAt,
+            resetTimeoutOnUseDuration,
+            filters,
+            singleUse,
+            rateLimitReference,
+            handler,
+            timeout,
+            constraints,
+            group
+        )
+    }
+
+    override fun withExpiration(expiresAt: Instant): PersistentComponentData {
+        return PersistentComponentData(
+            internalId,
+            componentType,
+            expiresAt,
+            resetTimeoutOnUseDuration,
+            filters,
+            singleUse,
+            rateLimitReference,
+            handler,
+            timeout,
+            constraints,
+            group
+        )
+    }
 }

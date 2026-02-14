@@ -26,7 +26,7 @@ internal class EphemeralComponentData(
     override val lifetimeType: LifetimeType
         get() = LifetimeType.EPHEMERAL
 
-    internal fun withGroup(group: ComponentGroupData?): EphemeralComponentData {
+    override fun withGroup(group: ComponentGroupData): EphemeralComponentData {
         require(this.group == null) {
             "Attempted to override a group with another"
         }
@@ -46,7 +46,7 @@ internal class EphemeralComponentData(
         )
     }
 
-    internal fun withExpiration(expiresAt: Instant): EphemeralComponentData {
+    override fun withExpiration(expiresAt: Instant): EphemeralComponentData {
         return EphemeralComponentData(
             internalId,
             componentType,

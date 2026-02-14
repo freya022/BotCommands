@@ -4,14 +4,10 @@ import gnu.trove.map.TIntObjectMap
 import gnu.trove.map.hash.TIntObjectHashMap
 import io.github.freya022.botcommands.api.components.annotations.RequiresLocalComponents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.internal.components.LifetimeType
 import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
-import io.github.freya022.botcommands.internal.components.builder.group.EphemeralComponentGroupBuilderImpl
-import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
-import io.github.freya022.botcommands.internal.components.builder.mixin.IEphemeralActionableComponentMixin
-import io.github.freya022.botcommands.internal.components.builder.mixin.IEphemeralTimeoutableComponentMixin
-import io.github.freya022.botcommands.internal.components.data.ComponentData
-import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
-import io.github.freya022.botcommands.internal.components.data.EphemeralComponentData
+import io.github.freya022.botcommands.internal.components.builder.mixin.*
+import io.github.freya022.botcommands.internal.components.data.*
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -36,31 +32,50 @@ internal class LocalComponentRepository {
     private val lock = ReentrantLock()
 
     internal fun createComponent(builder: BaseComponentBuilderMixin<*>): ComponentData {
-        if (builder !is IEphemeralActionableComponentMixin<*, *>) {
-            throw IllegalArgumentException("Cannot create persistent components without a database")
-        }
-        if (builder !is IEphemeralTimeoutableComponentMixin<*>) {
-            throw IllegalArgumentException("Cannot create persistent components without a database")
-        }
-
         val internalId = lock.withLock { nextId++ }
         val expiresAt: Instant? = builder.timeoutDuration?.let { Clock.System.now() + it }
         val resetTimeoutOnUseDuration: Duration? = builder.timeoutDuration
-                ?.takeIf { builder.resetTimeoutOnUse }
+            ?.takeIf { builder.resetTimeoutOnUse }
 
-        val data = EphemeralComponentData(
-            internalId,
-            builder.componentType,
-            expiresAt,
-            resetTimeoutOnUseDuration,
-            builder.filters.toList(),
-            builder.singleUse,
-            builder.rateLimitReference,
-            builder.handler,
-            builder.timeout,
-            builder.constraints,
-            null,
-        )
+        val data: ComponentData = when (builder.lifetimeType) {
+            LifetimeType.EPHEMERAL -> {
+                builder as IEphemeralActionableComponentMixin<*, *>
+                builder as IEphemeralTimeoutableComponentMixin<*>
+
+                EphemeralComponentData(
+                    internalId,
+                    builder.componentType,
+                    expiresAt,
+                    resetTimeoutOnUseDuration,
+                    builder.filters.toList(),
+                    builder.singleUse,
+                    builder.rateLimitReference,
+                    builder.handler,
+                    builder.timeout,
+                    builder.constraints.copy(),
+                    null,
+                )
+            }
+
+            LifetimeType.PERSISTENT -> {
+                builder as IPersistentActionableComponentMixin<*>
+                builder as IPersistentTimeoutableComponentMixin<*>
+
+                PersistentComponentData(
+                    internalId,
+                    builder.componentType,
+                    expiresAt,
+                    resetTimeoutOnUseDuration,
+                    builder.filters.toList(),
+                    builder.singleUse,
+                    builder.rateLimitReference,
+                    builder.handler,
+                    builder.timeout,
+                    builder.constraints.copy(),
+                    null,
+                )
+            }
+        }
 
         lock.withLock { components.put(internalId, data) }
 
@@ -70,10 +85,6 @@ internal class LocalComponentRepository {
     internal fun getComponent(id: Int): ComponentData? = lock.withLock { components[id] }
 
     internal fun insertGroup(builder: AbstractComponentGroupBuilder<*>): ComponentGroupData {
-        if (builder !is EphemeralComponentGroupBuilderImpl) {
-            throw IllegalArgumentException("Cannot create persistent groups without a database")
-        }
-
         val internalId = lock.withLock { nextId++ }
         val expiresAt: Instant? = builder.timeoutDuration?.let { Clock.System.now() + it }
         val resetTimeoutOnUseDuration: Duration? = builder.timeoutDuration
@@ -92,7 +103,7 @@ internal class LocalComponentRepository {
             for (innerComponentId in builder.componentIds) {
                 val innerComponent = components[innerComponentId]
                     ?: error("Registered a group with a deleted component")
-                if (innerComponent !is EphemeralComponentData)
+                if (innerComponent !is ActionComponentData)
                     error("Cannot set a group on a group")
 
                 if (innerComponent.timeout != null) {
@@ -119,8 +130,8 @@ internal class LocalComponentRepository {
     internal fun resetExpiration(componentId: Int): Instant = lock.withLock {
         val component = components[componentId]
             ?: throwInternal("Could not find component $componentId to reset expiration")
-        if (component !is EphemeralComponentData) {
-            throwInternal("Component to reset expiration is not an ephemeral action component")
+        if (component !is ActionComponentData) {
+            throwInternal("Component to reset expiration is not an action component")
         }
 
         val newExpiration = Clock.System.now() + component.resetTimeoutOnUseDuration!!
