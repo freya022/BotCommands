@@ -1,12 +1,12 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.repositories.persistent
 
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.internal.components.annotations.RequiresPersistentComponents
-import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
+import io.github.freya022.botcommands.internal.components.handler.persistent.EphemeralComponentHandlers
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 @BService

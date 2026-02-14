@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.repositories.persistent
 
 import io.github.freya022.botcommands.api.core.db.Transaction
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.internal.components.annotations.RequiresPersistentComponents
 import io.github.freya022.botcommands.internal.components.data.timeout.EphemeralTimeout
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
-import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.timeout.persistent.EphemeralTimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
 @BService

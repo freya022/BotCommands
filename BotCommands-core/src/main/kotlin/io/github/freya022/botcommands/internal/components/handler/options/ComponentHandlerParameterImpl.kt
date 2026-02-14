@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.components.handler.options
 
-import io.github.freya022.botcommands.internal.components.handler.ComponentDescriptor
+import io.github.freya022.botcommands.internal.components.handler.persistent.ComponentDescriptor
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.reflection.toAggregatorFunction
 import io.github.freya022.botcommands.internal.options.CommandOptions

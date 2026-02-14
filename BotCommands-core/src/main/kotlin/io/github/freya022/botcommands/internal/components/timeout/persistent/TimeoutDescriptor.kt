@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.timeout
+package io.github.freya022.botcommands.internal.components.timeout.persistent
 
 import io.github.freya022.botcommands.api.components.annotations.TimeoutData
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive

@@ -3,74 +3,38 @@ package io.github.freya022.botcommands.internal.components.controller
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.ComponentGroup
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
-import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
-import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.lazy
+import io.github.freya022.botcommands.api.core.objectLogger
+import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.internal.components.builder.group.AbstractComponentGroupBuilder
 import io.github.freya022.botcommands.internal.components.builder.mixin.BaseComponentBuilderMixin
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentData
-import io.github.freya022.botcommands.internal.components.handler.EphemeralComponentHandlers
-import io.github.freya022.botcommands.internal.components.repositories.ComponentRepository
-import io.github.freya022.botcommands.internal.components.timeout.EphemeralTimeoutHandlers
+import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
-import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.runBlocking
-import kotlin.time.Clock
+import kotlinx.datetime.Clock
+import kotlin.time.Instant
 
-private const val PREFIX = "BotCommands-Components-"
-private const val PREFIX_LENGTH = PREFIX.length
+@InterfacedService(acceptMultiple = false)
+internal abstract class ComponentController {
+    protected val logger = objectLogger()
 
-private val logger = KotlinLogging.logger { }
+    internal abstract val context: BContext
+    internal abstract val continuationManager: ComponentContinuationManager
+    protected abstract val timeoutManager: ComponentTimeoutManager
 
-@BService
-@RequiresComponents
-internal class ComponentController(
-    val context: BContext,
-    internal val continuationManager: ComponentContinuationManager,
-    private val componentRepository: ComponentRepository,
-    private val ephemeralComponentHandlers: EphemeralComponentHandlers,
-    private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers,
-    private val timeoutManager: ComponentTimeoutManager
-) {
     // This service might be used in classes that use components and also declare rate limiters
-    private val rateLimitContainer: RateLimitContainer by context.serviceContainer.lazy()
+    private val rateLimitContainer: RateLimitContainer by lazy { context.getService() }
     private val rateLimitReferences: MutableSet<ComponentRateLimitReference> = hashSetOf()
 
-    init {
-        runBlocking {
-            removeEphemeralComponents()
-            scheduleExistingTimeouts()
-        }
-    }
-
-    private suspend fun removeEphemeralComponents() {
-        val removedComponents = componentRepository.removeEphemeralComponents()
-        logger.debug { "Removed $removedComponents ephemeral components" }
-    }
-
-    private suspend fun scheduleExistingTimeouts() {
-        componentRepository
-            .getPersistentComponentTimeouts()
-            .forEach {
-                timeoutManager.scheduleTimeout(it.componentId, it.instant)
-            }
-    }
-
-    internal suspend inline fun <R> withNewComponent(builder: BaseComponentBuilderMixin<*>, block: (internalId: Int, componentId: String) -> R): R {
-        val internalId = createComponent(builder).internalId
-        return block(internalId, getComponentId(internalId))
-    }
-
-    private suspend fun createComponent(builder: BaseComponentBuilderMixin<*>): ComponentData {
+    internal suspend fun <R> withNewComponent(builder: BaseComponentBuilderMixin<*>, block: (internalId: Int, componentId: String) -> R): R {
         builder.rateLimitReference?.let { rateLimitReference ->
             require(rateLimitReference.group in rateLimitContainer) {
                 "Rate limit group '${rateLimitReference.group}' was not registered using ${classRef<RateLimitProvider>()}"
@@ -94,22 +58,27 @@ internal class ComponentController(
             logger.warn { "Using 'resetTimeoutOnUse' has no effect when no timeout is set" }
         }
 
-        val component = componentRepository.createComponent(builder)
+        val component = createComponent(builder)
 
         component.expiresAt?.let { expirationTimestamp ->
             timeoutManager.scheduleTimeout(component.internalId, expirationTimestamp)
         }
 
-        return component
+        val internalId = component.internalId
+        return block(internalId, getComponentId(internalId))
     }
 
+    protected abstract suspend fun createComponent(builder: BaseComponentBuilderMixin<*>): ComponentData
+
     internal suspend fun getActiveComponent(componentId: Int): ComponentData? {
-        return componentRepository.getComponent(componentId)
+        return getComponent(componentId)
             ?.takeUnless {
                 val expiresAt = it.expiresAt
                 expiresAt != null && expiresAt <= Clock.System.now()
             }
     }
+
+    internal abstract suspend fun getComponent(componentId: Int): ComponentData?
 
     internal suspend fun tryResetTimeout(component: ComponentData) {
         // Components in groups cannot have timeouts,
@@ -122,17 +91,18 @@ internal class ComponentController(
 
             // Cancel, reset in DB, schedule
             timeoutManager.cancelTimeout(component.internalId)
-            val newExpirationTimestamp = componentRepository.resetExpiration(component.internalId)
-                ?: throwInternal("New expiration timestamp is null despite ${component::resetTimeoutOnUseDuration.reference} being non-null")
+            val newExpirationTimestamp = resetExpiration(component.internalId)
             timeoutManager.scheduleTimeout(component.internalId, newExpirationTimestamp)
         }
     }
 
-    suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
+    protected abstract suspend fun resetExpiration(internalId: Int): Instant
+
+    internal suspend fun deleteComponent(component: ComponentData, throwTimeouts: Boolean) =
         deleteComponentsById(listOf(component.internalId), throwTimeouts)
 
-    suspend fun createGroup(builder: AbstractComponentGroupBuilder<*>): ComponentGroup {
-        val group = componentRepository.insertGroup(builder)
+    internal suspend fun createGroup(builder: AbstractComponentGroupBuilder<*>): ComponentGroup {
+        val group = createGroupData(builder)
 
         group.expiresAt?.let { expirationTimestamp ->
             timeoutManager.scheduleTimeout(group.internalId, expirationTimestamp)
@@ -141,13 +111,9 @@ internal class ComponentController(
         return ComponentGroup(this, group.internalId)
     }
 
-    suspend fun deleteComponentsById(ids: Collection<Int>, throwTimeouts: Boolean) {
-        componentRepository.deleteComponentsById(ids).forEach { (componentId, ephemeralComponentHandlerId, ephemeralTimeoutHandlerId) ->
-            ephemeralComponentHandlerId?.let { ephemeralComponentHandlers.remove(it) }
-            ephemeralTimeoutHandlerId?.let { ephemeralTimeoutHandlers.remove(it) }
-            timeoutManager.removeTimeouts(componentId, throwTimeouts)
-        }
-    }
+    protected abstract suspend fun createGroupData(builder: AbstractComponentGroupBuilder<*>): ComponentGroupData
+
+    internal abstract suspend fun deleteComponentsById(ids: Collection<Int>, throwTimeouts: Boolean)
 
     internal fun createRateLimitReference(group: String, discriminator: String): ComponentRateLimitReference {
         val ref = ComponentRateLimitReference(group, discriminator)
@@ -164,6 +130,9 @@ internal class ComponentController(
     }
 
     internal companion object {
+        private const val PREFIX = "BotCommands-Components-"
+        private const val PREFIX_LENGTH = PREFIX.length
+
         internal fun isCompatibleComponent(id: String): Boolean = id.startsWith(PREFIX)
 
         internal fun parseComponentId(id: String): Int = Integer.parseInt(id, PREFIX_LENGTH, id.length, 10)

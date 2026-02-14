@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.components.repositories
+package io.github.freya022.botcommands.internal.components.repositories.persistent
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
@@ -40,7 +40,7 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 @RequiresPersistentComponents
-internal class ComponentRepository(
+internal class PersistentComponentRepository(
     private val database: InternalDatabase,
     private val componentTimeoutRepository: ComponentTimeoutRepository,
     private val componentHandlerRepository: ComponentHandlerRepository,

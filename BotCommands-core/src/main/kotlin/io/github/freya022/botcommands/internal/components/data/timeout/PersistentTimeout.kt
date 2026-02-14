@@ -7,9 +7,8 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.components.ComponentType
-import io.github.freya022.botcommands.internal.components.timeout.ComponentTimeoutHandlers
-import io.github.freya022.botcommands.internal.components.timeout.GroupTimeoutHandlers
 import io.github.freya022.botcommands.internal.components.timeout.options.TimeoutHandlerOption
+import io.github.freya022.botcommands.internal.components.timeout.persistent.TimeoutHandlers
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -63,12 +62,11 @@ private object PersistentTimeoutComponentDataOptionCache {
 
     fun getOrCreate(context: BContext, componentType: ComponentType, handlerName: String): List<TimeoutHandlerOption> {
         return cache.computeIfAbsent(CacheKey(componentType, handlerName)) {
-            val container = when (componentType) {
-                ComponentType.GROUP -> context.getService<GroupTimeoutHandlers>()
-                else -> context.getService<ComponentTimeoutHandlers>()
-            }
-
-            val descriptor = container[handlerName] ?: throwArgument("No timeout handler named '$handlerName' exists")
+            val timeoutHandlers = context.getService<TimeoutHandlers>()
+            val descriptor = when (componentType) {
+                ComponentType.GROUP -> timeoutHandlers.ofGroup(handlerName)
+                else -> timeoutHandlers.ofComponent(handlerName)
+            } ?: throwArgument("No timeout handler named '$handlerName' exists")
             descriptor.allOptionsOrdered.filterIsInstance<TimeoutHandlerOption>().unmodifiableView()
         }
     }

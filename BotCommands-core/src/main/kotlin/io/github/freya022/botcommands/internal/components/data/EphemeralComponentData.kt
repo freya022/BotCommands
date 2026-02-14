@@ -25,4 +25,40 @@ internal class EphemeralComponentData(
 ) : ActionComponentData {
     override val lifetimeType: LifetimeType
         get() = LifetimeType.EPHEMERAL
+
+    internal fun withGroup(group: ComponentGroupData?): EphemeralComponentData {
+        require(this.group == null) {
+            "Attempted to override a group with another"
+        }
+
+        return EphemeralComponentData(
+            internalId,
+            componentType,
+            expiresAt,
+            resetTimeoutOnUseDuration,
+            filters,
+            singleUse,
+            rateLimitReference,
+            handler,
+            timeout,
+            constraints,
+            group
+        )
+    }
+
+    internal fun withExpiration(expiresAt: Instant): EphemeralComponentData {
+        return EphemeralComponentData(
+            internalId,
+            componentType,
+            expiresAt,
+            resetTimeoutOnUseDuration,
+            filters,
+            singleUse,
+            rateLimitReference,
+            handler,
+            timeout,
+            constraints,
+            group
+        )
+    }
 }
