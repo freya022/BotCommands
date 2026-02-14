@@ -118,6 +118,14 @@ class InteractionConstraints private constructor() {
         addPermissions(permissions)
     }
 
+    fun copy(): InteractionConstraints {
+        val copy = empty()
+        copy.allowedUsers.addAll(allowedUsers)
+        copy.allowedRoles.addAll(allowedRoles)
+        copy.allowingPermissions.addAll(allowingPermissions)
+        return copy
+    }
+
     @JvmSynthetic
     internal fun isAllowed(event: GenericComponentInteractionCreateEvent): Boolean {
         if (isEmpty) return true
