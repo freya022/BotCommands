@@ -24,8 +24,8 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
         val messageSourceContext = MessageSourceContext(
             localizationService = localizationService,
             localizationBundle = bundle,
-            guildLocale = guildLocaleProvider.getDiscordLocale(interaction),
-            userLocale = userLocaleProvider.getDiscordLocale(interaction),
+            guildLocale = guildLocaleProvider.getLocale(interaction),
+            userLocale = userLocaleProvider.getLocale(interaction),
         )
 
         return MessageSourceGenerator.instantiate(sourceHandle, messageSourceContext)

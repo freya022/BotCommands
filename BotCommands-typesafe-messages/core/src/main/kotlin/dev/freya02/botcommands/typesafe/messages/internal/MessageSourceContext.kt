@@ -10,12 +10,9 @@ import java.util.*
 internal class MessageSourceContext(
     private val localizationService: LocalizationService,
     private val localizationBundle: String,
-    guildLocale: DiscordLocale,
-    userLocale: DiscordLocale?,
+    private val guildLocale: Locale,
+    private val userLocale: Locale?,
 ) {
-
-    private val guildLocale: Locale = guildLocale.toLocale()
-    private val userLocale: Locale? = userLocale?.toLocale()
 
     init {
         // At least the root bundle must exist
