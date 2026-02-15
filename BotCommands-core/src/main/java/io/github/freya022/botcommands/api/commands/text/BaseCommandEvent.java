@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * Event for regex-based text commands.
  *
  * <h3>Localization</h3>
- * You can send localized replies using the user, guild and also any [Locale],
+ * You can send localized replies using the user, guild and also any {@link java.util.Locale Locale},
  * by using this event directly, see {@link LocalizableTextCommand} for more details and configuration.
  * <p>
  * An alternative to using this event is injecting an {@link TextLocalizationContext} in a parameter,
