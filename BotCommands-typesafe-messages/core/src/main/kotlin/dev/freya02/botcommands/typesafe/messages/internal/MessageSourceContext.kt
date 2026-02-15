@@ -7,12 +7,16 @@ import io.github.freya022.botcommands.api.localization.LocalizationService
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
+private typealias LocaleSupplier = () -> Locale
+
 internal class MessageSourceContext(
     private val localizationService: LocalizationService,
     private val localizationBundle: String,
-    private val guildLocale: Locale,
-    private val userLocale: Locale?,
+    guildLocaleSupplier: LocaleSupplier,
+    userLocaleSupplier: LocaleSupplier?,
 ) {
+    private val guildLocale: Locale by lazy(guildLocaleSupplier)
+    private val userLocale: Locale? by if (userLocaleSupplier == null) lazyOf(null) else lazy(userLocaleSupplier)
 
     init {
         // At least the root bundle must exist
