@@ -46,7 +46,7 @@ fun main(args: Array<out String>) {
         // ...
 
         @OptIn(ExperimentalRestartApi::class)
-        withRestarter(args) {
+        registerRestarter(args) {
             // Optional configuration
         }
     }
@@ -60,10 +60,10 @@ void main(String[] args) {
     BotCommands.create(config -> {
         // ...
 
-        var restarterConfig = RestarterConfigBuilder.create(args)
+        var restarterConfig = RestarterConfig.builder(args)
                 // Optional configuration
                 .build();
-        config.withConfig(restarterConfig);
+        config.registerModule(restarterConfig);
     });
 }
 ```

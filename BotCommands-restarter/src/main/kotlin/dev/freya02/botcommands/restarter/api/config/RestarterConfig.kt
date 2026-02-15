@@ -40,12 +40,30 @@ interface RestarterConfigProps {
 }
 
 /**
- * @see [RestarterConfigBuilder]
+ * Configuration for the restarter feature.
+ *
+ * To enable this feature, a configuration of it must be registered.
+ *
+ * @see [RestarterConfig.builder]
+ * @see [registerRestarter]
  */
 @InjectedService
 @ExperimentalRestartApi
 interface RestarterConfig : IConfig, RestarterConfigProps {
+
     override val configType get() = RestarterConfig::class.java
+
+    companion object {
+        /**
+         * Creates a new [RestarterConfigBuilder], you must [build] it and [register][BConfigBuilder.registerModule] it.
+         *
+         * @param args The program arguments, they will be passed to the main method upon restarting
+         */
+        @JvmStatic
+        fun builder(args: Array<out String>): RestarterConfigBuilder {
+            return RestarterConfigBuilder.create(args)
+        }
+    }
 }
 
 @ExperimentalRestartApi
@@ -56,7 +74,7 @@ internal val BConfig.restarterConfig: RestarterConfig
 /**
  * Builder of [RestarterConfig].
  *
- * @see [RestarterConfigBuilder.Companion.create]
+ * @see [RestarterConfig.builder]
  */
 @ConfigDSL
 @ExperimentalRestartApi
@@ -78,37 +96,34 @@ class RestarterConfigBuilder private constructor(
     }
 
     /**
-     * Builds the [RestarterConfig], you can register the built configuration with [BConfigBuilder.withConfig].
+     * Builds the [RestarterConfig], you can register the built configuration with [BConfigBuilder.registerModule].
      */
     fun build(): RestarterConfig = object : RestarterConfig {
         override val startArgs = this@RestarterConfigBuilder.startArgs
         override val restartDelay = this@RestarterConfigBuilder.restartDelay
     }
 
-    companion object {
+    internal companion object {
 
-        /**
-         * Creates a new [RestarterConfigBuilder], you must [build] it and [register][BConfigBuilder.withConfig] it.
-         *
-         * @param args The program arguments, they will be passed to the main method upon restarting
-         */
-        @JvmStatic
-        fun create(args: Array<out String>): RestarterConfigBuilder {
+        @JvmSynthetic
+        internal fun create(args: Array<out String>): RestarterConfigBuilder {
             return RestarterConfigBuilder(args.toList())
         }
     }
 }
 
 /**
- * Registers the restarter module.
+ * Registers the restarter module, enabling the feature.
  *
  * @param args  The program arguments, they will be passed to the main method upon restarting
  * @param block A block for further configuration
+ *
+ * @throws IllegalStateException If the module was already registered
  */
 @ExperimentalRestartApi
-fun BConfigBuilder.withRestarter(args: Array<out String>, block: RestarterConfigBuilder.() -> Unit = { }) {
+fun BConfigBuilder.registerRestarter(args: Array<out String>, block: RestarterConfigBuilder.() -> Unit = { }) {
     val config = RestarterConfigBuilder.create(args)
         .apply(block)
         .build()
-    withConfig(config)
+    registerModule(config)
 }
