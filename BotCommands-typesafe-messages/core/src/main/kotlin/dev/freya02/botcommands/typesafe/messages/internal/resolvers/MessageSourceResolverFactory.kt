@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.superErasureAt
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KClass
 import kotlin.reflect.full.valueParameters
@@ -32,7 +33,9 @@ internal class MessageSourceResolverFactory(
         val parameterErasure = request.parameter.erasure
         if (!parameterErasure.isSubclassOf<IMessageSource>()) return false
 
-        require(request.isFromInteractionHandler()) { "Only interaction handlers can be injected with IMessageSource instances" }
+        require(request.isFromCompatibleHandler()) {
+            "Only text commands and interaction handlers can be injected with IMessageSource instances"
+        }
 
         // It is requesting a message source, throw if we don't find a corresponding factory
         if (findMessageSourceFactory(parameterErasure) != null) {
@@ -55,11 +58,12 @@ internal class MessageSourceResolverFactory(
         return MessageSourceResolver(factory)
     }
 
-    private fun ResolverRequest.isFromInteractionHandler(): Boolean {
+    private fun ResolverRequest.isFromCompatibleHandler(): Boolean {
         val declaringFunction = parameter.parameter.function
         val firstParameter = declaringFunction.valueParameters.firstOrNull() ?: return false
 
-        return firstParameter.type.jvmErasure.isSubclassOf<Interaction>()
+        val erasure = firstParameter.type.jvmErasure
+        return erasure.isSubclassOf<Interaction>() || erasure.isSubclassOf<MessageReceivedEvent>()
     }
 
     private fun findMessageSourceFactory(expectedSourceType: KClass<*>): IMessageSourceFactory<*>? {
@@ -83,8 +87,10 @@ internal class MessageSourceResolver(
         option: Option,
         event: Event,
     ): IMessageSource {
-        event as Interaction
-
-        return factory.create(event)
+        return when (event) {
+            is Interaction -> factory.create(event)
+            is MessageReceivedEvent -> factory.create(event)
+            else -> throwInternal("Unhandled event type: $event")
+        }
     }
 }

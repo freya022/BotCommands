@@ -4,6 +4,8 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTyp
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
@@ -32,8 +34,25 @@ interface IMessageSourceFactory<out T : IMessageSource> {
     /**
      * Creates a new message source using the provided [interaction].
      *
-     * The default locale will be retrieved from [UserLocaleProvider],
+     * The default/user locale will be retrieved from [UserLocaleProvider],
      * while the guild locale will be retrieved from [GuildLocaleProvider].
      */
     fun create(interaction: Interaction): T
+
+    /**
+     * Creates a new message source using the provided [message event][MessageReceivedEvent].
+     *
+     * The default locale will be retrieved from [TextCommandLocaleProvider].
+     */
+    fun create(event: MessageReceivedEvent): T
+
+    /**
+     * Creates a new message source using the provided guild locale, and no user locale.
+     */
+    fun create(guildLocale: Locale): T = create(guildLocale, userLocale = null)
+
+    /**
+     * Creates a new message source using the provided guild and user locale.
+     */
+    fun create(guildLocale: Locale, userLocale: Locale?): T
 }

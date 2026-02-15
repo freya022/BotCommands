@@ -19,8 +19,10 @@ import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import io.github.freya022.botcommands.internal.utils.superErasureAt
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import org.slf4j.LoggerFactory
@@ -71,12 +73,16 @@ object MessageSourceFactoryGenerator {
 
         // The only abstract method should be the one we implement
         sourceFactoryType.java.methods
+            .asSequence()
             // Look at abstract methods
             .filter { it.isAbstract() }
             // Remove methods we implement
             .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Interaction::class.java && it.returnType == IMessageSource::class.java }
+            .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == MessageReceivedEvent::class.java && it.returnType == IMessageSource::class.java }
+            .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Locale::class.java && it.parameterTypes.getOrNull(1) == Locale::class.java && it.returnType == IMessageSource::class.java }
             .filterNot { it.name == "getBundleName" && it.parameterTypes.isEmpty() }
             .filterNot { it.name == "getLocales" && it.parameterTypes.isEmpty() }
+            .toList()
             .also { unimplementedMethods ->
                 require(unimplementedMethods.isEmpty(), ::InvalidSourceFactoryException) {
                     "${sourceFactoryType.jvmName} cannot contain abstract methods:\n${unimplementedMethods.joinAsList()}"
@@ -153,6 +159,7 @@ object MessageSourceFactoryGenerator {
                 context.getService<LocalizationService>(),
                 bundleName,
                 effectiveLocales,
+                context.getService<TextCommandLocaleProvider>(),
                 context.getService<GuildLocaleProvider>(),
                 context.getService<UserLocaleProvider>(),
                 sourceHandle,

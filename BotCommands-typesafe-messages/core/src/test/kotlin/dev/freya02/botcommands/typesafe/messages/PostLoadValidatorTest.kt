@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -84,6 +85,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -115,6 +117,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -149,6 +152,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -180,6 +184,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -209,6 +214,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -240,6 +246,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
@@ -271,6 +278,7 @@ class PostLoadValidatorTest {
         }
         val context = mockk<BContext> {
             every { getService<LocalizationService>() } returns localizationService
+            every { getService<TextCommandLocaleProvider>() } returns mockk()
             every { getService<GuildLocaleProvider>() } returns mockk()
             every { getService<UserLocaleProvider>() } returns mockk()
         }
