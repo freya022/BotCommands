@@ -5,7 +5,6 @@ package io.github.freya022.botcommands.api.commands.ratelimit.declaration
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.annotations.Cooldown
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
 import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
@@ -21,9 +20,9 @@ import java.time.Duration as JavaDuration
 import kotlin.time.Duration
 
 /**
- * Allows programmatic declaration of autocomplete handlers using [AutocompleteHandlerProvider].
+ * Allows programmatic declaration of rate limiters using [RateLimitProvider].
  *
- * @see AutocompleteHandlerProvider
+ * @see RateLimitProvider
  */
 @IgnoreStackFrame // Due to the abstract method
 abstract class RateLimitManager internal constructor() {
