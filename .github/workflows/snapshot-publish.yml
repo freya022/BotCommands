@@ -28,7 +28,7 @@ jobs:
       - name: Compile and test
         run: ./gradlew build --no-configuration-cache
 
-      - name: Compile, test and release
+      - name: Publish snapshot
         run: ./gradlew publishAllPublicationsToReposilite --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_reposiliteUsername: ${{ secrets.REPOSILITE_USERNAME }}
