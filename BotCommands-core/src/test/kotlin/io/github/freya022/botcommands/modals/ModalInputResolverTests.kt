@@ -84,11 +84,13 @@ object ModalInputResolverTests {
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
 
-        val request = ResolverRequest(ParameterWrapper(::userFunc.valueParameters[index]))
+        val parameter = ::userFunc.valueParameters[index]
+        val request = ResolverRequest(ParameterWrapper(parameter))
 
         val resolver = resolvers.getResolver(ModalParameterResolver::class, request)
         val modalMapping = mockk<ModalMapping> {
             every { asString } returns STRING
+            every { asOptionalString } returns null
             every { asStringList } returns strings
             every { asMentions } returns mentions
             every { asAttachmentList } returns attachments
@@ -96,7 +98,9 @@ object ModalInputResolverTests {
         }
 
         val value = resolver.resolveSuspend(
-            mockk<ModalOption>(),
+            mockk<ModalOption> {
+               every { isRequired } returns !(parameter.isOptional || parameter.type.isMarkedNullable)
+            },
             mockk<ModalEvent>(),
             modalMapping,
         )
@@ -108,6 +112,8 @@ object ModalInputResolverTests {
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
             arguments("TextInput String", 0, TEXT_INPUT, STRING),
+            arguments("TextInput empty as null", 18, TEXT_INPUT, null),
+            arguments("TextInput empty with default value", 19, TEXT_INPUT, null),
             arguments("Select menu string", 16, STRING_SELECT, STRING),
             arguments("Select menu strings", 1, STRING_SELECT, strings),
             arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, role),
@@ -151,5 +157,7 @@ object ModalInputResolverTests {
         @Suppress("unused") attachments: List<Message.Attachment>,
         @Suppress("unused") selectedString: String,
         @Suppress("unused") attachment: Message.Attachment,
+        @Suppress("unused") emptyTextInputAsNull: String?,
+        @Suppress("unused") emptyTextInputAsOptional: String = "default value",
     ) {}
 }
