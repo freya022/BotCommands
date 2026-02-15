@@ -1,3 +1,6 @@
+[bc-module-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-restarter?label=Maven%20central&logo=apachemaven&versionPrefix=3
+[bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-restarter
+
 # BotCommands module - Hot restarter
 This module enables fast restarts of your bot as you develop it.
 
@@ -8,6 +11,7 @@ leading to much faster restarts, as it doesn't need to recompile most of the cod
 > If you are using Spring, use [`spring-boot-devtools`](https://docs.spring.io/spring-boot/reference/using/devtools.html) instead.
 
 ## Installing
+[![BotCommands-restarter on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 
 ### Maven
 ```xml
