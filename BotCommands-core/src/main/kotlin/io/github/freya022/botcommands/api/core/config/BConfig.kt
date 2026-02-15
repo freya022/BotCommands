@@ -38,14 +38,14 @@ interface BConfig : IConfig, BConfigProps {
     val coroutineScopesConfig: BCoroutineScopesConfig
 
     /**
-     * An immutable collection of all [registered][BConfigBuilder.withConfig] configuration objects.
+     * An immutable collection of all [registered][BConfigBuilder.registerModule] configuration objects.
      */
     val configs: Collection<IConfig>
 
     /**
-     * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+     * Returns the configuration object of the provided type, or `null` if none were [registered][BConfigBuilder.registerModule].
      *
-     * @param type The type of configuration to get, based on [configType].
+     * @param type The type of configuration to get.
      */
     fun <T : IConfig> getConfigOrNull(type: Class<T>): T?
 }
@@ -149,16 +149,16 @@ interface BConfigProps {
 }
 
 /**
- * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+ * Returns the configuration object of the provided type, or `null` if none were [registered][BConfigBuilder.registerModule].
  *
- * @param type The type of configuration to get, based on [configType][BConfig.configType].
+ * @param type The type of configuration to get.
  */
 fun <T : IConfig> BConfig.getConfigOrNull(type: KClass<T>): T? = getConfigOrNull(type.java)
 
 /**
- * Gets a configuration of the provided type, or `null` if none were [registered][BConfigBuilder.withConfig].
+ * Returns the configuration object of the provided type, or `null` if none were [registered][BConfigBuilder.registerModule].
  *
- * @param T The type of configuration to get, based on [configType][BConfig.configType].
+ * @param T The type of configuration to get.
  */
 inline fun <reified T : IConfig> BConfig.getConfigOrNull(): T? = getConfigOrNull(T::class.java)
 
@@ -326,15 +326,17 @@ class BConfigBuilder : BConfigProps {
     }
 
     /**
-     * Registers the provided configuration, once configured, it cannot be modified or overwritten.
+     * Registers a configuration for the relevant module, enabling the features provided by the module.
      *
-     * @param newConfig The new configuration
+     * Once configured, it cannot be modified or overwritten.
      *
-     * @throws IllegalStateException If a config of the same type was already registered
+     * @param configuration The configuration of the registered module
+     *
+     * @throws IllegalStateException If the module was already registered
      */
-    fun withConfig(newConfig: IConfig) {
-        _configs.putIfAbsentOrThrow(newConfig.configType, newConfig) { _ ->
-            "Cannot reassign configuration of ${newConfig.configType.simpleNestedName}, please configure it entirely then assign once"
+    fun registerModule(configuration: IConfig) {
+        _configs.putIfAbsentOrThrow(configuration.configType, configuration) { _ ->
+            "Module was already registered, please configure the module then register once"
         }
     }
 
