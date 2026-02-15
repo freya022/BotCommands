@@ -19,7 +19,7 @@ import io.github.freya022.botcommands.internal.components.data.ComponentGroupDat
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 @InterfacedService(acceptMultiple = false)

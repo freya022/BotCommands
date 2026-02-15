@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.components.handler.ComponentHandler
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 internal sealed interface ActionComponentData : ComponentData {
     val constraints: InteractionConstraints

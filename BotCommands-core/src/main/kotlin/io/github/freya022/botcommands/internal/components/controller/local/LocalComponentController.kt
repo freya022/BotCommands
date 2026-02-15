@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.internal.components.controller.ComponentTi
 import io.github.freya022.botcommands.internal.components.data.ComponentData
 import io.github.freya022.botcommands.internal.components.data.ComponentGroupData
 import io.github.freya022.botcommands.internal.components.repositories.local.LocalComponentRepository
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @BService
 @RequiresLocalComponents

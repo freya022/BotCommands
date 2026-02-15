@@ -16,7 +16,7 @@ import io.github.freya022.botcommands.internal.components.timeout.persistent.Eph
 import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @BService
 @RequiresPersistentComponents

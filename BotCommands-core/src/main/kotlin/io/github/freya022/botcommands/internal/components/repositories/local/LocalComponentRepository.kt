@@ -11,11 +11,11 @@ import io.github.freya022.botcommands.internal.components.data.*
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 private val logger = KotlinLogging.logger { }
 
