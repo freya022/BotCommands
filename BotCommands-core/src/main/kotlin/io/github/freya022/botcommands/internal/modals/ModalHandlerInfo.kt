@@ -96,12 +96,17 @@ internal class ModalHandlerInfo internal constructor(
                 //We have the modal input's ID
                 // But we have a Map of input *name* -> InputData (contains input ID)
                 val modalMapping = event.getValue(option.customId)
-                    ?: throwUser("Modal input with custom ID '${option.customId}' was not found on the event, available values: ${event.values.map { it.customId }}")
-
-                option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
-                    // Technically not required, but provides additional info
-                    requireUser(obj != null || option.isOptionalOrNullable) {
-                        "The parameter '${option.declaredName}' from $modalMapping and value '${modalMapping.valueAsString}' is required but could not be resolved into a ${option.type.simpleNestedName}"
+                if (modalMapping == null) {
+                    if (option.isRequired) {
+                        throwUser("Modal input with custom ID '${option.customId}' was not found on the event, available values: ${event.values.map { it.customId }}")
+                    }
+                    null
+                } else {
+                    option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
+                        // Technically not required, but provides additional info
+                        requireUser(obj != null || option.isOptionalOrNullable) {
+                            "The parameter '${option.declaredName}' from $modalMapping and value '${modalMapping.valueAsString}' is required but could not be resolved into a ${option.type.simpleNestedName}"
+                        }
                     }
                 }
             }
