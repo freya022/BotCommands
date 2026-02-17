@@ -13,7 +13,11 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterRes
 import io.github.freya022.botcommands.internal.modals.resolvers.*
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
+import net.dv8tion.jda.api.components.Component
+import net.dv8tion.jda.api.components.Component.Type.*
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
@@ -50,27 +54,32 @@ object ModalInputResolverTests {
         every { channels } returns this@ModalInputResolverTests.channels
         every { getMentions() } returns this@ModalInputResolverTests.roles
     }
-    private val attachments = listOf<Message.Attachment>(mockk())
+    private val attachments = listOf<Message.Attachment>(mockk {
+        every { close() } just runs
+    })
 
     @MethodSource("modalInputs")
     @ParameterizedTest
-    suspend fun `Modal input parameter can be resolved`(index: Int, expected: Any?) {
+    suspend fun `Modal input parameter can be resolved`(index: Int, type: Component.Type, expected: Any?) {
         val serviceContainer = mockk<ServiceContainer> {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
                 "modalStringResolver",
                 "modalStringListResolver",
+                "modalAttachmentResolver",
                 "modalAttachmentListResolver",
             )
 
             every { findAnnotationOnService("modalMentionsResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalStringResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalStringListResolver", Resolver::class) } returns Resolver(0)
+            every { findAnnotationOnService("modalAttachmentResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalAttachmentListResolver", Resolver::class) } returns Resolver(0)
 
             every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver
             every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver
             every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver
+            every { getService("modalAttachmentResolver", ParameterResolver::class) } returns ModalAttachmentResolver
             every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
@@ -83,6 +92,7 @@ object ModalInputResolverTests {
             every { asStringList } returns strings
             every { asMentions } returns mentions
             every { asAttachmentList } returns attachments
+            every { this@mockk.type } returns type
         }
 
         val value = resolver.resolveSuspend(
@@ -97,28 +107,30 @@ object ModalInputResolverTests {
     @JvmStatic
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
-            arguments("TextInput String", 0, STRING),
-            arguments("Select menu strings", 1, strings),
-            arguments("Select menu mentionable", 2, role),
-            arguments("Select menu mentionables", 3, roles),
-            arguments("Select menu role", 4, role),
-            arguments("Select menu roles", 5, roles),
-            arguments("Select menu user", 6, user),
-            arguments("Select menu users", 7, users),
-            arguments("Select menu input user", 8, inputUser),
-            arguments("Select menu input users", 9, inputUsers),
-            arguments("Select menu member", 10, member),
-            arguments("Select menu members", 11, members),
-            arguments("Select menu channel", 12, channel),
-            arguments("Select menu channels", 13, channels),
-            arguments("Select menu mentions", 14, mentions),
-            arguments("Attachments", 15, attachments),
+            arguments("TextInput String", 0, TEXT_INPUT, STRING),
+            arguments("Select menu string", 16, STRING_SELECT, STRING),
+            arguments("Select menu strings", 1, STRING_SELECT, strings),
+            arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, role),
+            arguments("Select menu mentionables", 3, MENTIONABLE_SELECT, roles),
+            arguments("Select menu role", 4, ROLE_SELECT, role),
+            arguments("Select menu roles", 5, ROLE_SELECT, roles),
+            arguments("Select menu user", 6, USER_SELECT, user),
+            arguments("Select menu users", 7, USER_SELECT, users),
+            arguments("Select menu input user", 8, USER_SELECT, inputUser),
+            arguments("Select menu input users", 9, USER_SELECT, inputUsers),
+            arguments("Select menu member", 10, USER_SELECT, member),
+            arguments("Select menu members", 11, USER_SELECT, members),
+            arguments("Select menu channel", 12, CHANNEL_SELECT, channel),
+            arguments("Select menu channels", 13, CHANNEL_SELECT, channels),
+            arguments("Select menu mentions", 14, MENTIONABLE_SELECT, mentions),
+            arguments("Attachment", 17, FILE_UPLOAD, attachments.first()),
+            arguments("Attachments", 15, FILE_UPLOAD, attachments),
         )
         return listOf
     }
 
-    private fun arguments(name: String, index: Int, expected: Any?) =
-        argumentSet(name, index, expected)
+    private fun arguments(name: String, index: Int, type: Component.Type, expected: Any?) =
+        argumentSet(name, index, type, expected)
 
     private fun userFunc(
         @Suppress("unused") textInput: String,
@@ -137,5 +149,7 @@ object ModalInputResolverTests {
         @Suppress("unused") selectedChannels: List<GuildChannel>,
         @Suppress("unused") selectedMentions: Mentions,
         @Suppress("unused") attachments: List<Message.Attachment>,
+        @Suppress("unused") selectedString: String,
+        @Suppress("unused") attachment: Message.Attachment,
     ) {}
 }

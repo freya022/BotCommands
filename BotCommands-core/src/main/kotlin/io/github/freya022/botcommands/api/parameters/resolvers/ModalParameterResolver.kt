@@ -22,10 +22,10 @@ import kotlin.reflect.KType
  *
  * ### Types supported by default
  * - [TextInput] : `String`
- * - [StringSelectMenu] : `List<String>`
+ * - [StringSelectMenu] : `List<String>`, `String`
  * - [EntitySelectMenu] : [Mentions], `T` and `List<T>` where `T` is one of:
  * [IMentionable], [Role], [User], [InputUser], [Member], [GuildChannel]
- * - [AttachmentUpload] : `List` of [Message.Attachment]
+ * - [AttachmentUpload] : `List` of [Message.Attachment], [Message.Attachment]
  *
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
