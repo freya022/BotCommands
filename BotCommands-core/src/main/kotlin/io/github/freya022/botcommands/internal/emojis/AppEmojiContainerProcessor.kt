@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
-import org.jetbrains.annotations.TestOnly
 import kotlin.reflect.KClass
 
 internal object AppEmojiContainerProcessor : ClassGraphProcessor {
@@ -23,7 +22,6 @@ internal object AppEmojiContainerProcessor : ClassGraphProcessor {
         }
     }
 
-    @TestOnly
     internal fun clear() {
         emojiClasses.clear()
     }
