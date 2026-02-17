@@ -1,3 +1,6 @@
+[bc-module-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-typesafe-messages-core?label=Maven%20central&logo=apachemaven&versionPrefix=3
+[bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-typesafe-messages-core
+
 # BotCommands module - Typesafe messages
 This module allows you to define functions which retrieves translated messages,
 without having to implement anything, alongside a few other benefits:
@@ -11,9 +14,9 @@ without having to implement anything, alongside a few other benefits:
 See ["Responding with type-safe messages"](https://bc.freya02.dev/3.X/using-botcommands/localization/typesafe-messages/) in the wiki.
 
 ## Installation
-There are different dependencies based on which dependency injection you use:
+[![BotCommands-typesafe-messages-core on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 
-![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-typesafe-messages-core?versionPrefix=3)
+There are different dependencies based on which dependency injection you use:
 
 <details>
 <summary>Built-in</summary>
