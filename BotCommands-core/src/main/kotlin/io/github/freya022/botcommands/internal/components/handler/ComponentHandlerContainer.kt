@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.utils.FunctionFilter
+import io.github.freya022.botcommands.internal.utils.rethrowAt
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent
@@ -30,7 +31,12 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotationRecursive<JDAButtonListener>()!!.getEffectiveName(it.function)
 
-                val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.function, ButtonEvent::class))
+                val descriptor = try {
+                    ComponentDescriptor(context, it.function, ButtonEvent::class)
+                } catch (e: Exception) {
+                    e.rethrowAt("Unable to process button handler", it.function)
+                }
+                val oldDescriptor = buttonMap.put(handlerName, descriptor)
                 if (oldDescriptor != null) {
                     throwArgument("Tried to override a button handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
@@ -42,7 +48,11 @@ internal class ComponentHandlerContainer(context: BContextImpl, functionAnnotati
             .forEach {
                 val handlerName = it.function.findAnnotationRecursive<JDASelectMenuListener>()!!.getEffectiveName(it.function)
 
-                val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.function, GenericSelectMenuInteractionEvent::class))
+                val oldDescriptor = try {
+                    selectMap.put(handlerName, ComponentDescriptor(context, it.function, GenericSelectMenuInteractionEvent::class))
+                } catch (e: Exception) {
+                    e.rethrowAt("Unable to process select menu handler", it.function)
+                }
                 if (oldDescriptor != null) {
                     throwArgument("Tried to override a select menu handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
