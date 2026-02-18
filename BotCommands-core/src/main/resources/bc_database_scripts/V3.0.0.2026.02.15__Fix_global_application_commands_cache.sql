@@ -15,7 +15,8 @@ ALTER TABLE application_commands_cache
 ALTER TABLE application_commands_cache
     DROP IF EXISTS CONSTRAINT_INDEX_A;
 
-TRUNCATE TABLE application_commands_cache;
+-- Delete global commands cache, as this is what could have been duplicated
+DELETE FROM application_commands_cache WHERE guild_id IS NULL;
 
 ALTER TABLE application_commands_cache
     ADD CONSTRAINT app_commands_cache_unique_key UNIQUE NULLS NOT DISTINCT (application_id, guild_id);
