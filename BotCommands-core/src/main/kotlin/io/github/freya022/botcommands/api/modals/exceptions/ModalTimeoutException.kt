@@ -5,4 +5,4 @@ import kotlinx.coroutines.CancellationException
 /**
  * Exception thrown when modal timed out while a coroutine was awaiting a modal interaction
  */
-class ModalTimeoutException(message: String) : CancellationException(message)
+class ModalTimeoutException internal constructor(message: String) : CancellationException(message)
