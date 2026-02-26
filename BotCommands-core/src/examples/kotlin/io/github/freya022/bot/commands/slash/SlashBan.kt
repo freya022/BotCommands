@@ -16,6 +16,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.components.awaitAny
 import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.components.exceptions.ComponentCancellationException
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
@@ -24,7 +25,6 @@ import io.github.freya022.botcommands.api.localization.context.editLocalized
 import io.github.freya022.botcommands.api.localization.context.replaceLocalized
 import io.github.freya022.botcommands.api.localization.context.replyLocalizedEphemeral
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
@@ -84,7 +84,7 @@ class SlashBan(private val buttons: Buttons, private val banService: BanService)
 
         val componentEvent: ButtonEvent = try {
             componentGroup.awaitAny()
-        } catch (e: TimeoutCancellationException) {
+        } catch (_: ComponentCancellationException) {
             return event.hook.editLocalized(localizationContext, "outputs.timeout")
                 .deleteDelayed(5.seconds)
                 .queue()

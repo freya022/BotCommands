@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.exceptions.ComponentTimeoutException
+import io.github.freya022.botcommands.api.components.exceptions.RemovedComponentException
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -68,7 +69,7 @@ internal class ComponentTimeoutManager(
         // Continuations must be canceled
         val exception = when {
             throwTimeouts -> ComponentTimeoutException("Timed out waiting for component")
-            else -> CancellationException("Component was deleted")
+            else -> RemovedComponentException("Component was deleted")
         }
         continuations.forEach { it.cancel(exception) }
     }

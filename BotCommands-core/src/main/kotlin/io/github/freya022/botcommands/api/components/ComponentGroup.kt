@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.components
 
+import io.github.freya022.botcommands.api.components.exceptions.RemovedComponentException
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -16,6 +17,7 @@ class ComponentGroup internal constructor(
  * Suspends until the component is used and all checks passed, and returns the event.
  *
  * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
+ * @throws RemovedComponentException If the group was deleted while awaiting
  * @throws ClassCastException If the received event cannot be cast to the requested type
  */
 @JvmSynthetic

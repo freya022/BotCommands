@@ -259,7 +259,7 @@ As these handlers are optional, you can still handle them using coroutines, by u
 
 **Note:** Components have a default timeout (set in `Components`), which invalidates the button after expiration.
 You can disable the timeout if necessary using `noTimeout()`, or if you plan on putting the component in a group.
-Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
+Kotlin users need to make sure to catch `ComponentCancellationException` when using `await()` on them.
 
 An example can be found [here](BotCommands-core/src/examples/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
 
@@ -270,7 +270,7 @@ The DSL is very similar to the component's DSL, with your usual `bindTo` and `se
 
 **Note:** Modals also have a default timeout (set in `Modals`), which invalidates the modal after expiration.
 You can disable the timeout if necessary using `noTimeout()`.
-Kotlin users need to make sure to catch `TimeoutCancellationException` when using `await()` on them.
+Kotlin users need to make sure to catch `ModalTimeoutException` when using `await()` on them.
 
 ## New event handler
 
