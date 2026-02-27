@@ -74,8 +74,8 @@ internal object LocalizationContextResolverFactories {
             localizationService,
             localizationBundle = annotation.value,
             localizationPrefix = annotation.prefix.nullIfBlank(),
-            _guildLocale = null,
-            _userLocale = null
+            _guildLocaleProvider = null,
+            _userLocaleProvider = null,
         )
     }
 }

@@ -34,13 +34,11 @@ internal class LocalizableInteractionImpl internal constructor(
     private val guildLocale: Locale by lazy { guildLocaleProvider.getLocale(deferrableCallback) }
 
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): AppLocalizationContext {
-        return LocalizationContext.create(
-            localizationService,
-            bundleName,
-            pathPrefix,
-            guildLocale = guildLocaleProvider.getDiscordLocale(deferrableCallback),
-            userLocale = userLocaleProvider.getDiscordLocale(deferrableCallback)
-        )
+        return LocalizationContext.builder(localizationService, bundleName)
+            .setPrefix(pathPrefix)
+            .setGuildLocaleProvider(guildLocaleProvider, deferrableCallback)
+            .setUserLocaleProvider(userLocaleProvider, deferrableCallback)
+            .build()
     }
 
     @Suppress("DEPRECATION", "removal")
