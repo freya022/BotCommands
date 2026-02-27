@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
-import io.github.freya022.botcommands.api.localization.context.LocalizationContext.Companion.create
+import io.github.freya022.botcommands.api.localization.context.LocalizationContext.Companion.builder
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
@@ -38,7 +38,7 @@ typealias PairEntry = Pair<String, Any>
  *
  * @see TextLocalizationContext
  * @see AppLocalizationContext
- * @see create
+ * @see builder
  */
 interface LocalizationContext {
     /**

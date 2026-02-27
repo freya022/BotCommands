@@ -20,14 +20,14 @@ import javax.annotation.CheckReturnValue
  *
  * ### Manual usage
  * While instances of this interface are primarily injected with [@LocalizationBundle][LocalizationBundle],
- * you can also construct instances of this interface with [LocalizationContext.create].
+ * you can also construct instances of this interface with [LocalizationContext.builder].
  *
  * Instances are only injectable if the event is a subclass of either [Interaction] or [MessageReceivedEvent].
  *
  * @see guildLocale
  * @see AppLocalizationContext
  *
- * @see LocalizationContext.create
+ * @see LocalizationContext.builder
  */
 interface TextLocalizationContext : LocalizationContext {
     /**

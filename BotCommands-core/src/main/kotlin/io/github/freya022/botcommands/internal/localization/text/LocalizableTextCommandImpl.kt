@@ -29,12 +29,10 @@ internal class LocalizableTextCommandImpl internal constructor(
     private val locale: Locale by lazy { localeProvider.getLocale(event) }
 
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext {
-        return LocalizationContext.create(
-            localizationService,
-            bundleName,
-            pathPrefix,
-            guildLocale = localeProvider.getDiscordLocale(event)
-        )
+        return LocalizationContext.builder(localizationService, bundleName)
+            .setPrefix(pathPrefix)
+            .setGuildLocaleProvider(localeProvider, event)
+            .build()
     }
 
     @Suppress("DEPRECATION", "removal")
