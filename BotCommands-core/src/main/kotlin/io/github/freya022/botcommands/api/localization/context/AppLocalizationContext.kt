@@ -43,7 +43,7 @@ interface AppLocalizationContext : TextLocalizationContext {
      * @see withUserLocale
      */
     //User locale is always provided in interactions
-    val userLocale: DiscordLocale
+    val userLocale: Locale
 
     @Deprecated("Use the Locale overload")
     @CheckReturnValue

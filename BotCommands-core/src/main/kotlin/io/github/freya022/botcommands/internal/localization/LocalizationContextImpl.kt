@@ -23,23 +23,17 @@ internal class LocalizationContextImpl(
     private val userLocaleProvider: Lazy<Locale>
         get() = _userLocaleProvider ?: throwArgument("Cannot user localize on an event which doesn't provide user localization")
 
-    private val userJavaLocale: Locale
+    override val userLocale: Locale
         get() = userLocaleProvider.value
 
-    private val guildJavaLocale: Locale
+    override val guildLocale: Locale
         get() = guildLocaleProvider.value
 
-    override val userLocale: DiscordLocale
-        get() = DiscordLocale.from(userJavaLocale)
-
-    override val guildLocale: DiscordLocale
-        get() = DiscordLocale.from(guildJavaLocale)
-
-    override val effectiveLocale: DiscordLocale
+    override val effectiveLocale: Locale
         get() = when {
             _userLocaleProvider != null -> userLocale
             _guildLocaleProvider != null -> guildLocale
-            else -> DiscordLocale.ENGLISH_US
+            else -> Locale.US
         }
 
     init {

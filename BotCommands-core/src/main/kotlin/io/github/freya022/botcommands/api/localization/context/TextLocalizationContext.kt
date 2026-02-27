@@ -5,8 +5,8 @@ import io.github.freya022.botcommands.api.localization.annotations.LocalizationB
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
+import java.util.*
 import javax.annotation.CheckReturnValue
 
 /**
@@ -43,18 +43,18 @@ interface TextLocalizationContext : LocalizationContext {
     fun hasGuildLocale(): Boolean
 
     /**
-     * Returns the [DiscordLocale] of the guild.
+     * Returns the [Locale] of the guild.
      *
      * The locale can either come from the [GuildLocaleProvider] or from a [withGuildLocale].
      *
-     * @return the [DiscordLocale] of the guild
+     * @return the [Locale] of the guild
      *
      * @throws IllegalStateException If the event did not happen in a Guild and the guild locale was not supplied
      *
      * @see hasGuildLocale
      * @see withGuildLocale
      */
-    val guildLocale: DiscordLocale
+    val guildLocale: Locale
 
     @CheckReturnValue
     override fun withBundle(localizationBundle: String): TextLocalizationContext

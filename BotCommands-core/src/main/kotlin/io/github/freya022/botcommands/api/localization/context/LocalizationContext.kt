@@ -48,9 +48,9 @@ interface LocalizationContext {
      * The locale used when no locale is specified, the best locale is picked in this order:
      * - The [user locale][Interaction.getUserLocale]
      * - The [guild locale][Guild.getLocale]
-     * - The default locale ([DiscordLocale.ENGLISH_US])
+     * - The default locale ([Locale.US])
      */
-    val effectiveLocale: DiscordLocale
+    val effectiveLocale: Locale
 
     /**
      * Returns the localization bundle of the current context.
