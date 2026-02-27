@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterR
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.javaMethodInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
-import kotlinx.coroutines.runBlocking
 import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
 import javax.annotation.CheckReturnValue
@@ -409,7 +408,7 @@ interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> 
      */
     @CheckReturnValue
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): T =
-        timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
+        timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { handler.run() }
 
     /**
      * Sets the timeout on this component, invalidating the component on expiration,
