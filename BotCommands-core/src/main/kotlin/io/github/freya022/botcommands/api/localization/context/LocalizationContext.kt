@@ -310,6 +310,7 @@ interface LocalizationContext {
          * Creates a new builder, using a [LocalizationService] and the specified bundle name,
          * from which the strings will be retrieved from.
          */
+        @JvmStatic
         fun builder(localizationService: LocalizationService, localizationBundle: String): Builder {
             return Builder(localizationService, localizationBundle)
         }
