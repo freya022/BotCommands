@@ -201,6 +201,7 @@ interface LocalizationContext {
     companion object {
         @JvmStatic
         @JvmOverloads
+        @Deprecated("Replaced by builder")
         fun create(
             context: BContext,
             localizationBundle: String,
@@ -219,6 +220,7 @@ interface LocalizationContext {
 
         @JvmStatic
         @JvmOverloads
+        @Deprecated("Replaced by builder")
         fun create(
             localizationService: LocalizationService,
             localizationBundle: String,
@@ -237,6 +239,7 @@ interface LocalizationContext {
 
         @JvmStatic
         @JvmOverloads
+        @Deprecated("Replaced by builder")
         fun fromLocaleProviders(
             context: BContext,
             event: Interaction,
@@ -254,6 +257,7 @@ interface LocalizationContext {
 
         @JvmStatic
         @JvmOverloads
+        @Deprecated("Replaced by builder")
         fun fromLocaleProviders(
             context: BContext,
             event: MessageReceivedEvent,
