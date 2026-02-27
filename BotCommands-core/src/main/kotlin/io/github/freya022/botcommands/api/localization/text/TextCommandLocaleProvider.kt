@@ -24,8 +24,10 @@ import java.util.*
  */
 @InterfacedService(acceptMultiple = false)
 interface TextCommandLocaleProvider {
+    @Deprecated("Use 'getLocale' instead, use 'DiscordLocale.from' / 'DiscordLocale#toLocale' if necessary")
     fun getDiscordLocale(event: MessageReceivedEvent): DiscordLocale
 
+    @Suppress("DEPRECATION")
     fun getLocale(event: MessageReceivedEvent): Locale =
         getDiscordLocale(event).toLocale()
 }

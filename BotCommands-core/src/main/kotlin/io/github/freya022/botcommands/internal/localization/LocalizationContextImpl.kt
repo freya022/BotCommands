@@ -14,26 +14,26 @@ internal class LocalizationContextImpl(
     private val localizationService: LocalizationService,
     override val localizationBundle: String,
     override val localizationPrefix: String?,
-    private val _guildLocaleProvider: Lazy<DiscordLocale>?,
-    private val _userLocaleProvider: Lazy<DiscordLocale>?,
+    private val _guildLocaleProvider: Lazy<Locale>?,
+    private val _userLocaleProvider: Lazy<Locale>?,
 ) : TextLocalizationContext, AppLocalizationContext {
-    private val guildLocaleProvider: Lazy<DiscordLocale>
+    private val guildLocaleProvider: Lazy<Locale>
         get() = _guildLocaleProvider ?: throwArgument("Cannot guild localize on an event which doesn't provide guild localization")
 
-    private val userLocaleProvider: Lazy<DiscordLocale>
+    private val userLocaleProvider: Lazy<Locale>
         get() = _userLocaleProvider ?: throwArgument("Cannot user localize on an event which doesn't provide user localization")
 
-    override val userLocale: DiscordLocale
-        get() = guildLocaleProvider.value
-
-    override val guildLocale: DiscordLocale
+    override val userLocale: Locale
         get() = userLocaleProvider.value
 
-    override val effectiveLocale: DiscordLocale
+    override val guildLocale: Locale
+        get() = guildLocaleProvider.value
+
+    override val effectiveLocale: Locale
         get() = when {
             _userLocaleProvider != null -> userLocale
             _guildLocaleProvider != null -> guildLocale
-            else -> DiscordLocale.ENGLISH_US
+            else -> Locale.US
         }
 
     init {
@@ -43,11 +43,19 @@ internal class LocalizationContextImpl(
         }
     }
 
-    override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
+    @Deprecated("Use the Locale overload")
+    override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl =
+        withGuildLocale(guildLocale?.toLocale())
+
+    override fun withGuildLocale(guildLocale: Locale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale?.toProvider(), _userLocaleProvider)
     }
 
-    override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
+    @Deprecated("Use the Locale overload")
+    override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl =
+        withUserLocale(userLocale?.toLocale())
+
+    override fun withUserLocale(userLocale: Locale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocaleProvider, userLocale?.toProvider())
     }
 
@@ -63,11 +71,11 @@ internal class LocalizationContextImpl(
         return LocalizationContextImpl(localizationService, localizationBundle, null, _guildLocaleProvider, _userLocaleProvider)
     }
 
-    fun withLocales(guildLocale: DiscordLocale, userLocale: DiscordLocale): LocalizationContextImpl {
+    internal fun withLocales(guildLocale: Locale, userLocale: Locale): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, lazyOf(guildLocale), lazyOf(userLocale))
     }
 
-    override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
+    override fun localize(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String {
         val localization = getLocalization(locale)
         val effectivePath = LocalizationUtils.getEffectivePath(localizationPrefix, localizationPath)
         val template = localization[effectivePath]
@@ -76,7 +84,7 @@ internal class LocalizationContextImpl(
         return template.localize(*entries)
     }
 
-    override fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String? {
+    override fun localizeOrNull(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String? {
         val localization = getLocalization(locale)
         val effectivePath = LocalizationUtils.getEffectivePath(localizationPrefix, localizationPath)
         val template = localization[effectivePath] ?: return null
@@ -84,13 +92,13 @@ internal class LocalizationContextImpl(
         return template.localize(*entries)
     }
 
-    private fun getLocalization(discordLocale: DiscordLocale) =
-        localizationService.getInstance(localizationBundle, discordLocale.toLocale())
+    private fun getLocalization(discordLocale: Locale) =
+        localizationService.getInstance(localizationBundle, discordLocale)
             ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$discordLocale', the root bundle should have been checked")
 
     override fun hasGuildLocale(): Boolean {
         return _guildLocaleProvider != null
     }
 
-    private fun DiscordLocale.toProvider(): Lazy<DiscordLocale> = lazyOf(this)
+    private fun Locale.toProvider(): Lazy<Locale> = lazyOf(this)
 }

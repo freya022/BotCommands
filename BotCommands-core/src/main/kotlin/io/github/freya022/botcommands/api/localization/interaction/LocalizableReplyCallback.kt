@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
@@ -95,6 +94,7 @@ interface LocalizableReplyCallback {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): ReplyCallbackAction =
         replyLocalized(locale.toLocale(), localizationPath, *entries)
@@ -201,6 +201,8 @@ fun LocalizableReplyCallback.replyGuild(localizationPath: String, vararg entries
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableReplyCallback.replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     replyLocalized(locale, localizationPath, *entries.mapToEntries())
 

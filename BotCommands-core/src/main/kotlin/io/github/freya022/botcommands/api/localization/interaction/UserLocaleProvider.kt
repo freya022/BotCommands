@@ -24,8 +24,10 @@ import java.util.*
  */
 @InterfacedService(acceptMultiple = false)
 interface UserLocaleProvider {
+    @Deprecated("Use 'getLocale' instead, use 'DiscordLocale.from' / 'DiscordLocale#toLocale' if necessary")
     fun getDiscordLocale(interaction: Interaction): DiscordLocale
 
+    @Suppress("DEPRECATION")
     fun getLocale(interaction: Interaction): Locale =
         getDiscordLocale(interaction).toLocale()
 }

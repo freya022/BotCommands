@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.text
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
@@ -29,7 +28,7 @@ import javax.annotation.CheckReturnValue
 interface LocalizableTextCommand : LocalizableAction {
     /**
      * Returns a localization context for the provided bundle name and path prefix,
-     * using the locale from [TextCommandLocaleProvider.getDiscordLocale].
+     * using the locale from [TextCommandLocaleProvider].
      */
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext
 
@@ -137,6 +136,7 @@ interface LocalizableTextCommand : LocalizableAction {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun respondLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction =
         respondLocalized(locale.toLocale(), localizationPath, *entries)
@@ -162,6 +162,7 @@ interface LocalizableTextCommand : LocalizableAction {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction =
         replyLocalized(locale.toLocale(), localizationPath, *entries)
@@ -320,6 +321,8 @@ fun LocalizableTextCommand.replyGuild(localizationPath: String, vararg entries: 
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableTextCommand.respondLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     respondLocalized(locale, localizationPath, *entries.mapToEntries())
 
@@ -344,6 +347,8 @@ fun LocalizableTextCommand.respondLocalized(locale: DiscordLocale, localizationP
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableTextCommand.replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     replyLocalized(locale, localizationPath, *entries.mapToEntries())
 

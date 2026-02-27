@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.localization.text.replyGuild
 import io.github.freya022.botcommands.api.localization.text.respondLocalized
-import net.dv8tion.jda.api.interactions.DiscordLocale
+import java.util.*
 
 @Command
 class TextLocalization {
@@ -14,6 +14,6 @@ class TextLocalization {
         event.localizationPrefix = "commands.localization"
 
         event.replyGuild("response", "guild_users" to event.guild.memberCount, "uptime" to 3.141519).queue()
-        event.respondLocalized(DiscordLocale.GERMAN, "response", "guild_users" to event.guild.memberCount, "uptime" to 3.141519).queue()
+        event.respondLocalized(Locale.GERMAN, "response", "guild_users" to event.guild.memberCount, "uptime" to 3.141519).queue()
     }
 }
