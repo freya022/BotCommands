@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -33,7 +32,7 @@ interface LocalizableInteraction : LocalizableAction {
 
     /**
      * Returns a localization context for the provided bundle name and path prefix,
-     * using the locales from [UserLocaleProvider.getDiscordLocale] and [GuildLocaleProvider.getDiscordLocale].
+     * using the locales from [UserLocaleProvider] and [GuildLocaleProvider].
      */
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): AppLocalizationContext
 

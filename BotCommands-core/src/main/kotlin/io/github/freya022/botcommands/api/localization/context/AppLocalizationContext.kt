@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.freya022.botcommands.api.localization.context
 
 import io.github.freya022.botcommands.api.localization.Localization
@@ -6,6 +8,7 @@ import io.github.freya022.botcommands.api.localization.interaction.GuildLocalePr
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
+import java.util.*
 import javax.annotation.CheckReturnValue
 
 /**
@@ -42,8 +45,12 @@ interface AppLocalizationContext : TextLocalizationContext {
     //User locale is always provided in interactions
     val userLocale: DiscordLocale
 
+    @Deprecated("Use the Locale overload")
     @CheckReturnValue
     override fun withGuildLocale(guildLocale: DiscordLocale?): AppLocalizationContext
+
+    @CheckReturnValue
+    override fun withGuildLocale(guildLocale: Locale?): AppLocalizationContext
 
     @CheckReturnValue
     override fun withBundle(localizationBundle: String): AppLocalizationContext

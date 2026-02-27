@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.text
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.LocalizableAction
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
@@ -29,7 +28,7 @@ import javax.annotation.CheckReturnValue
 interface LocalizableTextCommand : LocalizableAction {
     /**
      * Returns a localization context for the provided bundle name and path prefix,
-     * using the locale from [TextCommandLocaleProvider.getDiscordLocale].
+     * using the locale from [TextCommandLocaleProvider].
      */
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext
 

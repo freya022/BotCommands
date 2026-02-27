@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.freya022.botcommands.api.localization.context
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
@@ -26,6 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
+import java.util.*
 import javax.annotation.CheckReturnValue
 
 typealias PairEntry = Pair<String, Any>
@@ -74,8 +77,26 @@ interface LocalizationContext {
      *
      * @param guildLocale The guild locale to use, or `null` to remove it
      */
+    @Deprecated("Use the Locale overload")
     @CheckReturnValue
     fun withGuildLocale(guildLocale: DiscordLocale?): TextLocalizationContext
+
+    /**
+     * Returns a new [TextLocalizationContext] with the specified guild locale.
+     *
+     * @param guildLocale The guild locale to use, or `null` to remove it
+     */
+    @CheckReturnValue
+    fun withGuildLocale(guildLocale: Locale?): TextLocalizationContext
+
+    /**
+     * Returns a new [AppLocalizationContext] with the specified user locale.
+     *
+     * @param userLocale The user locale to use, or `null` to remove it
+     */
+    @Deprecated("Use the Locale overload")
+    @CheckReturnValue
+    fun withUserLocale(userLocale: DiscordLocale?): AppLocalizationContext
 
     /**
      * Returns a new [AppLocalizationContext] with the specified user locale.
@@ -83,7 +104,7 @@ interface LocalizationContext {
      * @param userLocale The user locale to use, or `null` to remove it
      */
     @CheckReturnValue
-    fun withUserLocale(userLocale: DiscordLocale?): AppLocalizationContext
+    fun withUserLocale(userLocale: Locale?): AppLocalizationContext
 
     /**
      * Returns a new localization context with the specified localization bundle.
@@ -118,7 +139,19 @@ interface LocalizationContext {
      * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
+    @Deprecated("Use the Locale overload")
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
+        = localize(locale.toLocale(), localizationPath, *entries)
+
+    /**
+     * Localizes the provided path, with the provided locale.
+     *
+     * @param locale           The [Locale] to use when fetching the localization bundle
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
+     * @param entries          The entries to fill the template with
+     */
+    fun localize(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
      * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
@@ -128,7 +161,19 @@ interface LocalizationContext {
      * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
      * @param entries          The entries to fill the template with
      */
+    @Deprecated("Use the Locale overload")
     fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String?
+        = localizeOrNull(locale.toLocale(), localizationPath, *entries)
+
+    /**
+     * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
+     *
+     * @param locale           The [Locale] to use when fetching the localization bundle
+     * @param localizationPath The path of the localization template,
+     * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
+     * @param entries          The entries to fill the template with
+     */
+    fun localizeOrNull(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String?
 
     /**
      * Localizes the provided path, with the [best locale][effectiveLocale] available.
@@ -153,8 +198,8 @@ interface LocalizationContext {
 
     class Builder internal constructor(private val localizationService: LocalizationService, private val bundleName: String) {
         private var prefix: String? = null
-        private var guildLocaleProvider: Lazy<DiscordLocale>? = null
-        private var userLocaleProvider: Lazy<DiscordLocale>? = null
+        private var guildLocaleProvider: Lazy<Locale>? = null
+        private var userLocaleProvider: Lazy<Locale>? = null
 
         /**
          * Sets the prefix of the context.
@@ -170,24 +215,24 @@ interface LocalizationContext {
          * Sets the guild locale to be provided by the passed [GuildLocaleProvider].
          */
         fun setGuildLocaleProvider(provider: GuildLocaleProvider, interaction: Interaction): Builder {
-            return setGuildLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
+            return setGuildLocaleProvider(lazy { provider.getLocale(interaction) })
         }
 
         /**
          * Sets the guild locale to be provided by the passed [TextCommandLocaleProvider].
          */
         fun setGuildLocaleProvider(provider: TextCommandLocaleProvider, event: MessageReceivedEvent): Builder {
-            return setGuildLocaleProvider(lazy { provider.getDiscordLocale(event) })
+            return setGuildLocaleProvider(lazy { provider.getLocale(event) })
         }
 
         /**
          * Sets the guild locale to the provided one.
          */
-        fun setGuildLocale(locale: DiscordLocale): Builder {
+        fun setGuildLocale(locale: Locale): Builder {
             return setGuildLocaleProvider(lazyOf(locale))
         }
 
-        private fun setGuildLocaleProvider(provider: Lazy<DiscordLocale>): Builder {
+        private fun setGuildLocaleProvider(provider: Lazy<Locale>): Builder {
             this.guildLocaleProvider = provider
             return this
         }
@@ -196,17 +241,17 @@ interface LocalizationContext {
          * Sets the user locale to be provided by the passed [UserLocaleProvider].
          */
         fun setUserLocaleProvider(provider: UserLocaleProvider, interaction: Interaction): Builder {
-            return setUserLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
+            return setUserLocaleProvider(lazy { provider.getLocale(interaction) })
         }
 
         /**
          * Sets the user locale to the provided one.
          */
-        fun setUserLocale(locale: DiscordLocale): Builder {
+        fun setUserLocale(locale: Locale): Builder {
             return setUserLocaleProvider(lazyOf(locale))
         }
 
-        private fun setUserLocaleProvider(provider: Lazy<DiscordLocale>): Builder {
+        private fun setUserLocaleProvider(provider: Lazy<Locale>): Builder {
             this.userLocaleProvider = provider
             return this
         }
@@ -273,8 +318,8 @@ interface LocalizationContext {
                 context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
-                lazy { context.getService<GuildLocaleProvider>().getDiscordLocale(event) },
-                lazy { context.getService<UserLocaleProvider>().getDiscordLocale(event) },
+                lazy { context.getService<GuildLocaleProvider>().getLocale(event) },
+                lazy { context.getService<UserLocaleProvider>().getLocale(event) },
             )
         }
 
@@ -292,7 +337,7 @@ interface LocalizationContext {
                 context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
-                lazy { context.getService<TextCommandLocaleProvider>().getDiscordLocale(event) },
+                lazy { context.getService<TextCommandLocaleProvider>().getLocale(event) },
                 userLocale?.toProvider(),
             )
         }
@@ -315,7 +360,7 @@ interface LocalizationContext {
             return Builder(localizationService, localizationBundle)
         }
 
-        private fun DiscordLocale.toProvider(): Lazy<DiscordLocale> = lazyOf(this)
+        private fun DiscordLocale.toProvider(): Lazy<Locale> = lazyOf(this.toLocale())
     }
 }
 
@@ -331,7 +376,19 @@ internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
  * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
+@Deprecated("Use the Locale overload")
 fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
+    localize(locale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Localizes the provided path, with the provided locale.
+ *
+ * @param locale           The [Locale] to use when fetching the localization bundle
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
+ * @param entries          The entries to fill the template with
+ */
+fun LocalizationContext.localize(locale: Locale, localizationPath: String, vararg entries: PairEntry): String =
     localize(locale, localizationPath, *entries.mapToEntries())
 
 /**
@@ -342,7 +399,19 @@ fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String
  * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
  * @param entries          The entries to fill the template with
  */
+@Deprecated("Use the Locale overload")
 fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String? =
+    localizeOrNull(locale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
+ *
+ * @param locale           The [Locale] to use when fetching the localization bundle
+ * @param localizationPath The path of the localization template,
+ * prefixed with [localizationPrefix][LocalizationContext.localizationPrefix] unless starting with `/`
+ * @param entries          The entries to fill the template with
+ */
+fun LocalizationContext.localizeOrNull(locale: Locale, localizationPath: String, vararg entries: PairEntry): String? =
     localizeOrNull(locale, localizationPath, *entries.mapToEntries())
 
 /**

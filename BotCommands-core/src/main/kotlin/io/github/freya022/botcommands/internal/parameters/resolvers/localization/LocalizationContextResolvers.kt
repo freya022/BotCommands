@@ -24,7 +24,7 @@ internal class AppLocalizationContextResolver(
 
     override suspend fun resolveSuspend(option: Option, event: Event): AppLocalizationContext {
         return when (event) {
-            is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
+            is Interaction -> baseContext.withLocales(guildLocaleProvider.getLocale(event), userLocaleProvider.getLocale(event))
             //MessageReceivedEvent does not provide user locale
             else -> throwInternal("Unsupported event type for ${classRef<AppLocalizationContext>()}: ${event.javaClass.name}")
         }
@@ -41,9 +41,9 @@ internal class TextLocalizationContextResolver(
 
     override suspend fun resolveSuspend(option: Option, event: Event): TextLocalizationContext {
         return when (event) {
-            is Interaction -> baseContext.withLocales(guildLocaleProvider.getDiscordLocale(event), userLocaleProvider.getDiscordLocale(event))
+            is Interaction -> baseContext.withLocales(guildLocaleProvider.getLocale(event), userLocaleProvider.getLocale(event))
             is MessageReceivedEvent -> when {
-                event.isFromGuild -> baseContext.withGuildLocale(textCommandLocaleProvider.getDiscordLocale(event))
+                event.isFromGuild -> baseContext.withGuildLocale(textCommandLocaleProvider.getLocale(event))
                 else -> baseContext
             }
             else -> throwInternal("Unsupported event type for ${classRef<TextLocalizationContext>()}: ${event.javaClass.name}")
