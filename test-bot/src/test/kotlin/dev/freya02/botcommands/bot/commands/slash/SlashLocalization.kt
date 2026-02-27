@@ -22,9 +22,9 @@ import io.github.freya022.botcommands.api.modals.Modals
 import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.create
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.lang.management.ManagementFactory
+import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 
 @Command
@@ -52,7 +52,7 @@ class SlashLocalization {
                 "uptime" to 3.141519
             ),
             ctx.localize(
-                DiscordLocale.GERMAN,
+                Locale.GERMAN,
                 localizationPath = "response",
                 "guild_users" to event.guild.memberCount,
                 "uptime" to 3.141519
@@ -95,7 +95,7 @@ class SlashLocalization {
             }
             val customLocaleButton = buttons.primary("Custom locale").ephemeral {
                 bindTo { buttonEvent ->
-                    buttonEvent.replyLocalized(DiscordLocale.GERMAN, "commands.localization.response", *customData)
+                    buttonEvent.replyLocalized(Locale.GERMAN, "commands.localization.response", *customData)
                         .setEphemeral(true)
                         .queue()
                 }
@@ -117,7 +117,7 @@ class SlashLocalization {
                     modalEvent.replyUser("response", *userData).setEphemeral(true).queue()
                     modalEvent.hook.editUser("response", *userData).queue()
                     modalEvent.hook.editGuild("response", *guildData).queue()
-                    modalEvent.hook.editLocalized(DiscordLocale.GERMAN, "response", *customData).queue()
+                    modalEvent.hook.editLocalized(Locale.GERMAN, "response", *customData).queue()
                 }
             }
 
@@ -127,7 +127,7 @@ class SlashLocalization {
                     when (selectEvent.values.single()) {
                         "user" -> selectEvent.replyUser("response", *userData)
                         "guild" -> selectEvent.replyGuild("response", *guildData)
-                        "custom" -> selectEvent.replyLocalized(DiscordLocale.GERMAN, "response", *customData)
+                        "custom" -> selectEvent.replyLocalized(Locale.GERMAN, "response", *customData)
                         else -> throw AssertionError()
                     }.setEphemeral(true).queue()
                 }
@@ -149,10 +149,10 @@ class SlashLocalization {
             .queue()
         event.hook.editGuild("response", *guildData).queue()
 
-        event.hook.sendLocalized(DiscordLocale.GERMAN, "response", *customData)
+        event.hook.sendLocalized(Locale.GERMAN, "response", *customData)
             .setEphemeral(true)
             .queue()
-        event.hook.editLocalized(DiscordLocale.GERMAN, "response", *customData).queue()
+        event.hook.editLocalized(Locale.GERMAN, "response", *customData).queue()
     }
 
     private val userData get() = arrayOf("guild_users" to 20, "uptime" to uptime)

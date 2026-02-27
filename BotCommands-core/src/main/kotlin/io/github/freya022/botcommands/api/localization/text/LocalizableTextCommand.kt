@@ -136,6 +136,7 @@ interface LocalizableTextCommand : LocalizableAction {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun respondLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction =
         respondLocalized(locale.toLocale(), localizationPath, *entries)
@@ -161,6 +162,7 @@ interface LocalizableTextCommand : LocalizableAction {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction =
         replyLocalized(locale.toLocale(), localizationPath, *entries)
@@ -319,6 +321,8 @@ fun LocalizableTextCommand.replyGuild(localizationPath: String, vararg entries: 
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableTextCommand.respondLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     respondLocalized(locale, localizationPath, *entries.mapToEntries())
 
@@ -343,6 +347,8 @@ fun LocalizableTextCommand.respondLocalized(locale: DiscordLocale, localizationP
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableTextCommand.replyLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     replyLocalized(locale, localizationPath, *entries.mapToEntries())
 

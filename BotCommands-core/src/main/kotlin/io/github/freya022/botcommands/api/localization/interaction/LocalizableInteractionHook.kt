@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization.interaction
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
@@ -101,6 +100,7 @@ interface LocalizableInteractionHook : InteractionHook {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun sendLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageCreateAction<Message> =
         sendLocalized(locale.toLocale(), localizationPath, *entries)
@@ -202,6 +202,7 @@ interface LocalizableInteractionHook : InteractionHook {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     @CheckReturnValue
     fun editLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): WebhookMessageEditAction<Message> =
         editLocalized(locale.toLocale(), localizationPath, *entries)
@@ -304,6 +305,8 @@ fun LocalizableInteractionHook.sendGuild(localizationPath: String, vararg entrie
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableInteractionHook.sendLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     sendLocalized(locale, localizationPath, *entries.mapToEntries())
 
@@ -404,6 +407,8 @@ fun LocalizableInteractionHook.editGuild(localizationPath: String, vararg entrie
  * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
  * - If the template requires an argument that was not passed to [entries]
  */
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableInteractionHook.editLocalized(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry) =
     editLocalized(locale, localizationPath, *entries.mapToEntries())
 

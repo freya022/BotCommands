@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.localization
 
-import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
@@ -102,6 +101,7 @@ interface LocalizableAction {
      * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
      * - If the template requires an argument that was not passed to [entries]
      */
+    @Deprecated("Pass a Locale instead")
     fun getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String =
         getLocalizedMessage(locale.toLocale(), localizationPath, *entries)
 }
@@ -109,5 +109,7 @@ interface LocalizableAction {
 fun LocalizableAction.getLocalizedMessage(locale: Locale, localizationPath: String, vararg entries: PairEntry): String =
     getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())
 
+@Suppress("DEPRECATION")
+@Deprecated("Pass a Locale instead")
 fun LocalizableAction.getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
     getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())
