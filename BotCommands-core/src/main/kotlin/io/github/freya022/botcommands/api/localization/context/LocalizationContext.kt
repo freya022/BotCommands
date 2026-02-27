@@ -61,11 +61,9 @@ interface LocalizationContext {
     val localizationBundle: String
 
     /**
-     * Returns the localization prefix of the current context.
+     * The prefix to add to every localization request.
      *
-     * The localization prefix can either come from [LocalizationBundle.prefix] or [withPrefix].
-     *
-     * @return The localization prefix for this context, or `null` if none has been set
+     * This will be ignored if the request's path starts with a `/`.
      *
      * @see withPrefix
      */
@@ -158,19 +156,33 @@ interface LocalizationContext {
         private var guildLocaleProvider: Lazy<DiscordLocale>? = null
         private var userLocaleProvider: Lazy<DiscordLocale>? = null
 
+        /**
+         * Sets the prefix of the context.
+         *
+         * @see LocalizationContext.localizationPrefix
+         */
         fun setPrefix(prefix: String?): Builder {
             this.prefix = prefix
             return this
         }
 
+        /**
+         * Sets the guild locale to be provided by the passed [GuildLocaleProvider].
+         */
         fun setGuildLocaleProvider(provider: GuildLocaleProvider, interaction: Interaction): Builder {
             return setGuildLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
         }
 
+        /**
+         * Sets the guild locale to be provided by the passed [TextCommandLocaleProvider].
+         */
         fun setGuildLocaleProvider(provider: TextCommandLocaleProvider, event: MessageReceivedEvent): Builder {
             return setGuildLocaleProvider(lazy { provider.getDiscordLocale(event) })
         }
 
+        /**
+         * Sets the guild locale to the provided one.
+         */
         fun setGuildLocale(locale: DiscordLocale): Builder {
             return setGuildLocaleProvider(lazyOf(locale))
         }
@@ -180,10 +192,16 @@ interface LocalizationContext {
             return this
         }
 
+        /**
+         * Sets the user locale to be provided by the passed [UserLocaleProvider].
+         */
         fun setUserLocaleProvider(provider: UserLocaleProvider, interaction: Interaction): Builder {
             return setUserLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
         }
 
+        /**
+         * Sets the user locale to the provided one.
+         */
         fun setUserLocale(locale: DiscordLocale): Builder {
             return setUserLocaleProvider(lazyOf(locale))
         }
@@ -193,6 +211,11 @@ interface LocalizationContext {
             return this
         }
 
+        /**
+         * Builds an instance with the current configuration.
+         *
+         * **Note:** This returns an [AppLocalizationContext] (instead of a [LocalizationContext]) to give you full capabilities.
+         */
         fun build(): AppLocalizationContext {
             return LocalizationContextImpl(localizationService, bundleName, prefix, guildLocaleProvider, userLocaleProvider)
         }
@@ -274,10 +297,19 @@ interface LocalizationContext {
             )
         }
 
+        /**
+         * Creates a new builder, using a [LocalizationService] retrieved from the provided context,
+         * and the specified bundle name, from which the strings will be retrieved from.
+         */
+        @JvmStatic
         fun builder(context: BContext, localizationBundle: String): Builder {
             return Builder(localizationService = context.getService(), localizationBundle)
         }
 
+        /**
+         * Creates a new builder, using a [LocalizationService] and the specified bundle name,
+         * from which the strings will be retrieved from.
+         */
         fun builder(localizationService: LocalizationService, localizationBundle: String): Builder {
             return Builder(localizationService, localizationBundle)
         }
