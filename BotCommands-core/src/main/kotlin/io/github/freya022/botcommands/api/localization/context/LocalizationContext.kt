@@ -153,6 +153,51 @@ interface LocalizationContext {
     fun localizeOrNull(localizationPath: String, vararg entries: Localization.Entry): String? =
         localizeOrNull(effectiveLocale, localizationPath, *entries)
 
+    class Builder internal constructor(private val localizationService: LocalizationService, private val bundleName: String) {
+        private var prefix: String? = null
+        private var guildLocaleProvider: Lazy<DiscordLocale>? = null
+        private var userLocaleProvider: Lazy<DiscordLocale>? = null
+
+        fun setPrefix(prefix: String?): Builder {
+            this.prefix = prefix
+            return this
+        }
+
+        fun setGuildLocaleProvider(provider: GuildLocaleProvider, interaction: Interaction): Builder {
+            return setGuildLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
+        }
+
+        fun setGuildLocaleProvider(provider: TextCommandLocaleProvider, event: MessageReceivedEvent): Builder {
+            return setGuildLocaleProvider(lazy { provider.getDiscordLocale(event) })
+        }
+
+        fun setGuildLocale(locale: DiscordLocale): Builder {
+            return setGuildLocaleProvider(lazyOf(locale))
+        }
+
+        private fun setGuildLocaleProvider(provider: Lazy<DiscordLocale>): Builder {
+            this.guildLocaleProvider = provider
+            return this
+        }
+
+        fun setUserLocaleProvider(provider: UserLocaleProvider, interaction: Interaction): Builder {
+            return setUserLocaleProvider(lazy { provider.getDiscordLocale(interaction) })
+        }
+
+        fun setUserLocale(locale: DiscordLocale): Builder {
+            return setUserLocaleProvider(lazyOf(locale))
+        }
+
+        private fun setUserLocaleProvider(provider: Lazy<DiscordLocale>): Builder {
+            this.userLocaleProvider = provider
+            return this
+        }
+
+        fun build(): AppLocalizationContext {
+            return LocalizationContextImpl(localizationService, bundleName, prefix, guildLocaleProvider, userLocaleProvider)
+        }
+    }
+
     companion object {
         @JvmStatic
         @JvmOverloads
@@ -167,8 +212,8 @@ interface LocalizationContext {
                 context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
-                guildLocale,
-                userLocale
+                guildLocale?.toProvider(),
+                userLocale?.toProvider()
             )
         }
 
@@ -185,8 +230,8 @@ interface LocalizationContext {
                 localizationService,
                 localizationBundle,
                 localizationPrefix,
-                guildLocale,
-                userLocale
+                guildLocale?.toProvider(),
+                userLocale?.toProvider()
             )
         }
 
@@ -202,8 +247,8 @@ interface LocalizationContext {
                 context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
-                context.getService<GuildLocaleProvider>().getDiscordLocale(event),
-                context.getService<UserLocaleProvider>().getDiscordLocale(event),
+                lazy { context.getService<GuildLocaleProvider>().getDiscordLocale(event) },
+                lazy { context.getService<UserLocaleProvider>().getDiscordLocale(event) },
             )
         }
 
@@ -220,10 +265,20 @@ interface LocalizationContext {
                 context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
-                context.getService<TextCommandLocaleProvider>().getDiscordLocale(event),
-                userLocale,
+                lazy { context.getService<TextCommandLocaleProvider>().getDiscordLocale(event) },
+                userLocale?.toProvider(),
             )
         }
+
+        fun builder(context: BContext, localizationBundle: String): Builder {
+            return Builder(localizationService = context.getService(), localizationBundle)
+        }
+
+        fun builder(localizationService: LocalizationService, localizationBundle: String): Builder {
+            return Builder(localizationService, localizationBundle)
+        }
+
+        private fun DiscordLocale.toProvider(): Lazy<DiscordLocale> = lazyOf(this)
     }
 }
 

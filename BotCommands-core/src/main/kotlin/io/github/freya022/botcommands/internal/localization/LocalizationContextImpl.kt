@@ -14,19 +14,25 @@ internal class LocalizationContextImpl(
     private val localizationService: LocalizationService,
     override val localizationBundle: String,
     override val localizationPrefix: String?,
-    private val _guildLocale: DiscordLocale?,
-    private val _userLocale: DiscordLocale?
+    private val _guildLocaleProvider: Lazy<DiscordLocale>?,
+    private val _userLocaleProvider: Lazy<DiscordLocale>?,
 ) : TextLocalizationContext, AppLocalizationContext {
+    private val guildLocaleProvider: Lazy<DiscordLocale>
+        get() = _guildLocaleProvider ?: throwArgument("Cannot guild localize on an event which doesn't provide guild localization")
+
+    private val userLocaleProvider: Lazy<DiscordLocale>
+        get() = _userLocaleProvider ?: throwArgument("Cannot user localize on an event which doesn't provide user localization")
+
     override val userLocale: DiscordLocale
-        get() = _userLocale ?: throwArgument("Cannot user localize on an event which doesn't provide user localization")
+        get() = guildLocaleProvider.value
 
     override val guildLocale: DiscordLocale
-        get() = _guildLocale ?: throwArgument("Cannot guild localize on an event which doesn't provide guild localization")
+        get() = userLocaleProvider.value
 
     override val effectiveLocale: DiscordLocale
         get() = when {
-            _userLocale != null -> _userLocale
-            hasGuildLocale() -> guildLocale
+            _userLocaleProvider != null -> userLocale
+            _guildLocaleProvider != null -> guildLocale
             else -> DiscordLocale.ENGLISH_US
         }
 
@@ -38,27 +44,27 @@ internal class LocalizationContextImpl(
     }
 
     override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, _userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale?.toProvider(), _userLocaleProvider)
     }
 
     override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocaleProvider, userLocale?.toProvider())
     }
 
     override fun withBundle(localizationBundle: String): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, _userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocaleProvider, _userLocaleProvider)
     }
 
     override fun withPrefix(localizationPrefix: String?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, _userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocaleProvider, _userLocaleProvider)
     }
 
     override fun switchBundle(localizationBundle: String): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, null, _guildLocale, _userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, null, _guildLocaleProvider, _userLocaleProvider)
     }
 
     fun withLocales(guildLocale: DiscordLocale, userLocale: DiscordLocale): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, lazyOf(guildLocale), lazyOf(userLocale))
     }
 
     override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
@@ -83,6 +89,8 @@ internal class LocalizationContextImpl(
             ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$discordLocale', the root bundle should have been checked")
 
     override fun hasGuildLocale(): Boolean {
-        return _guildLocale != null
+        return _guildLocaleProvider != null
     }
+
+    private fun DiscordLocale.toProvider(): Lazy<DiscordLocale> = lazyOf(this)
 }
