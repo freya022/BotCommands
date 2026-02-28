@@ -25,6 +25,8 @@ dependencies {
 
     testImplementation(libs.bundles.test)
 
+    testImplementation(libs.jda)
+
     // Architecture tests
     testImplementation(libs.konsist)
     testImplementation(libs.kotlin.metadata)
