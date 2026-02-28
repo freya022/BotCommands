@@ -9,7 +9,9 @@ import io.github.freya022.botcommands.api.core.service.getService
 interface ApplicationCommandBuilder<T> : ExecutableCommandBuilder<T>,
                                          ApplicationOptionRegistry<T> where T : ApplicationCommandOptionAggregateBuilder<T> {
 
-    //TODO document
+    /**
+     * The top-level builder of this command.
+     */
     val topLevelBuilder: TopLevelApplicationCommandBuilder<T>
 
     /**

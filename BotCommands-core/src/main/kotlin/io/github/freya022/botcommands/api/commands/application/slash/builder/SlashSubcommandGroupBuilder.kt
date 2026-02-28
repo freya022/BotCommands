@@ -12,10 +12,8 @@ import kotlin.reflect.KFunction
 
 @CommandDSL
 interface SlashSubcommandGroupBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
-    //TODO change docs when Discord eventually decides to not have a mess of a command list
     /**
      * Short description of the subcommand group.
-     * May be displayed on Discord.
      *
      * If this description is omitted, a default localization is
      * searched in [the command localization bundles][BApplicationConfigBuilder.addLocalizations]

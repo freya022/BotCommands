@@ -19,7 +19,10 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import kotlin.reflect.KFunction
 
 interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
-    //TODO docs
+
+    /**
+     * The name of this option as shown on Discord.
+     */
     val optionName: String
 
     /**

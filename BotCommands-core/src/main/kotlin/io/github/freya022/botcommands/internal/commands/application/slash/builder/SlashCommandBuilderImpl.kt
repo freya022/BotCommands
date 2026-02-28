@@ -34,7 +34,7 @@ internal abstract class SlashCommandBuilderImpl internal constructor(
     protected abstract val allowSubcommandGroups: Boolean
 
     init {
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Slash command name")
     }
 
     final override fun option(declaredName: String, optionName: String, block: SlashCommandOptionBuilder.() -> Unit) {

@@ -72,7 +72,11 @@ interface TextCommandBuilder : CommandBuilder {
      */
     var detailedDescription: ((EmbedBuilder) -> Unit)?
 
-    //TODO docs
+    /**
+     * Adds a subcommand with the provided name.
+     *
+     * @throws IllegalArgumentException If the name does not match `[\w-]+`
+     */
     fun subcommand(name: String, block: TextCommandBuilder.() -> Unit)
 
     /**
