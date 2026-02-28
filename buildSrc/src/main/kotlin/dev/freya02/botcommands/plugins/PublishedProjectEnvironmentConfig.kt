@@ -49,7 +49,9 @@ abstract class PublishedProjectEnvironmentConfig(
 
     val isJitpack = GitUtils.isJitpack(project.providers)
 
-    val effectiveTag = if (canPublish) "v${version}" else "3.X"
+    val effectiveTag by lazy {
+        if (canPublish) "v${version.get()}" else "3.X"
+    }
 
     /**
      * Sets the provided [artifactId] as the Kotlin module name, Dokka module name & path, and Maven artifact ID.
