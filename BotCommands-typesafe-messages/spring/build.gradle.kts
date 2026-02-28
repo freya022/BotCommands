@@ -24,6 +24,8 @@ dependencies {
 
     testImplementation(libs.bundles.test)
 
+    testImplementation(libs.jda)
+
     testImplementation(libs.mockk)
     testImplementation(libs.logback.classic)
 

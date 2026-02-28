@@ -6,6 +6,7 @@ plugins {
 // The root project script is used to produce an aggregated POM
 
 dependencies {
+    testImplementation(libs.jda)
     testImplementation(projects.botCommandsCore)
     testImplementation(libs.kotlin.logging)
     testImplementation(projects.botCommandsJdaKtx)

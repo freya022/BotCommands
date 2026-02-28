@@ -137,6 +137,8 @@ Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to ge
 you can also check out the [examples](src/examples).
 
 ## Installation
+After [adding JDA](https://github.com/discord-jda/JDA?tab=readme-ov-file#-installation):
+
 [![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]
 ### Maven
 ```xml

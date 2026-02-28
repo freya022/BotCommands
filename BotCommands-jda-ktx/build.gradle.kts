@@ -12,7 +12,7 @@ plugins {
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
-    api(libs.jda)
+    compileOnly(libs.jda)
     api(libs.kotlinx.coroutines.core)
 
     ksp(projects.jdaKtxDeprecationProcessor)
@@ -20,6 +20,8 @@ dependencies {
     // -------------------- TEST DEPENDENCIES --------------------
 
     testImplementation(libs.bundles.test)
+
+    testImplementation(libs.jda)
 
     testImplementation(libs.classgraph)
     testImplementation(libs.kotlin.reflect)

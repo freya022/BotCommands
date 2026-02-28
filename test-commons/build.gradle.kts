@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    api(libs.jda)
     api(projects.botCommandsCore)
 
     api(libs.bundles.test)

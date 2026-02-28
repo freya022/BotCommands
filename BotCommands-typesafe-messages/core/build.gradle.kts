@@ -11,6 +11,7 @@ plugins {
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
+    compileOnly(libs.jda)
     api(projects.botCommandsCore)
 
     // Logging
@@ -22,6 +23,8 @@ dependencies {
     // -------------------- TEST DEPENDENCIES --------------------
 
     testImplementation(libs.bundles.test)
+
+    testImplementation(libs.jda)
 
     testImplementation(libs.mockk)
     testImplementation(libs.logback.classic)

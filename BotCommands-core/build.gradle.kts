@@ -35,10 +35,7 @@ dependencies {
     implementation(libs.kotlin.logging)
 
     // JDA
-    api(libs.jda) {
-        exclude(module = "opus-java")
-        exclude(module = "tink")
-    }
+    compileOnly(libs.jda)
     implementation(projects.botCommandsJdaKtx)
 
     // Classpath scanning
