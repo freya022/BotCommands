@@ -21,7 +21,6 @@ internal class TextCommandComparator(private val context: BContext) : Comparator
             .drop(1)
             .filter { context.getService<ResolverContainer>().hasResolverOfType<TextParameterResolver<*, *>>(it.wrap()) }
 
-    //TODO is this correct ? the same old implementation did not function with the new objects.
     override fun compare(o1: TextFunctionMetadata, o2: TextFunctionMetadata): Int {
         if (o1.func == o2.func) return 0
 

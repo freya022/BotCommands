@@ -45,7 +45,6 @@ private val spacePattern = Regex("\\s+")
 
 @BService
 @RequiresTextCommands
-//TODO expand this to a custom condition, included in built-in text command stuff
 @ConditionalService(TextCommandsListener.ActivationCondition::class)
 internal class TextCommandsListener internal constructor(
     private val context: BContext,
