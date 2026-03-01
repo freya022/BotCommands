@@ -9,7 +9,7 @@ on:
       - 3.X
 
 concurrency:
-  group: "validate"
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   check:
