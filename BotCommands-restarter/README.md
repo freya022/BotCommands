@@ -42,6 +42,12 @@ To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
 ## Usage
 You can enable the feature by doing so, after which, every build will restart your application.
 
+> [!IMPORTANT]
+> You must only use this feature during development, here are a few ways to do so:
+> - Using a program argument like `--dev` then reading it from `args`
+> - Using a configuration file with a `IS_DEV` property
+> - Using an environment variable
+
 ### Kotlin
 ```kotlin
 fun main(args: Array<out String>) {
@@ -49,6 +55,7 @@ fun main(args: Array<out String>) {
     BotCommands.create {
         // ...
 
+        // You should enable this only during development
         @OptIn(ExperimentalRestartApi::class)
         registerRestarter(args) {
             // Optional configuration
@@ -64,6 +71,7 @@ void main(String[] args) {
     BotCommands.create(config -> {
         // ...
 
+        // You should enable this only during development
         var restarterConfig = RestarterConfig.builder(args)
                 // Optional configuration
                 .build();
