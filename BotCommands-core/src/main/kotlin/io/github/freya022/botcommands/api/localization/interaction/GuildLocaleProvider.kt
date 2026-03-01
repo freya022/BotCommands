@@ -27,7 +27,8 @@ import java.util.*
 @InterfacedService(acceptMultiple = false)
 interface GuildLocaleProvider {
     @Deprecated("Use 'getLocale' instead, use 'DiscordLocale.from' / 'DiscordLocale#toLocale' if necessary")
-    fun getDiscordLocale(interaction: Interaction): DiscordLocale
+    fun getDiscordLocale(interaction: Interaction): DiscordLocale =
+        throw UnsupportedOperationException("'getLocale' needs to be implemented instead")
 
     @Suppress("DEPRECATION")
     fun getLocale(interaction: Interaction): Locale =
