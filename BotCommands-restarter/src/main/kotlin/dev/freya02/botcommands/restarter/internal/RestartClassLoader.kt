@@ -4,7 +4,13 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.util.*
 
-// STILL SUPER DUPER IMPORTANT TO OVERRIDE SOME STUFF AND DELEGATE
+/**
+ * This implementation is slightly simplified, in particular to avoid tracking (and keeping in-memory) the actual data of build outputs.
+ *
+ * However, code that loads classes that were deleted, before the restart (like shutdown code), will fail.
+ *
+ * But this issue should be extremely rare, so this is a fair trade.
+ */
 internal class RestartClassLoader internal constructor(
     urls: List<URL>,
     parent: ClassLoader,

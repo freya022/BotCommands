@@ -77,19 +77,7 @@ class Restarter private constructor(
      * Starts a new instance of the main class, or returns a [Throwable] if it failed.
      */
     private fun start(): Throwable? {
-        // We use a regular URLClassLoader instead of RestartClassLoaderFull,
-        // as classpath changes will trigger a restart and thus recreate a new ClassLoader,
-        // meaning live updating the classes is pointless.
-        // In contrast, Spring needs their RestartClassLoader because it can override classes remotely,
-        // but we don't have such a use case.
-        // However, not using RestartClassLoaderFull, which uses snapshots, has an issue,
-        // trying to load deleted classes (most likely on shutdown) will fail,
-        // Spring also has that issue, but it will only happen on classes out of its component scan,
-        // BC just needs to make sure to at least load the classes on its path too.
-        val restartClassLoader = RestartClassLoader(
-            appClasspathUrls,
-            appClassLoader
-        )
+        val restartClassLoader = RestartClassLoader(appClasspathUrls, appClassLoader)
         var error: Throwable? = null
         val launchThreads = thread(name = RESTARTED_THREAD_NAME, isDaemon = false, contextClassLoader = restartClassLoader) {
             try {
