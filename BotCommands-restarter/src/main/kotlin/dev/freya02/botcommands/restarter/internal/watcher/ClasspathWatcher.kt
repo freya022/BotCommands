@@ -13,10 +13,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread
 import kotlin.concurrent.withLock
@@ -35,7 +32,7 @@ internal class ClasspathWatcher private constructor(
     private val settingsHolder = SettingsHolder(settings)
 
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
-    private lateinit var restartFuture: ScheduledFuture<*>
+    private var restartFuture: Future<*> = CompletableFuture.completedFuture(null)
 
     private val watchService = FileSystems.getDefault().newWatchService()
     private val registeredDirectories: MutableSet<Path> = ConcurrentHashMap.newKeySet()
@@ -80,7 +77,7 @@ internal class ClasspathWatcher private constructor(
                 // awaiting the new instance allows restarting
                 // as soon as the framework is in a state where it can shut down properly
                 val settings = settingsHolder.getOrAwait()
-                if (::restartFuture.isInitialized) restartFuture.cancel(false)
+                restartFuture.cancel(false)
                 restartFuture = scheduler.schedule(::tryRestart, settings.restartDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             }
         }
