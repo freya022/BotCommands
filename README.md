@@ -177,7 +177,7 @@ The base `BotCommands` artifact will include modules often used, while others ar
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
 - [`BotCommands-typesafe-messages`](./BotCommands-typesafe-messages): Allows defining functions to retrieve text content from your bundles, providing better ergonomics and safety with load-time validation
 - [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): Improved alternative for this framework to call your functions
-- [`BotCommands-restarter`](./BotCommands-restarter): Enables fast restarts of your bot as you develop it
+- [`BotCommands-restarter`](./BotCommands-restarter): Automatically restarts of your bot as your code changes
 
 ## Sample usage
 Here is how you would create a slash command that sends a message in a specified channel.

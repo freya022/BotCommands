@@ -2,9 +2,7 @@
 [bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-restarter
 
 # BotCommands module - Hot restarter
-This module enables fast restarts of your bot as you develop it.
-
-When you build changes of your code, it restarts automatically, in the same JVM,
+When you build changes of your code, this modules restarts your app automatically, in the same JVM,
 leading to much faster restarts, as it doesn't need to recompile most of the code.
 
 > [!WARNING]
