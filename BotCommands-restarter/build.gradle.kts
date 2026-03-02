@@ -17,7 +17,7 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-opt-in=dev.freya02.botcommands.restarter.api.ExperimentalRestartApi",
+            "-opt-in=dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi",
         )
     }
 }

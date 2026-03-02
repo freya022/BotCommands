@@ -1,7 +1,7 @@
 package dev.freya02.botcommands.restarter.api.config
 
 import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
-import dev.freya02.botcommands.restarter.api.ExperimentalRestartApi
+import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import java.time.Duration as JavaDuration
 import kotlin.time.Duration

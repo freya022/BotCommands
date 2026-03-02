@@ -1,4 +1,4 @@
-package dev.freya02.botcommands.restarter.api
+package dev.freya02.botcommands.restarter.api.annotations
 
 import kotlin.annotation.AnnotationTarget.*
 

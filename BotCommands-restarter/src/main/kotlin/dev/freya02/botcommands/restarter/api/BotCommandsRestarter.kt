@@ -1,5 +1,7 @@
 package dev.freya02.botcommands.restarter.api
 
+import dev.freya02.botcommands.restarter.api.BotCommandsRestarter.initialize
+import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import dev.freya02.botcommands.restarter.api.config.RestarterConfigBuilder
 import dev.freya02.botcommands.restarter.api.exceptions.ImmediateRestartException
 import dev.freya02.botcommands.restarter.internal.Restarter

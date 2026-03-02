@@ -5,7 +5,7 @@ import dev.freya02.botcommands.bot.config.Environment
 import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
-import dev.freya02.botcommands.restarter.api.ExperimentalRestartApi
+import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
