@@ -168,7 +168,7 @@ internal class ClasspathWatcher private constructor(
     }
 
     private fun registerDirectories(directory: Path) {
-        directory.walkDirectories { path, attributes ->
+        directory.walkDirectories { path, _ ->
             if (registeredDirectories.add(path))
                 path.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
         }
