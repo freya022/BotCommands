@@ -40,8 +40,9 @@ To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
 ## Usage
 You can enable the feature by doing so, after which, every build will restart your application.
 
-You should minimize the amount of code executed before calling `BotCommands.create`,
-as it will run twice on startup, then everytime it is restarted.
+> [!NOTE]
+> You should minimize the amount of code executed before calling `BotCommandsRestarter.initialize`,
+> as it will run twice on startup, then everytime it is restarted.
 
 > [!IMPORTANT]
 > You must only use this feature during development, here are a few ways to do so:
