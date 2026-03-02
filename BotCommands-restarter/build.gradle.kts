@@ -8,7 +8,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.jda)
     api(projects.botCommandsCore)
 
     // Logging
