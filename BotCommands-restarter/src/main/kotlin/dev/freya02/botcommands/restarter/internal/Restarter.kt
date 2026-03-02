@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.restarter.internal
 
+import dev.freya02.botcommands.restarter.api.config.RestarterConfig
 import dev.freya02.botcommands.restarter.api.exceptions.ImmediateRestartException
 import dev.freya02.botcommands.restarter.internal.utils.AppClasspath
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -11,9 +12,7 @@ import kotlin.concurrent.withLock
 
 private val logger = KotlinLogging.logger { }
 
-class Restarter private constructor(
-    private val args: List<String>,
-) {
+class Restarter private constructor() {
 
     private val appClassLoader: ClassLoader
     val appClasspathUrls: List<URL>
@@ -55,7 +54,7 @@ class Restarter private constructor(
      * Runs each [dev.freya02.botcommands.restarter.internal.RestartListener.beforeStop] and then starts a new instance of the main class,
      * if the new instance fails, the [Throwable] is returned.
      */
-    fun restart(): Throwable? {
+    internal fun restart(): Throwable? {
         logger.debug { "Restarting application in '$mainClassName'" }
         // Do it from the original class loader, so the context is the same as for the initial restart
         return leakSafeExecutor.callAndWait {
@@ -85,7 +84,7 @@ class Restarter private constructor(
                 val mainClass = Class.forName(mainClassName, false, restartClassLoader)
                 val mainMethod = mainClass.getDeclaredMethod("main", Array<String>::class.java)
                 mainMethod.isAccessible = true
-                mainMethod.invoke(null, args.toTypedArray())
+                mainMethod.invoke(null, config.startArgs.toTypedArray())
             } catch (ex: Throwable) {
                 error = ex
             }
@@ -95,23 +94,28 @@ class Restarter private constructor(
         return error
     }
 
-    companion object {
+    internal companion object {
 
-        const val RESTARTED_THREAD_NAME = "restartedMain"
+        private const val RESTARTED_THREAD_NAME = "restartedMain"
 
-        private val instanceLock: Lock = ReentrantLock()
-        lateinit var instance: Restarter
+        internal lateinit var instance: Restarter
             private set
 
-        fun initialize(args: List<String>) {
-            var newInstance: Restarter? = null
-            instanceLock.withLock {
-                if (::instance.isInitialized.not()) {
-                    newInstance = Restarter(args)
-                    instance = newInstance
-                }
+        internal lateinit var config: RestarterConfig
+            private set
+
+        internal val isInitialized: Boolean
+            get() = ::instance.isInitialized
+
+        @Synchronized
+        internal fun initialize(config: RestarterConfig) {
+            check(!isInitialized) {
+                "Restarter is already initialized!"
             }
-            newInstance?.initialize()
+
+            this.instance = Restarter()
+            this.config = config
+            instance.initialize()
         }
     }
 }

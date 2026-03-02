@@ -51,21 +51,18 @@ as it will run twice on startup, then everytime it is restarted.
 > - Using a configuration file with a `IS_DEV` property
 > - Using an environment variable
 
-> [!NOTE]
-> If you catch exceptions, make sure to rethrow `ImmediateRestartException`.
-
 ### Kotlin
 ```kotlin
 fun main(args: Array<out String>) {
+    // You should enable this only during development
+    @OptIn(ExperimentalRestartApi::class)
+    BotCommandsRestarter.initialize(args) {
+        // Optional configuration
+    }
+    
     // ...
     BotCommands.create {
         // ...
-
-        // You should enable this only during development
-        @OptIn(ExperimentalRestartApi::class)
-        registerRestarter(args) {
-            // Optional configuration
-        }
     }
 }
 ```
@@ -73,15 +70,14 @@ fun main(args: Array<out String>) {
 ### Java
 ```java
 void main(String[] args) {
+    // You should enable this only during development
+    BotCommandsRestarter.initialize(args, builder -> {
+        // Optional configuration
+    });
+    
     // ...
     BotCommands.create(config -> {
         // ...
-
-        // You should enable this only during development
-        var restarterConfig = RestarterConfig.builder(args)
-                // Optional configuration
-                .build();
-        config.registerModule(restarterConfig);
     });
 }
 ```

@@ -21,15 +21,12 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.isDirectory
 import kotlin.io.path.pathString
 import kotlin.io.path.relativeTo
-import kotlin.time.Duration
 
 private val logger = KotlinLogging.logger { }
 
-internal class ClasspathWatcher private constructor(
-    settings: Settings,
-) {
+internal class ClasspathWatcher private constructor() {
 
-    private val settingsHolder = SettingsHolder(settings)
+    private val registrationStatus = RegistrationStatus()
 
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
     private var restartFuture: Future<*> = CompletableFuture.completedFuture(null)
@@ -72,13 +69,8 @@ internal class ClasspathWatcher private constructor(
                     continue
                 }
 
-                // Await for an instance to attach before scheduling a restart
-                // When the filesystem changes while an instance is being restarted (slow builds),
-                // awaiting the new instance allows restarting
-                // as soon as the framework is in a state where it can shut down properly
-                val settings = settingsHolder.getOrAwait()
-                restartFuture.cancel(false)
-                restartFuture = scheduler.schedule(::tryRestart, settings.restartDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+                restartFuture.cancel(/* mayInterruptIfRunning = */ false)
+                restartFuture = scheduler.schedule(::tryRestart, Restarter.config.restartDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             }
         }
     }
@@ -95,19 +87,13 @@ internal class ClasspathWatcher private constructor(
      * Any exception thrown are caught and will cause more classpath changes to be awaited for a new restart attempt
      */
     private fun tryRestart() {
-        // I believe this should not happen as this method is always single-threaded,
-        // and only this method can clear the settings,
-        // but just in case...
-        val settings = settingsHolder.getOrNull() ?: run {
-            logger.warn { "Restart was scheduled but instance was unregistered after being scheduled, awaiting new instance" }
-            settingsHolder.getOrAwait()
-        }
+        // Wait for a BC instance to register itself before attempting a restart
+        registrationStatus.awaitIfAbsent()
         try {
             logger.debug { "Attempting to restart" }
 
-            // Clear the settings since we are in the process of restarting,
-            // absent settings prevents further restart attempts while this one hasn't completed.
-            settingsHolder.clear()
+            // Prevent restarts until a new BC instance gets registered
+            registrationStatus.setAbsent()
 
             compareSnapshots()
             snapshots.keys.forEach { registerDirectories(it) }
@@ -116,7 +102,8 @@ internal class ClasspathWatcher private constructor(
             if (exception != null) throw exception
         } catch (e: Exception) {
             logger.error(e) { "Restart failed, waiting for the next build" }
-            settingsHolder.set(settings) // Reuse the old settings to reschedule a new restart
+            // Signal we listen to builds again
+            registrationStatus.setPresent()
         }
     }
 
@@ -174,48 +161,39 @@ internal class ClasspathWatcher private constructor(
         }
     }
 
-    private class SettingsHolder(
-        settings: Settings,
-    ) {
-        // null = no instance registered = no restart can be scheduled
-        private var settings: Settings? = settings
+    /**
+     * Helper class to await for a BC instance to be registered before restarting
+     */
+    private class RegistrationStatus {
+        private var present = true
 
         private val lock = ReentrantLock()
         private val condition = lock.newCondition()
 
-        fun set(settings: Settings) = lock.withLock {
-            this.settings = settings
+        fun setPresent() = lock.withLock {
+            this.present = true
             condition.signalAll()
         }
 
-        fun clear() = lock.withLock { settings = null }
+        fun setAbsent() = lock.withLock { present = false }
 
-        fun getOrNull(): Settings? = lock.withLock { settings }
+        fun awaitIfAbsent(): Unit = lock.withLock {
+            if (present) return@withLock
 
-        fun getOrAwait(): Settings = lock.withLock {
-            settings?.let { return it }
             condition.await()
-            return settings!!
         }
     }
 
-    private class Settings(
-        val restartDelay: Duration,
-    )
-
     internal companion object {
-        private val instanceLock = ReentrantLock()
         internal lateinit var instance: ClasspathWatcher
             private set
 
-        internal fun initialize(restartDelay: Duration) {
-            instanceLock.withLock {
-                val settings = Settings(restartDelay)
-                if (::instance.isInitialized.not()) {
-                    instance = ClasspathWatcher(settings)
-                } else {
-                    instance.settingsHolder.set(settings)
-                }
+        @Synchronized
+        internal fun initialize() {
+            if (::instance.isInitialized.not()) {
+                instance = ClasspathWatcher()
+            } else {
+                instance.registrationStatus.setPresent()
             }
         }
     }

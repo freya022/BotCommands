@@ -4,9 +4,8 @@ import ch.qos.logback.classic.ClassicConstants
 import dev.freya02.botcommands.bot.config.Environment
 import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
+import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
 import dev.freya02.botcommands.restarter.api.ExperimentalRestartApi
-import dev.freya02.botcommands.restarter.api.config.registerRestarter
-import dev.freya02.botcommands.restarter.api.exceptions.ImmediateRestartException
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -23,6 +22,9 @@ object Main {
         try {
             System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
             logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+
+            @OptIn(ExperimentalRestartApi::class)
+            BotCommandsRestarter.initialize(args)
 
             @OptIn(ExperimentalMethodAccessorsApi::class)
             MethodAccessorsConfig.preferClassFileAccessors()
@@ -71,12 +73,7 @@ object Main {
                 modals {
                     enable = true
                 }
-
-                @OptIn(ExperimentalRestartApi::class)
-                registerRestarter(args)
             }
-        } catch (e: ImmediateRestartException) {
-            throw e
         } catch (e: Exception) {
             logger.error(e) { "Could not start the test bot" }
             exitProcess(1)
