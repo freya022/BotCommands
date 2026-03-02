@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException
  *
  * This exception must propagate to the main method, and must not be caught, if it is, you must rethrow it.
  */
-class ImmediateRestartException internal constructor() : RuntimeException("Dummy exception to stop the execution of the first main thread") {
+class ImmediateRestartException private constructor() : RuntimeException("Dummy exception to stop the execution of the first main thread") {
 
     internal companion object {
         @JvmSynthetic
