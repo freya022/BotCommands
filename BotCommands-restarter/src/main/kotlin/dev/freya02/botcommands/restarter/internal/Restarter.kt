@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.restarter.internal
 
+import dev.freya02.botcommands.restarter.api.exceptions.ImmediateRestartException
 import dev.freya02.botcommands.restarter.internal.utils.AppClasspath
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.net.URL
