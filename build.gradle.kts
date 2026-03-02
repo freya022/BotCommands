@@ -40,6 +40,7 @@ dependencies {
     dokka(projects.botCommandsTypesafeMessages.core)
     dokka(projects.botCommandsTypesafeMessages.bc)
     dokka(projects.botCommandsTypesafeMessages.spring)
+    dokka(projects.botCommandsRestarter)
 }
 
 tasks.withType<Test> {

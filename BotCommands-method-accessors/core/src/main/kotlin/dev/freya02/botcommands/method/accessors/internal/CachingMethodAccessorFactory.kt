@@ -13,6 +13,10 @@ class CachingMethodAccessorFactory(private val delegate: MethodAccessorFactory) 
     private val cache = WeakHashMap<Executable, MethodAccessor<*>>()
     private val lock = ReentrantLock()
 
+    fun clearCache() {
+        cache.clear()
+    }
+
     override fun <R> create(
         instance: Any?,
         function: KFunction<R>,

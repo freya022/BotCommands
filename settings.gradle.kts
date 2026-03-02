@@ -19,4 +19,5 @@ include(
     ":BotCommands-typesafe-messages:bc",
     ":BotCommands-typesafe-messages:spring",
 )
+include(":BotCommands-restarter")
 include(":test-bot")

@@ -1,0 +1,82 @@
+[bc-module-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands-restarter?label=Maven%20central&logo=apachemaven&versionPrefix=3
+[bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-restarter
+
+# BotCommands module - Hot restarter
+When you build changes of your code, this modules restarts your app automatically, in the same JVM,
+leading to much faster restarts, as it doesn't need to recompile most of the code.
+
+> [!WARNING]
+> If you are using Spring, use [`spring-boot-devtools`](https://docs.spring.io/spring-boot/reference/using/devtools.html) instead.
+
+## Installing
+[![BotCommands-restarter on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
+
+### Maven
+```xml
+<dependencies>
+  <dependency>
+    <groupId>io.github.freya022</groupId>
+    <artifactId>BotCommands-restarter</artifactId>
+    <version>VERSION</version>
+  </dependency>
+</dependencies>
+```
+
+### Gradle
+```gradle
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.freya022:BotCommands-restarter:VERSION")
+}
+```
+
+### Snapshots
+
+To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
+
+## Usage
+You can enable the feature by doing so, after which, every build will restart your application.
+
+> [!NOTE]
+> You should minimize the amount of code executed before calling `BotCommandsRestarter.initialize`,
+> as it will run twice on startup, then everytime it is restarted.
+
+> [!IMPORTANT]
+> You must only use this feature during development, here are a few ways to do so:
+> - Using a program argument like `--dev` then reading it from `args`
+> - Using a configuration file with a `IS_DEV` property
+> - Using an environment variable
+
+### Kotlin
+```kotlin
+fun main(args: Array<out String>) {
+    // You should enable this only during development
+    @OptIn(ExperimentalRestartApi::class)
+    BotCommandsRestarter.initialize(args) {
+        // Optional configuration
+    }
+    
+    // ...
+    BotCommands.create {
+        // ...
+    }
+}
+```
+
+### Java
+```java
+void main(String[] args) {
+    // You should enable this only during development
+    BotCommandsRestarter.initialize(args, builder -> {
+        // Optional configuration
+    });
+    
+    // ...
+    BotCommands.create(config -> {
+        // ...
+    });
+}
+```

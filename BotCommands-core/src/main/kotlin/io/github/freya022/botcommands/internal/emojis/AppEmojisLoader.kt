@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
 import net.dv8tion.jda.internal.utils.Checks
-import org.jetbrains.annotations.TestOnly
 import kotlin.math.abs
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberProperties
@@ -235,7 +234,6 @@ internal class AppEmojisLoader internal constructor(
         private val toLoad = arrayListOf<LoadRequest>()
         private val loadedEmojis = hashMapOf<String, ApplicationEmoji>()
 
-        @TestOnly
         internal fun clear() {
             loaded = false
             toLoadEmojiNames.clear()
