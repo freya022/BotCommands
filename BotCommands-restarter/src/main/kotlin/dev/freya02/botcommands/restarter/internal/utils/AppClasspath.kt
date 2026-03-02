@@ -12,7 +12,7 @@ private val logger = KotlinLogging.logger { }
 
 internal object AppClasspath {
 
-    val paths: List<Path>
+    internal val paths: List<Path>
 
     init {
         val resources = Thread.currentThread().contextClassLoader.getResources("META-INF/BotCommands-restarter.properties")

@@ -12,10 +12,10 @@ import kotlin.concurrent.withLock
 
 private val logger = KotlinLogging.logger { }
 
-class Restarter private constructor() {
+internal class Restarter private constructor() {
 
     private val appClassLoader: ClassLoader
-    val appClasspathUrls: List<URL>
+    private val appClasspathUrls: List<URL>
 
     private val mainClassName: String
 
