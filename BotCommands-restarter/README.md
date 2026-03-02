@@ -51,6 +51,9 @@ as it will run twice on startup, then everytime it is restarted.
 > - Using a configuration file with a `IS_DEV` property
 > - Using an environment variable
 
+> [!NOTE]
+> If you catch exceptions, make sure to rethrow `ImmediateRestartException`.
+
 ### Kotlin
 ```kotlin
 fun main(args: Array<out String>) {
