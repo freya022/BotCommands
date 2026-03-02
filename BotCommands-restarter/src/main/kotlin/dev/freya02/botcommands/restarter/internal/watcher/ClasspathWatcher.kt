@@ -68,7 +68,7 @@ internal class ClasspathWatcher private constructor(
                     continue
                 }
                 if (!key.reset()) {
-                    logger.warn { "${key.watchable()} is no longer valid" }
+                    logger.debug { "${key.watchable()} is no longer valid" }
                     continue
                 }
 
