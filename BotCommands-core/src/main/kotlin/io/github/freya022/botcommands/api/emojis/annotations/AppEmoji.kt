@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.emojis.annotations
 
+import io.github.classgraph.ScanResult
 import io.github.freya022.botcommands.api.emojis.AppEmojisRegistry
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
 
@@ -14,9 +15,9 @@ import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
 @Retention(AnnotationRetention.RUNTIME)
 annotation class AppEmoji(
     /**
-     * The name of the asset to load, including the extension.
+     * The [glob pattern][ScanResult.getResourcesMatchingWildcard] which matches a single file, includes the extension.
      *
-     * This defaults to the field name, converted to `snake_case`.
+     * This defaults to the field name, converted to `snake_case`, followed by any extension. For example, `field_name.**`
      */
     val assetPattern: String = DEFAULT,
     /**
