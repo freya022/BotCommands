@@ -24,21 +24,17 @@ A framework for [JDA](https://github.com/discord-jda/JDA) with everything you ne
 
 It supports Java 17+ and provides first-class Kotlin support, meaning you get full language support and a few extras!
 
-## Features
-The framework being built around events and dependency injection,
-your project can take advantage of that and avoid passing objects around, 
-while also easily being able to use services provided by the framework. 
+## 🧪 Features
 
-### Commands
-* Automatic registration of commands, resolvers, services, etc... with full dependency injection
-* Can be used with annotations (or with a Kotlin DSL)
+### [Dependency injection](https://bc.freya02.dev/3.X/using-botcommands/dependency-injection/)
 
-### Application commands
-* Slash commands with automatic & customizable argument processing
-  * Supports choices, min/max values/length, channel types and autocomplete
-  * Options can be grouped into objects
-* Context menu commands (User / Message)
-* Automatic, smart application commands registration
+Everything is built around it, it takes care of passing instances around, no need to instantiate classes, no passing everything everywhere.
+
+It can also be replaced with Spring IoC.
+
+### [Application commands](https://bc.freya02.dev/3.X/using-commands/application-commands/)
+
+Annotated and declarative application commands, with customizable argument processing, and smart automatic registration.
 
 <details>
 <summary>Example</summary>
@@ -67,11 +63,9 @@ class SlashBan {
 
 </details>
 
-### Text commands
-* Supports prefix and mentions
-* With two parsing modes:
-  1. Each parameter is an argument, works the same as slash commands
-  2. Manual argument consumption
+### [Text commands](https://bc.freya02.dev/3.X/using-commands/text-commands/)
+
+Annotated and declarative application commands, with customizable argument processing or manual token consumption, supports prefix and mentions.
 
 <details>
 <summary>Example</summary>
@@ -102,41 +96,38 @@ Here's how the help content would look with [a subcommand and a few more variati
 ![Help content example](assets/command_help_embed_example.png)
 </details>
 
-### Components and modals
-* Unlimited data storage for components, with persistent and ephemeral storage
-* Both modals and persistent components have a way to pass data
+### [Components](https://bc.freya02.dev/3.X/using-components/)
 
-### Event handlers
-* Custom (annotated) event handlers, with priorities and async
+Database-backed components, can be used with callbacks, or bound to a method, optionally with passed data.
 
-### Localization
-* Entirely localizable, from the command declaration to the bot responses
+### [Modals](https://bc.freya02.dev/3.X/using-modals/)
 
-### Dependency injection
-* Loads everything and passes objects automatically
-* Can create custom conditions to disable services/commands at startup
-* Can be replaced with Spring IoC
+Similar API to components, can be used with callbacks, or bound to a method, optionally with passed data.
 
-### Utilities
-  * A PostgreSQL (and H2) database abstraction, with logged queries
-  * An event waiter with (multiple) preconditions, timeouts and consumers for every completion state
-  * Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (turning `:joy:` into 😂)
-  * Paginators and menus of different types (using components!)
+### [Event handlers](https://bc.freya02.dev/3.X/using-botcommands/events/)
 
-And way more features!
+Custom (annotated) event handlers, with priorities and async.
 
-## Getting Started
+### [Localization](https://bc.freya02.dev/3.X/using-botcommands/localization/)
+
+Use powerful localization for your commands and replies.
+
+### Other utilities
+
+* A PostgreSQL (and H2) [database abstraction](https://bc.freya02.dev/3.X/using-botcommands/database/), with logged queries
+* A smart [event waiter](https://docs.bc.freya02.dev/BotCommands-core/io.github.freya022.botcommands.api.core.waiter/-event-waiter/index.html) with (multiple) preconditions, timeouts and consumers for every completion state
+* [Message parsers](https://docs.bc.freya02.dev/BotCommands-core/io.github.freya022.botcommands.api.utils/-rich-text-finder/index.html) and [emoji resolvers](https://docs.bc.freya02.dev/BotCommands-core/io.github.freya022.botcommands.api.utils/-emoji-utils/index.html) (turning `:joy:` into 😂)
+* [Paginators and menus](https://docs.bc.freya02.dev/BotCommands-core/io.github.freya022.botcommands.api.pagination/-paginators/index.html) of different types (using components!)
+
+Amongst others!
+
+## 🏃‍♂️ Getting Started
 You are strongly recommended to have some experience with Kotlin (or Java),
 OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics before you start using this library.
 
-### Prerequisites
-* An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=21) installation
-* For languages other than Kotlin, enable method parameters names, please refer to the [wiki page](https://bc.freya02.dev/3.X/using-botcommands/parameter-names/)
+Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to get started.
 
-Head over to [the wiki](https://bc.freya02.dev/3.X/setup/getting-started/) to get started,
-you can also check out the [examples](src/examples).
-
-## Installation
+## 🔬 Installation
 After [adding JDA](https://github.com/discord-jda/JDA?tab=readme-ov-file#-installation):
 
 [![BotCommands on maven central][bc-maven-central-shield] ][bc-maven-central-link]
@@ -166,7 +157,7 @@ dependencies {
 
 To use the latest, unreleased changes, see [SNAPSHOTS.md](SNAPSHOTS.md).
 
-## Modules
+## 🧩 Modules
 The base `BotCommands` artifact will include modules often used, while others are optional.
 
 ### Default modules
@@ -176,10 +167,10 @@ The base `BotCommands` artifact will include modules often used, while others ar
 - [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): provides a set of Kotlin extensions and top-level functions, similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
 - [`BotCommands-typesafe-messages`](./BotCommands-typesafe-messages): Allows defining functions to retrieve text content from your bundles, providing better ergonomics and safety with load-time validation
-- [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): Improved alternative for this framework to call your functions
+- [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): An alternative to reflective calls, leading to cleaner exceptions and faster calls
 - [`BotCommands-restarter`](./BotCommands-restarter): Automatically restarts of your bot as your code changes
 
-## Sample usage
+## 💡 Sample usage
 Here is how you would create a slash command that sends a message in a specified channel.
 <details>
 <summary>Kotlin</summary>
@@ -307,7 +298,7 @@ public class SlashSay {
 ```
 </details>
 
-## Live templates
+## 💪 Live templates
 
 IntelliJ IDEA users can use [live templates](https://www.jetbrains.com/help/idea/using-live-templates.html) provided in [this zip file](BotCommands%203.X%20Live%20Templates.zip),
 helping you make commands and other handlers with predefined templates, for both Kotlin and Java, 
@@ -321,11 +312,11 @@ in the `BotCommands 3.X - [Language]` group.
 
 For an installation guide, you can follow [this guide from JetBrains](https://www.jetbrains.com/help/idea/sharing-live-templates.html#import).
 
-## Support
+## 🧑‍💻 Support
 
 Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
 
-## Breaking changes
+## 🚨 Breaking changes
 
 Due to the nature of JDA (and the Discord API), and to always improve the developer experience,
 the library could introduce breaking changes to allow quick adoption of newer features and better practices.
@@ -333,10 +324,10 @@ the library could introduce breaking changes to allow quick adoption of newer fe
 While attempting to reduce breaking changes by using deprecation mechanisms,
 it is not always possible or practical to use deprecations.
 
-Small breaking/deprecating changes should be noticed via an increase of the **minor** version (`3.0.0` -> `3.1.0`),
+Small breaking/deprecating changes should be noticed via an increase of the **minor** version (`3.0.Z` -> `3.1.0`),
 while larger breaking changes should be seing an increase of the **major** version (`3.Y.Z` -> `4.0.0`).
 
-## Contributing
+## 🛠️ Contributing
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
 
 It would be appreciated to focus on improving the documentation,
