@@ -19,13 +19,13 @@ object Main {
 
     @JvmStatic
     fun main(args: Array<out String>) {
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
+        logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+
+        @OptIn(ExperimentalRestartApi::class)
+        BotCommandsRestarter.initialize(args)
+
         try {
-            System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
-            logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
-
-            @OptIn(ExperimentalRestartApi::class)
-            BotCommandsRestarter.initialize(args)
-
             @OptIn(ExperimentalMethodAccessorsApi::class)
             MethodAccessorsConfig.preferClassFileAccessors()
 
