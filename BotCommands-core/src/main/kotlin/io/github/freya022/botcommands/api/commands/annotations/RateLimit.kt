@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
+import io.github.bucket4j.BandwidthBuilder.BandwidthBuilderCapacityStage
+import io.github.bucket4j.BandwidthBuilder.BandwidthBuilderRefillStage
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
@@ -18,7 +20,7 @@ import java.time.temporal.ChronoUnit
  *
  * @see Refill @Refill
  * @see Bandwidth @Bandwidth
- * @see io.github.bucket4j.Refill Bucket4J Refill
+ * @see BandwidthBuilderRefillStage Bucket4J Refill
  */
 enum class RefillType {
     /**
@@ -26,12 +28,16 @@ enum class RefillType {
      *
      * For example, "10 tokens per 1 second" will add 1 token per each 100 milliseconds,
      * in other words, it will not wait 1 second to regenerate 10 tokens.
+     *
+     * @see BandwidthBuilderRefillStage.refillGreedy
      */
     GREEDY,
 
     /**
      * Refill on every interval of time,
      * "10 tokens per 1 second" will exactly regenerate 10 tokens every second.
+     *
+     * @see BandwidthBuilderRefillStage.refillIntervally
      */
     INTERVAL
 }
@@ -46,6 +52,7 @@ enum class RefillType {
 @Target
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Bandwidth(
+    /** @see BandwidthBuilderCapacityStage.capacity */
     val capacity: Long,
     val refill: Refill
 )
