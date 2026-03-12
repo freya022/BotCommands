@@ -179,7 +179,7 @@ internal object LocalizedContentFunctionGenerator {
             templateParameters.forEachIndexed { arrayIndex, parameter ->
                 val parameterIndex = parameter.index - 1 // 1st is instance parameter
                 val templateVarName = getTemplateArgumentParameterName(parameter)
-                    ?: error("Parameter names are absent from $function ; see https://bc.freya02.dev/3.X/using-botcommands/parameter-names/")
+                    ?: error("Parameter names are absent from $function ; see https://bc.freya02.dev/3.X/setup/parameter-names/")
 
                 // localizationEntry = new Localization.Entry(paramName, value)
                 lineNumber.setAndIncrement()
