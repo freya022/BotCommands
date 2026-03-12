@@ -175,6 +175,18 @@ they will only return `null` when the error exactly says the entity is missing, 
 
 See [sources in `retrieve`](./src/main/kotlin/dev/freya02/botcommands/jda/ktx/retrieve).
 
+### Thread retrieval
+This uses internal JDA APIs to retrieve a thread by ID, from any thread container, archived or not.
+A `OrNull` variant also exists.
+
+```kt
+fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel>
+
+fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel>
+
+// Same with OrNull
+```
+
 ### Misc
 ```kt
 // Suppresses warnings related to a missing 'MESSAGE_CONTENT' intent inside the block
