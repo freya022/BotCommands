@@ -56,6 +56,10 @@ interface EventWaiter {
      * @param eventType The JDA event to wait after
      * @param T         Type of the JDA event
      *
+     * @throws IllegalArgumentException
+     *         If the event is [RawGatewayEvent][net.dv8tion.jda.api.events.RawGatewayEvent]
+     *         but [raw events][net.dv8tion.jda.api.JDABuilder.setRawEventsEnabled] were not enabled.
+     *
      * @return A new event waiter builder
      */
     fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T>
