@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.db.preparedStatement
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.db.query.GenericParametrizedQueryFactory
 import io.github.freya022.botcommands.internal.core.db.query.NonParametrizedQueryFactory
@@ -24,7 +25,7 @@ import kotlin.time.toKotlinDuration
 // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
 private const val latestVersion = "3.0.0-beta.9" // Change in the latest migration script too
 
-private val logger = KotlinLogging.logger { }
+private val logger = KotlinLogging.loggerOf<Database>()
 
 @BService
 @Primary

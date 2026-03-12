@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
@@ -14,7 +15,7 @@ import kotlinx.coroutines.*
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
 
-private val logger = KotlinLogging.logger { }
+private val logger = KotlinLogging.loggerOf<EventDispatcher>()
 
 @BService
 internal class EventDispatcherImpl internal constructor(

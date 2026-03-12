@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.SlashComman
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
@@ -35,7 +36,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import kotlin.reflect.jvm.jvmErasure
 
-private val logger = KotlinLogging.logger { }
+private val logger = KotlinLogging.loggerOf<SlashCommandInfo>()
 
 internal sealed class SlashCommandInfoImpl(
     final override val context: BContext,
