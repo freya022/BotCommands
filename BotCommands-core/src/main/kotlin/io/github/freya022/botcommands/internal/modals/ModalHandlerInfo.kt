@@ -133,8 +133,6 @@ internal class ModalHandlerInfo internal constructor(
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
-
-            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

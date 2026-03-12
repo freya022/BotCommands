@@ -126,8 +126,6 @@ internal class TextCommandVariationImpl internal constructor(
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
-
-            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         // If value is null and required, go to next variation

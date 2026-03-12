@@ -96,7 +96,7 @@ internal class ComponentTimeoutExecutor internal constructor(
             }
 
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
-            OptionType.CUSTOM, OptionType.CONSTANT, OptionType.GENERATED -> throwInternal("${option.optionType} has not been implemented")
+            OptionType.CUSTOM, OptionType.GENERATED -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

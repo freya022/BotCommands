@@ -93,7 +93,6 @@ internal class UserCommandInfoImpl internal constructor(
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
             OptionType.SERVICE -> (option as ServiceMethodOption).getService()
-            OptionType.CONSTANT -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)
