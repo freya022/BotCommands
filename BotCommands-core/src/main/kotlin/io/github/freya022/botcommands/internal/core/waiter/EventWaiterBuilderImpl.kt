@@ -17,6 +17,7 @@ internal class EventWaiterBuilderImpl<T : Event> internal constructor(
     private var onTimeout: Runnable? = null
     private var onCancelled: Runnable? = null
     private var onComplete: CompletedFutureEvent<T>? = null
+    private var ignoreMissingIntents: Boolean = false
 
     private var timeout: Duration? = null
 
@@ -46,8 +47,12 @@ internal class EventWaiterBuilderImpl<T : Event> internal constructor(
         this.preconditions += precondition
     }
 
+    override fun ignoreMissingIntents(): EventWaiterBuilder<T> = apply {
+        this.ignoreMissingIntents = true
+    }
+
     override fun submit(): CompletableFuture<T> = eventWaiter.submit(
-        WaitingEvent(eventType, preconditions, onComplete, onSuccess, onTimeout, onCancelled, timeout)
+        WaitingEvent(eventType, preconditions, onComplete, onSuccess, onTimeout, onCancelled, ignoreMissingIntents, timeout)
     )
 
     override fun complete(): T = submit().get()

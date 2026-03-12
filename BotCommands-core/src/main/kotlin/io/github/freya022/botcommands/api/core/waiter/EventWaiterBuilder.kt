@@ -105,6 +105,13 @@ interface EventWaiterBuilder<T : Event> {
     fun setOnComplete(onComplete: CompletedFutureEvent<T>): EventWaiterBuilder<T>
 
     /**
+     * Prevents warnings if JDA is missing some (or all) intents required by the event being listened for.
+     *
+     * @return This builder for chaining convenience
+     */
+    fun ignoreMissingIntents(): EventWaiterBuilder<T>
+
+    /**
      * Returns a [CompletableFuture] which is completed when the event waiter receives an event of the specified type,
      * and all [preconditions][addPrecondition] have passed.
      *

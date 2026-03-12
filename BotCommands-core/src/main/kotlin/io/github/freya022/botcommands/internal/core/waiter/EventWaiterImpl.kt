@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.waiter
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.events.InjectedJDAEvent
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.getSignature
@@ -12,7 +11,6 @@ import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.api.core.waiter.EventWaiterBuilder
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
-import io.github.freya022.botcommands.internal.utils.reference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -21,7 +19,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.JDAImpl
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -46,12 +43,20 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             "Cannot use the event waiter before a JDA instance has been detected"
         }
 
-        checkEventIntents(eventType)
+        if (RawGatewayEvent::class.isAssignableFrom(eventType)) {
+            require((jda as JDAImpl).isRawEvents) {
+                "Cannot listen to a ${eventType.simpleNestedName} as JDA is not configured to emit raw gateway events, see ${JDABuilder::setRawEventsEnabled.getSignature(source = false)}"
+            }
+        }
 
         return EventWaiterBuilderImpl(this, eventType)
     }
 
     internal fun <T : Event> submit(waitingEvent: WaitingEvent<T>): CompletableFuture<T> {
+        if (!waitingEvent.ignoreMissingIntents) {
+            checkEventIntents(waitingEvent.eventType)
+        }
+
         val future = waitingEvent.completableFuture
         if (waitingEvent.timeout != null) {
             future.orTimeout(waitingEvent.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
@@ -125,27 +130,22 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         }
     }
 
+    @Suppress("DEPRECATION")
     private val warnedEventTypes: MutableSet<Class<out Event>> = context.config.ignoredEventIntents.toMutableSet()
 
     private fun checkEventIntents(eventType: Class<out Event>) {
-        val neededIntents = GatewayIntent.fromEvents(eventType)
-        val missingIntents = neededIntents - jdaIntents
+        val requiredIntents = GatewayIntent.fromEvents(eventType)
+        val missingIntents = requiredIntents - jdaIntents
         if (missingIntents.isNotEmpty() && warnedEventTypes.add(eventType)) {
             logger.warn {
                 """
                     Cannot listen to a ${eventType.simpleNestedName} as there are missing intents:
                     Enabled intents: ${jdaIntents.joinToString { it.name }}
-                    Intents needed: ${neededIntents.joinToString { it.name }}
+                    Required intents: ${requiredIntents.joinToString { it.name }}
                     Missing intents: ${missingIntents.joinToString { it.name }}
-                    If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.reference}
-                    See ${eventType.simpleNestedName} for more detail
+                    If this is intentional, this can be suppressed using ${EventWaiterBuilder<*>::ignoreMissingIntents.getSignature(source = false)}
+                    See ${eventType.simpleNestedName} for more details
                 """.trimIndent()
-            }
-        }
-
-        if (RawGatewayEvent::class.isAssignableFrom(eventType)) {
-            require((jda as JDAImpl).isRawEvents) {
-                "Cannot listen to a ${eventType.simpleNestedName} as JDA is not configured to emit raw gateway events, see ${JDABuilder::setRawEventsEnabled.getSignature(source = false)}"
             }
         }
     }

@@ -23,6 +23,7 @@ internal class BotCommandsCoreConfiguration(
     override val disableExceptionsInDMs: Boolean = false,
     override val enableOwnerBypass: Boolean = false,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
+    @Deprecated("Replaced by EventWaiterBuilder.ignoreMissingIntents()")
     override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
     override val ignoreRestRateLimiter: Boolean = false,
     override val enableShutdownHook: Boolean = true,
@@ -37,6 +38,7 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
     enableOwnerBypass = configuration.enableOwnerBypass
     ignoredIntents += configuration.ignoredIntents
+    @Suppress("DEPRECATION")
     ignoredEventIntents += configuration.ignoredEventIntents
     ignoreRestRateLimiter = configuration.ignoreRestRateLimiter
 }

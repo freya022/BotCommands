@@ -14,6 +14,7 @@ internal class WaitingEvent<T : Event> internal constructor(
     val onSuccess: Consumer<T>?,
     val onTimeout: Runnable?,
     val onCancelled: Runnable?,
+    val ignoreMissingIntents: Boolean,
     val timeout: Duration?
 ) {
     val completableFuture = CompletableFuture<T>()

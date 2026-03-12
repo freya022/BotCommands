@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.core.waiter.EventWaiter
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
+import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -118,6 +119,8 @@ interface BConfigProps {
      *
      * Spring property: `botcommands.core.ignoredEventIntents`
      */
+    @Deprecated("Replaced by EventWaiterBuilder.ignoreMissingIntents()")
+    @DeprecatedValue("Replaced by EventWaiterBuilder.ignoreMissingIntents()")
     @ConfigurationValue(path = "botcommands.core.ignoredEventIntents", type = "java.util.Set<java.lang.Class<net.dv8tion.jda.api.events.Event>>")
     val ignoredEventIntents: Set<Class<out Event>>
 
@@ -176,6 +179,7 @@ class BConfigBuilder : BConfigProps {
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
 
+    @Deprecated("Replaced by EventWaiterBuilder.ignoreMissingIntents()")
     override val ignoredEventIntents: MutableSet<Class<out Event>> = hashSetOf()
 
     override var ignoreRestRateLimiter: Boolean = false
@@ -352,6 +356,7 @@ class BConfigBuilder : BConfigProps {
             override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
             override val enableOwnerBypass = this@BConfigBuilder.enableOwnerBypass
             override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
+            @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
             override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
             override val ignoreRestRateLimiter = this@BConfigBuilder.ignoreRestRateLimiter
             override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
