@@ -39,9 +39,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private val lock = ReentrantLock()
 
     private lateinit var jda: JDA
-    private lateinit var intents: EnumSet<GatewayIntent>
-
-    private val jdaIntents: Set<GatewayIntent> by lazy { jda.gatewayIntents }
+    private lateinit var jdaIntents: Set<GatewayIntent>
 
     override fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T> {
         check(::jda.isInitialized) {
@@ -59,7 +57,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             future.orTimeout(waitingEvent.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         }
 
-        val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() }
+        val waitingEvents = lock.withLock { waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() } }
         future.whenComplete { event: T?, throwable: Throwable? ->
             try {
                 waitingEvent.onComplete?.accept(future, event, throwable)
@@ -93,7 +91,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         logger.trace { "Got JDA instance ${event.jda}" }
 
         this.jda = event.jda
-        this.intents = event.jda.gatewayIntents
+        this.jdaIntents = event.jda.gatewayIntents
     }
 
     @Suppress("UNCHECKED_CAST")
