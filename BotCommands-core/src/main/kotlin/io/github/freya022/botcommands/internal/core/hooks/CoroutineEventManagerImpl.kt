@@ -3,14 +3,13 @@ package io.github.freya022.botcommands.internal.core.hooks
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.config.BEventManagerConfig
 import io.github.freya022.botcommands.api.core.hooks.CoroutineEventListener
+import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.unwrap
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -22,8 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.time.Duration
-
-private val logger = KotlinLogging.logger { }
 
 /**
  * This class is more a barebone listener which replaces jda-ktx's CoroutineEventManager.
@@ -78,9 +75,7 @@ internal class CoroutineEventManagerImpl internal constructor(
                 } catch (_: CancellationException) {
                     // Ignore
                 } catch (e: Throwable) {
-                    logger.error(e.unwrap()) {
-                        "An exception occurred in ${wrapper.listener} (${wrapper.listener.javaClass.simpleNestedName})"
-                    }
+                    wrapper.listener.objectLogger().catching(e.unwrap())
                 }
             }
         }
@@ -125,7 +120,7 @@ internal class CoroutineEventManagerImpl internal constructor(
             }
 
             if (result == null) {
-                logger.debug { "Event listener $listener timed out on ${event.javaClass.name}" }
+                listener.objectLogger().debug { "Event listener timed out on ${event.javaClass.name}" }
             }
         }
     }

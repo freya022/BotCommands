@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMod
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
+import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -133,7 +134,7 @@ internal class EventDispatcherImpl internal constructor(
     }
 
     private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) =
-        logger.error(e.unwrap()) {
+        eventHandlerFunction.classPathFunction.instance.objectLogger().error(e.unwrap()) {
             "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}"
         }
 }
