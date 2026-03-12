@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.CommandDeclarationFilter
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
+import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandManager.Defaults
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.entities.Guild
 import org.junit.jupiter.api.*
 import kotlin.test.Test
 import kotlin.test.assertContains
+import kotlin.test.assertTrue
 
 class SlashCommandAutoBuilderTest {
     private val serviceContainer = mockk<ServiceContainer>()
@@ -217,8 +219,6 @@ class SlashCommandAutoBuilderTest {
 
     @Nested
     inner class CommandsWithDeclarationFilters {
-        // TODO test that DeclarationFilter only works on guild commands (throw otherwise)
-
         inner class DoNotDeclare : CommandDeclarationFilter {
             override fun filter(guild: Guild, path: CommandPath, commandId: String?): Boolean = false
         }
@@ -232,6 +232,10 @@ class SlashCommandAutoBuilderTest {
         @JDASlashCommand(name = "test_command")
         @DeclarationFilter(DoNotDeclare::class)
         fun topLevel(event: GlobalSlashEvent) { consume(event) }
+
+        @JDASlashCommand(name = "test_command")
+        @DeclarationFilter(DoNotDeclare::class)
+        fun globalTopLevel(event: GlobalSlashEvent) { consume(event) }
 
         @TopLevelSlashCommandData(scope = CommandScope.GUILD)
         @JDASlashCommand(name = "test_command", subcommand = "subcommand")
@@ -347,6 +351,27 @@ class SlashCommandAutoBuilderTest {
             verify(exactly = 0) { builder.subcommand(any(), any(), any()) }
             verify(exactly = 1) { builder.subcommandGroup("group2", any()) }
             verify(exactly = 1) { groupBuilder.subcommand(any(), any(), any()) }
+        }
+
+        @Test
+        fun `Can only use on guild commands`() {
+            every { functionAnnotationsMap.getWithClassAnnotation(Command::class, JDASlashCommand::class) } answers {
+                listOf(
+                    ClassPathFunction(this@CommandsWithDeclarationFilters, CommandsWithDeclarationFilters::globalTopLevel),
+                )
+            }
+
+            val autoBuilder = spyk(SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap))
+            val manager = mockk<GlobalApplicationCommandManager> {
+                every { context } returns mockk()
+            }
+            val exception = assertThrows<RuntimeException> {
+                autoBuilder.declareGlobalApplicationCommands(manager)
+            }
+            assertTrue(exception.cause!!.cause!!.message!!.startsWith("@DeclarationFilter can only be used on guild commands"))
+
+            // The setup makes an unnecessary stubbing for this test specifically
+            clearAllMocks()
         }
     }
 
