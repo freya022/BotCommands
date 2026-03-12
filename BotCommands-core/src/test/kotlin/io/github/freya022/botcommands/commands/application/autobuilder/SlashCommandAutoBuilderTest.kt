@@ -375,7 +375,31 @@ class SlashCommandAutoBuilderTest {
         }
     }
 
-    // TODO test that Test only works on guild commands (throw otherwise)
+    @Nested
+    inner class TestCommands {
+
+        @JDASlashCommand(name = "test_command")
+        @io.github.freya022.botcommands.api.commands.application.annotations.Test
+        fun globalTopLevel(event: GlobalSlashEvent) { consume(event) }
+
+        @Test
+        fun `Can only use on guild commands`() {
+            every { functionAnnotationsMap.getWithClassAnnotation(Command::class, JDASlashCommand::class) } answers {
+                listOf(
+                    ClassPathFunction(this@TestCommands, TestCommands::globalTopLevel),
+                )
+            }
+
+            val autoBuilder = spyk(SlashCommandAutoBuilder(serviceContainer, applicationConfig, resolverContainer, functionAnnotationsMap))
+            val manager = mockk<GlobalApplicationCommandManager> {
+                every { context } returns mockk()
+            }
+            val exception = assertThrows<RuntimeException> {
+                autoBuilder.declareGlobalApplicationCommands(manager)
+            }
+            assertTrue(exception.cause!!.cause!!.message!!.startsWith("Test commands must have their scope set to GUILD"))
+        }
+    }
 
     @Suppress("NOTHING_TO_INLINE", "unused")
     private inline fun consume(e: Any) {}
