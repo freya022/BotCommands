@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.retrieve
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import dev.freya02.botcommands.jda.ktx.IgnoreForMatch
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponseOrNull
@@ -22,7 +21,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
  *
  * @see JDA.retrieveUserById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveUserByIdOrNull(userId: String, @IgnoreForMatch useCache: Boolean = true): User? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
         retrieveUserById(userId).useCache(useCache).await()
@@ -39,7 +37,6 @@ suspend fun JDA.retrieveUserByIdOrNull(userId: String, @IgnoreForMatch useCache:
  *
  * @see JDA.retrieveUserById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveUserByIdOrNull(userId: Long, @IgnoreForMatch useCache: Boolean = true): User? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
         retrieveUserById(userId).useCache(useCache).await()
@@ -53,7 +50,6 @@ suspend fun JDA.retrieveUserByIdOrNull(userId: Long, @IgnoreForMatch useCache: B
  *
  * @see JDA.retrieveSticker
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveStickerOrNull(sticker: StickerSnowflake): StickerUnion? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_STICKER) {
         retrieveSticker(sticker).await()
@@ -67,7 +63,6 @@ suspend fun JDA.retrieveStickerOrNull(sticker: StickerSnowflake): StickerUnion? 
  *
  * @see JDA.retrieveEntitlementById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveEntitlementByIdOrNull(entitlementId: String): Entitlement? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_ENTITLEMENT) {
         retrieveEntitlementById(entitlementId).await()
@@ -81,7 +76,6 @@ suspend fun JDA.retrieveEntitlementByIdOrNull(entitlementId: String): Entitlemen
  *
  * @see JDA.retrieveEntitlementById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveEntitlementByIdOrNull(entitlementId: Long): Entitlement? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_ENTITLEMENT) {
         retrieveEntitlementById(entitlementId).await()
@@ -95,7 +89,6 @@ suspend fun JDA.retrieveEntitlementByIdOrNull(entitlementId: Long): Entitlement?
  *
  * @see JDA.retrieveWebhookById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveWebhookByIdOrNull(webhookId: String): Webhook? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_WEBHOOK) {
         retrieveWebhookById(webhookId).await()
@@ -109,7 +102,6 @@ suspend fun JDA.retrieveWebhookByIdOrNull(webhookId: String): Webhook? {
  *
  * @see JDA.retrieveWebhookById
  */
-@DeprecatedInBcCore
 suspend fun JDA.retrieveWebhookByIdOrNull(webhookId: Long): Webhook? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_WEBHOOK) {
         retrieveWebhookById(webhookId).await()

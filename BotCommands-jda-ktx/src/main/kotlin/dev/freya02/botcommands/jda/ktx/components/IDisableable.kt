@@ -1,13 +1,11 @@
 package dev.freya02.botcommands.jda.ktx.components
 
-import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.tree.ComponentTree
 
 /**
  * Returns a list containing the results of disabling/enabling each component in the original collection.
  */
-@ReplaceJdaKtx
 @Suppress("UNCHECKED_CAST")
 fun <T : Component> Iterable<T>.withDisabled(disabled: Boolean): List<T> =
     ComponentTree.of(this.toList()).withDisabled(disabled).components as List<T>
@@ -15,13 +13,11 @@ fun <T : Component> Iterable<T>.withDisabled(disabled: Boolean): List<T> =
 /**
  * Returns a list containing the results of disabling each component in the original collection.
  */
-@ReplaceJdaKtx
 fun <T : Component> Iterable<T>.asDisabled() = withDisabled(true)
 
 /**
  * Returns a list containing the results of enabling each component in the original collection.
  */
-@ReplaceJdaKtx
 fun <T : Component> Iterable<T>.asEnabled() = withDisabled(false)
 
 /**
@@ -29,7 +25,6 @@ fun <T : Component> Iterable<T>.asEnabled() = withDisabled(false)
  *
  * The operation is _intermediate_ and _stateless_.
  */
-@ReplaceJdaKtx
 fun <T : Component> Sequence<T>.withDisabled(disabled: Boolean) =
     asIterable().withDisabled(disabled).asSequence()
 
@@ -38,7 +33,6 @@ fun <T : Component> Sequence<T>.withDisabled(disabled: Boolean) =
  *
  * The operation is _intermediate_ and _stateless_.
  */
-@ReplaceJdaKtx
 fun <T : Component> Sequence<T>.asDisabled() = withDisabled(true)
 
 /**
@@ -46,5 +40,4 @@ fun <T : Component> Sequence<T>.asDisabled() = withDisabled(true)
  *
  * The operation is _intermediate_ and _stateless_.
  */
-@ReplaceJdaKtx
 fun <T : Component> Sequence<T>.asEnabled() = withDisabled(false)

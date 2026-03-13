@@ -2,7 +2,6 @@
 
 package dev.freya02.botcommands.jda.ktx.messages
 
-import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import dev.freya02.botcommands.jda.ktx.components.*
 import dev.freya02.botcommands.jda.ktx.hex
 import dev.freya02.botcommands.jda.ktx.hsb
@@ -42,7 +41,6 @@ typealias InlineMessageEdit = InlineMessage<MessageEditData>
 @PublishedApi
 internal val NO_CONTENT = emptyList<Nothing>()
 
-@ReplaceJdaKtx
 inline fun MessageCreateBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
@@ -69,7 +67,6 @@ inline fun MessageCreateBuilder(
     InlineMessage(this).apply(builder)
 }
 
-@ReplaceJdaKtx
 inline fun MessageCreate(
     content: String? = null,
     embeds: Collection<MessageEmbed> = NO_CONTENT,
@@ -103,7 +100,6 @@ inline fun MessageCreate(
  * @param replace    `true` to replace the entire message, `false` to only replace specified parts
  * @param builder    Additional configuration, can override the previously provided parameters
  */
-@ReplaceJdaKtx
 inline fun MessageEditBuilder(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
@@ -135,7 +131,6 @@ inline fun MessageEditBuilder(
  * @param replace    `true` to replace the entire message, `false` to only replace specified parts
  * @param builder    Additional configuration, can override the previously provided parameters
  */
-@ReplaceJdaKtx
 inline fun MessageEdit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,
@@ -156,7 +151,6 @@ inline fun MessageEdit(
     builder
 ).build()
 
-@ReplaceJdaKtx
 inline fun Embed(
     color: Int? = null,
     timestamp: TemporalAccessor? = null,
@@ -165,7 +159,6 @@ inline fun Embed(
     return EmbedBuilder(color, timestamp, builder).build()
 }
 
-@ReplaceJdaKtx
 inline fun EmbedBuilder(
     color: Int? = null,
     timestamp: TemporalAccessor? = null,
@@ -178,7 +171,6 @@ inline fun EmbedBuilder(
     InlineEmbed(this).apply(builder)
 }
 
-@ReplaceJdaKtx
 @MessageBuilderDSL
 class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
 
@@ -513,7 +505,6 @@ class InlineMessage<T>(val builder: AbstractMessageBuilder<T, *>) {
     }
 }
 
-@ReplaceJdaKtx
 @MessageBuilderDSL
 class InlineEmbed(val builder: EmbedBuilder) {
 
@@ -643,7 +634,6 @@ class Accumulator<T> internal constructor() {
     }
 }
 
-@ReplaceJdaKtx
 sealed interface MentionConfig {
     val type: MentionType
 
@@ -688,7 +678,6 @@ class WhitelistMentionConfig(
     }
 }
 
-@ReplaceJdaKtx
 data class Mentions(
     var users: MentionConfig,
     var roles: MentionConfig,

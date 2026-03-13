@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import dev.freya02.botcommands.jda.ktx.durations.delay
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.InteractionHook
@@ -12,7 +11,6 @@ import kotlin.time.Duration
  *
  * **Note:** This delays the rest action by the given delay.
  */
-@DeprecatedInBcCore
 fun <R> RestAction<R>.deleteDelayed(hook: InteractionHook, delay: Duration?): RestAction<R> {
     return withFiniteDelayOrSelf(delay) { finiteDelay ->
         delay(finiteDelay).flatMapOriginal { hook.deleteOriginal() }
@@ -24,7 +22,6 @@ fun <R> RestAction<R>.deleteDelayed(hook: InteractionHook, delay: Duration?): Re
  *
  * **Note:** This delays the rest action by the given delay.
  */
-@DeprecatedInBcCore
 fun RestAction<InteractionHook>.deleteDelayed(delay: Duration?): RestAction<InteractionHook> {
     return withFiniteDelayOrSelf(delay) { finiteDelay ->
         delay(finiteDelay).flatMapOriginal(InteractionHook::deleteOriginal)
@@ -36,7 +33,6 @@ fun RestAction<InteractionHook>.deleteDelayed(delay: Duration?): RestAction<Inte
  *
  * **Note:** This delays the rest action by the given delay.
  */
-@DeprecatedInBcCore
 @JvmName("deleteDelayedMessage")
 fun RestAction<Message>.deleteDelayed(delay: Duration?): RestAction<Message> {
     return withFiniteDelayOrSelf(delay) { finiteDelay ->
