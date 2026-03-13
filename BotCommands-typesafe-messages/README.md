@@ -2,12 +2,14 @@
 [bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-typesafe-messages-core
 
 # BotCommands module - Typesafe messages
-This module allows you to define functions which retrieves translated messages,
-without having to implement anything, alongside a few other benefits:
+This module allows you to define functions which retrieves (optionally localized) messages,
+without having to implement anything, providing a few benefits:
 - Checks if the templates exists in your bundles, ensuring your content can always be displayed
 - Checks if function parameters exists in your template's arguments, meaning all parameters map to an argument
 - Checks if template arguments map to function parameters, so all arguments have values
-- Removes the need for magic strings (for the arguments), improving type safety and making regressions appear immediately
+
+⇒ No more magic strings in your command's code! Template paths and argument names are centralized and checked when your bot loads,
+improving safety and making mistakes/regressions appear immediately.
 
 ## Usage
 

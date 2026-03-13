@@ -161,12 +161,12 @@ To use the latest, unreleased changes, see [SNAPSHOTS.md](SNAPSHOTS.md).
 The base `BotCommands` artifact will include modules often used, while others are optional.
 
 ### Default modules
-- [`BotCommands-core`](./BotCommands-core): Root module which contains most features
+- [`BotCommands-core`](./BotCommands-core): Contains most features
 
 ### Optional modules
-- [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): provides a set of Kotlin extensions and top-level functions, similar to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
+- [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): Provides a set of Kotlin extensions and top-level functions, similarly to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).
 - [`BotCommands-spring`](./BotCommands-spring): Support for Spring Boot
-- [`BotCommands-typesafe-messages`](./BotCommands-typesafe-messages): Allows defining functions to retrieve text content from your bundles, providing better ergonomics and safety with load-time validation
+- [`BotCommands-typesafe-messages`](./BotCommands-typesafe-messages): Retrieve (optionally localized) content using auto implemented interfaces, providing better ergonomics and safety with load-time validation
 - [`BotCommands-method-accessors-classfile`](./BotCommands-method-accessors): An alternative to reflective calls, leading to cleaner exceptions and faster calls
 - [`BotCommands-restarter`](./BotCommands-restarter): Automatically restarts of your bot as your code changes
 

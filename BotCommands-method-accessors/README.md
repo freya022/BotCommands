@@ -8,7 +8,7 @@ This module provides abstractions to call user methods.
 [![BotCommands-method-accessors-classfile on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 
 You can optionally install this dependency,
-it requires Java 24+ and can be enabled with `BotCommand.preferClassFileAccessors()`.
+it requires Java 24+ and can be enabled with `MethodAccessorsConfig.preferClassFileAccessors()`.
 
 ### Maven
 ```xml
