@@ -14,7 +14,7 @@ environment.version = Version(
     major = providers.gradleProperty("version.major").get(),
     minor = providers.gradleProperty("version.minor").get(),
     revision = providers.gradleProperty("version.revision").get(),
-    classifier = providers.gradleProperty("version.classifier").get(),
+    classifier = providers.gradleProperty("version.classifier").get().ifBlank { null },
 )
 version = environment.version.get()
 

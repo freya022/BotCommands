@@ -12,7 +12,11 @@ data class Version(
 ) : Serializable {
 
     override fun toString(): String {
-        return "$major.$minor.$revision-$classifier"
+        if (classifier != null) {
+            return "$major.$minor.$revision-$classifier"
+        } else {
+            return "$major.$minor.$revision"
+        }
     }
 
     private fun writeObject(out: ObjectOutputStream) {
