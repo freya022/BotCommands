@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFacto
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 /**
@@ -41,15 +40,6 @@ interface LocalizableAction {
     fun getLocalizationContext(bundleName: String, pathPrefix: String?): LocalizationContext
 
     /**
-     * Retrieves a [DefaultMessages] instance, using a locale suitable for messages sent to the user.
-     *
-     * @see DefaultMessagesFactory
-     */
-    @Suppress("DEPRECATION", "removal")
-    @Deprecated("Replaced with getBotCommandsMessages()")
-    fun getDefaultMessages(): DefaultMessages
-
-    /**
      * Retrieves a [BotCommandsMessages] instance, using a locale suitable for messages sent to the user.
      *
      * @see BotCommandsMessagesFactory
@@ -79,38 +69,7 @@ interface LocalizableAction {
      * - If the template requires an argument that was not passed to [entries]
      */
     fun getLocalizedMessage(locale: Locale, localizationPath: String, vararg entries: Localization.Entry): String
-
-    /**
-     * Returns the localized message at the following [path][localizationPath],
-     * using the provided locale and parameters.
-     *
-     * ### Bundle resolution
-     * The bundle used is either the [defined bundle][localizationBundle]
-     * or one of the [registered bundles][BLocalizationConfig.responseBundles].
-     *
-     * The locale of the bundle is the best available,
-     * for example, if `fr_FR` is not available, then `fr` will be used,
-     * and otherwise, the root bundle (without any suffix) will be used.
-     *
-     * @param locale           The locale to translate the message to
-     * @param localizationPath The path of the message to translate,
-     * will be prefixed with [localizationPrefix][localizationPrefix] unless starting with `/`
-     * @param entries          The values replacing arguments of the localization template
-     *
-     * @throws IllegalArgumentException If:
-     * - [localizationBundle] is set, but the bundle doesn't exist
-     * - No [registered bundle][BLocalizationConfig.responseBundles] containing the path could be found
-     * - If the template requires an argument that was not passed to [entries]
-     */
-    @Deprecated("Pass a Locale instead")
-    fun getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String =
-        getLocalizedMessage(locale.toLocale(), localizationPath, *entries)
 }
 
 fun LocalizableAction.getLocalizedMessage(locale: Locale, localizationPath: String, vararg entries: PairEntry): String =
-    getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())
-
-@Suppress("DEPRECATION")
-@Deprecated("Pass a Locale instead")
-fun LocalizableAction.getLocalizedMessage(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
     getLocalizedMessage(locale, localizationPath, *entries.mapToEntries())

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.waiter
 
-import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.JDA
@@ -45,8 +44,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *     LOGGER.error("Error waiting for event", e);
  * }
  * ```
- *
- * @see BConfigBuilder.ignoredEventIntents
  */
 @InterfacedService(acceptMultiple = false)
 interface EventWaiter {

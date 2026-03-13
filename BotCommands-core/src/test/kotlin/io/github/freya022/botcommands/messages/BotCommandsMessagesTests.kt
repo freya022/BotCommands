@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION", "removal")
-
 package io.github.freya022.botcommands.messages
 
 import dev.freya02.botcommands.helpers.AbstractIntegrationTest
@@ -10,60 +8,18 @@ import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessag
 import io.github.freya022.botcommands.api.core.messages.exceptions.MissingMessageTemplateException
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.localization.DefaultMessages
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
-import io.github.freya022.botcommands.internal.core.messages.autoconfigure.BotCommandsMessagesFactoryAutoConfiguration
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.test.Test
-import kotlin.test.assertIsNot
 import kotlin.test.fail
 
 class BotCommandsMessagesTests : AbstractIntegrationTest() {
-
-    @Test
-    fun `Adapter is used when custom DefaultMessagesFactory type is used`() {
-        val context = createTest {
-            services {
-                registerServiceSupplier<DefaultMessagesFactory> {
-                    object : DefaultMessagesFactory {
-                        override fun get(locale: Locale): DefaultMessages = throw UnsupportedOperationException()
-                        override fun get(event: MessageReceivedEvent) = throw UnsupportedOperationException()
-                        override fun get(event: Interaction) = throw UnsupportedOperationException()
-                    }
-                }
-            }
-        }
-
-        assertIsNot<DefaultBotCommandsMessagesFactory>(context.getService<BotCommandsMessagesFactory>())
-    }
-
-    @Test
-    fun `Adapter is used when custom DefaultMessages JSON exists`() {
-        val context = createTest {
-            services {
-                registerServiceSupplier<BotCommandsMessagesFactoryAutoConfiguration> {
-                    mockk {
-                        every {
-                            botCommandsMessagesFactory(any(), any(), any(), any(), any())
-                        } answers { callOriginal() }
-
-                        every { this@mockk["hasCustomDefaultMessages"]() } returns true
-                    }
-                }
-            }
-        }
-
-        assertIsNot<DefaultBotCommandsMessagesFactory>(context.getService<BotCommandsMessagesFactory>())
-    }
 
     @Test
     fun `All messages have defaults`() {

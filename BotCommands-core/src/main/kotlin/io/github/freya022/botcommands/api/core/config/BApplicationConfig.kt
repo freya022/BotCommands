@@ -19,7 +19,6 @@ import io.github.freya022.botcommands.api.localization.readers.JacksonLocalizati
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
-import io.github.freya022.botcommands.internal.core.config.DeprecatedValue
 import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.lazyWritable
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -47,18 +46,6 @@ interface BApplicationConfigProps {
      */
     @ConfigurationValue(path = "botcommands.application.enable", defaultValue = "true")
     val enable: Boolean
-
-    /**
-     * If not empty, only these guilds will have their application commands updated.
-     *
-     * Existing commands won't be removed in other guilds, global commands will still be updated.
-     *
-     * Spring property: `botcommands.application.slashGuildIds`
-     */
-    @Deprecated("Replaced by 'guildsToUpdate'", replaceWith = ReplaceWith("guildToUpdate"))
-    @DeprecatedValue("Replaced by 'guildsToUpdate'", replacement = "botcommands.application.slashGuildIds")
-    @ConfigurationValue(path = "botcommands.application.slashGuildIds")
-    val slashGuildIds: List<Long> get() = guildsToUpdate
 
     /**
      * If not empty, application commands will only be updated in these guilds.
@@ -164,8 +151,6 @@ interface BApplicationConfigProps {
 class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps {
     @set:JvmName("enable")
     override var enable: Boolean = true
-    @Deprecated("Replaced by 'guildsToUpdate'", replaceWith = ReplaceWith("guildToUpdate"))
-    override val slashGuildIds: MutableList<Long> get() = guildsToUpdate
     override val guildsToUpdate: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     @set:DevConfig

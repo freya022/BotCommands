@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
 import io.github.freya022.botcommands.api.utils.EmojiUtils
-import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -23,8 +22,6 @@ internal class BotCommandsCoreConfiguration(
     override val disableExceptionsInDMs: Boolean = false,
     override val enableOwnerBypass: Boolean = false,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
-    @Deprecated("Replaced by EventWaiterBuilder.ignoreMissingIntents()")
-    override val ignoredEventIntents: Set<Class<out Event>> = emptySet(),
     override val ignoreRestRateLimiter: Boolean = false,
     override val enableShutdownHook: Boolean = true,
 ) : BConfigProps {
@@ -38,8 +35,6 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
     enableOwnerBypass = configuration.enableOwnerBypass
     ignoredIntents += configuration.ignoredIntents
-    @Suppress("DEPRECATION")
-    ignoredEventIntents += configuration.ignoredEventIntents
     ignoreRestRateLimiter = configuration.ignoreRestRateLimiter
 }
 

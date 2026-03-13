@@ -1,9 +1,6 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.api.core.messages
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -11,8 +8,7 @@ import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
 /**
- * Factory of [BotCommandsMessages], the default implementation is [DefaultBotCommandsMessagesFactory], or,
- * if a non-default [DefaultMessagesFactory] exists, an adapter is used.
+ * Factory of [BotCommandsMessages], the default implementation is [DefaultBotCommandsMessagesFactory].
  *
  * ### Complete customization
  *

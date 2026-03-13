@@ -7,7 +7,6 @@ import io.github.freya022.botcommands.api.localization.context.TextLocalizationC
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 internal class LocalizationContextImpl(
@@ -43,17 +42,9 @@ internal class LocalizationContextImpl(
         }
     }
 
-    @Deprecated("Use the Locale overload")
-    override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl =
-        withGuildLocale(guildLocale?.toLocale())
-
     override fun withGuildLocale(guildLocale: Locale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale?.toProvider(), _userLocaleProvider)
     }
-
-    @Deprecated("Use the Locale overload")
-    override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl =
-        withUserLocale(userLocale?.toLocale())
 
     override fun withUserLocale(userLocale: Locale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocaleProvider, userLocale?.toProvider())

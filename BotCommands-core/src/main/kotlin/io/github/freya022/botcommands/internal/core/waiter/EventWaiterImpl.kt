@@ -130,8 +130,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         }
     }
 
-    @Suppress("DEPRECATION")
-    private val warnedEventTypes: MutableSet<Class<out Event>> = context.config.ignoredEventIntents.toMutableSet()
+    private val warnedEventTypes: MutableSet<Class<out Event>> = hashSetOf()
 
     private fun checkEventIntents(eventType: Class<out Event>) {
         val requiredIntents = GatewayIntent.fromEvents(eventType)
