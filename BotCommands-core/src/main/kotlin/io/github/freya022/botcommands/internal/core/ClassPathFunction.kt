@@ -13,6 +13,7 @@ private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
 
 internal sealed class ClassPathFunction {
     abstract val clazz: KClass<*>
+    abstract val javaClazz: Class<*>
     abstract val instance: Any
 
     abstract val function: KFunction<*>
@@ -38,6 +39,8 @@ internal class LazyClassPathFunction internal constructor(
     override val clazz: KClass<*>,
     method: Method
 ) : ClassPathFunction() {
+
+    override val javaClazz: Class<*> get() = clazz.java
     override val function: KFunction<*> by lazy { method.asKFunction() }
     override val instance by context.serviceContainer.lazy(clazz)
     override val methodAccessor: MethodAccessor<*> by lazy { MethodAccessorFactoryProvider.getAccessorFactory().create(instance, function) }
@@ -52,6 +55,7 @@ internal class InstanceClassPathFunction internal constructor(
     override val function: KFunction<*>
 ) : ClassPathFunction() {
     override val clazz: KClass<*> get() = instance::class
+    override val javaClazz: Class<*> get() = instance.javaClass
     override val methodAccessor = MethodAccessorFactoryProvider.getAccessorFactory().create(instance, function)
 }
 

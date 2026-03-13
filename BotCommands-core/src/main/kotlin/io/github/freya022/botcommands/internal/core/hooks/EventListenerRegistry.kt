@@ -16,21 +16,19 @@ import io.github.freya022.botcommands.internal.core.service.canCreateWrappedServ
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.core.toClassPathFunctions
 import io.github.freya022.botcommands.internal.utils.*
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KClass
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<KClass<*>, EventListenerList>
+private typealias EventMap = MutableMap<Class<*>, EventListenerList>
 
 private val logger = KotlinLogging.logger { }
 
@@ -54,7 +52,7 @@ internal class EventListenerRegistry internal constructor(
             .addAsEventListeners()
     }
 
-    internal operator fun get(eventType: KClass<*>): EventListenerList? {
+    internal operator fun get(eventType: Class<*>): EventListenerList? {
         return map[eventType]
     }
 
@@ -67,7 +65,7 @@ internal class EventListenerRegistry internal constructor(
     }
 
     internal fun removeEventListener(listener: Any) {
-        listeners.remove(listener::class.java)?.let { instanceMap ->
+        listeners.remove(listener.javaClass)?.let { instanceMap ->
             instanceMap.forEach { (kClass, functions) ->
                 val functionMap = map[kClass]
                     ?: throwInternal("Listener was registered without having its functions added to the listener map")
@@ -89,10 +87,10 @@ internal class EventListenerRegistry internal constructor(
 
             val parameters = function.nonInstanceParameters
 
-            val eventErasure = parameters.first().type.jvmErasure
+            val eventErasure = parameters.first().type.jvmErasure.java
             if (!annotation.ignoreIntents && eventErasure.isSubclassOf<Event>()) {
                 @Suppress("UNCHECKED_CAST")
-                val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
+                val requiredIntents = GatewayIntent.fromEvents(eventErasure as Class<out Event>)
                 val missingIntents = requiredIntents - jdaService.intents - config.ignoredIntents - annotation.ignoredIntents
                 if (missingIntents.isNotEmpty()) {
                     return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
@@ -123,7 +121,7 @@ internal class EventListenerRegistry internal constructor(
                 })
 
             val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure
-            classPathFunc.function.declaringClass.java.let { clazz ->
+            classPathFunc.javaClazz.let { clazz ->
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 allEventTypes.forEach {

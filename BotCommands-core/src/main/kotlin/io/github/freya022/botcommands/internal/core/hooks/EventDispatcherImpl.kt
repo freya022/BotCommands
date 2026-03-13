@@ -29,7 +29,7 @@ internal class EventDispatcherImpl internal constructor(
 
     internal fun onEvent(event: GenericEvent) {
         // No need to check for `event` type as if it's in the map, then it's recognized
-        val handlers = eventListenerRegistry[event::class] ?: return
+        val handlers = eventListenerRegistry[event.javaClass] ?: return
 
         // Run blocking handlers first
         handlers[RunMode.BLOCKING]?.let { eventHandlers ->
@@ -63,7 +63,7 @@ internal class EventDispatcherImpl internal constructor(
 
     override suspend fun dispatchEvent(event: Any) {
         // No need to check for `event` type as if it's in the map, then it's recognized
-        val handlers = eventListenerRegistry[event::class] ?: return
+        val handlers = eventListenerRegistry[event.javaClass] ?: return
 
         // Run blocking handlers first
         handlers[RunMode.BLOCKING]?.forEach { eventHandler ->
@@ -86,7 +86,7 @@ internal class EventDispatcherImpl internal constructor(
     override fun dispatchEventAsync(event: Any): List<Deferred<Unit>> {
         // Try not to switch context on non-handled events
         // No need to check for `event` type as if it's in the map, then it's recognized
-        val handlers = eventListenerRegistry[event::class] ?: return emptyList()
+        val handlers = eventListenerRegistry[event.javaClass] ?: return emptyList()
 
         return handlers.map { eventHandler ->
             asyncCoroutineScope.async { runEventHandler(eventHandler, event) }

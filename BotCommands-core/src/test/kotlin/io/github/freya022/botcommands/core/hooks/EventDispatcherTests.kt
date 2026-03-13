@@ -40,7 +40,7 @@ object EventDispatcherTests {
         val expectedInstance = ReadyTestListener()
         val expectedFunction = ReadyTestListener::onReady
         val listenerRegistry = mockk<EventListenerRegistry> {
-            every { get(BReadyEvent::class) } returns mockk<EventListenerList> {
+            every { get(BReadyEvent::class.java) } returns mockk<EventListenerList> {
                 every { get(any<BEventListener.RunMode>()) } returns emptyList()
                 every { get(BEventListener.RunMode.BLOCKING) } returns listOf(
                     EventHandlerFunction(
