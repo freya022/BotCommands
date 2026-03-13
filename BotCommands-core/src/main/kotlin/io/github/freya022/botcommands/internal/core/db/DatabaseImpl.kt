@@ -133,7 +133,24 @@ internal class DatabaseImpl internal constructor(
         return connection
     }
 
+    private lateinit var parametrizedQueryFactory: ParametrizedQueryFactory<*>
+
     private fun getTracedQueryFactory(connection: Connection): ParametrizedQueryFactory<*> {
+        if (::parametrizedQueryFactory.isInitialized) {
+            return parametrizedQueryFactory
+        }
+
+        return synchronized(this) {
+            if (::parametrizedQueryFactory.isInitialized) {
+                return parametrizedQueryFactory
+            }
+
+            parametrizedQueryFactory = createTracedQueryFactory(connection)
+            parametrizedQueryFactory
+        }
+    }
+
+    private fun createTracedQueryFactory(connection: Connection): ParametrizedQueryFactory<*> {
         if (!databaseConfig.logQueryParameters) {
             return NonParametrizedQueryFactory
         }
