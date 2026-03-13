@@ -21,9 +21,6 @@ class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
         username = config.databaseConfig.user
         password = config.databaseConfig.password
 
-        // idk bucket4j is confused without it
-        schema = "public"
-
         maximumPoolSize = 2
         leakDetectionThreshold = 10.seconds.inWholeMilliseconds
     })

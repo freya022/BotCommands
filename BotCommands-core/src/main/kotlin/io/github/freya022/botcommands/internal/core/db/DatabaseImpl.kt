@@ -62,8 +62,6 @@ internal class DatabaseImpl internal constructor(
     // but cannot be resumed and freed because of the coroutine scope being full (from another component event)
     private val semaphore = Semaphore(connectionSupplier.maxConnections)
 
-    private lateinit var baseSchema: String
-
     init {
         if (databaseConfig.dumpLongTransactions) {
             check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
@@ -117,13 +115,6 @@ internal class DatabaseImpl internal constructor(
         }
 
         try {
-            if (!::baseSchema.isInitialized) {
-                baseSchema = connection.schema
-            } else {
-                // Reset schema as it isn't done by HikariCP
-                // in situations where a schema isn't set on the connection pool
-                connection.schema = baseSchema
-            }
             connection.isReadOnly = readOnly
         } catch (e: Exception) {
             runCatching { connection.close() }.onFailure { e.addSuppressed(it) }
