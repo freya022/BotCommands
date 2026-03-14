@@ -3,16 +3,12 @@ package io.github.freya022.botcommands.internal.commands.text.options.builder
 import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.text.options.builder.TextCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.text.options.builder.TextCommandOptionBuilder
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.core.options.builder.OptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 
 internal class TextCommandOptionAggregateBuilderImpl internal constructor(
-    override val context: BContext,
-    override val declarationSiteHolder: IDeclarationSiteHolder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : OptionAggregateBuilderImpl<TextCommandOptionAggregateBuilder>(aggregatorParameter, aggregator),
@@ -50,5 +46,5 @@ internal class TextCommandOptionAggregateBuilderImpl internal constructor(
     }
 
     override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
-        TextCommandOptionAggregateBuilderImpl(context, declarationSiteHolder, aggregatorParameter, aggregator)
+        TextCommandOptionAggregateBuilderImpl(aggregatorParameter, aggregator)
 }
