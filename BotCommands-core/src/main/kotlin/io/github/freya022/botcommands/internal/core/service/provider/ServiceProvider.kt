@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
@@ -148,8 +149,9 @@ internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass
 internal fun ServiceProvider.commonCanInstantiate(serviceContainer: BCServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
     findAnnotations<Dependencies>().forEach { dependencies ->
         dependencies.value.forEach { dependency ->
-            serviceContainer.canCreateService(dependency)?.let { serviceError ->
-                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available", nestedError = serviceError)
+            val dependencyError = checkDependency(serviceContainer, dependency)
+            if (dependencyError != null) {
+                return dependencyError
             }
         }
     }
@@ -157,83 +159,104 @@ internal fun ServiceProvider.commonCanInstantiate(serviceContainer: BCServiceCon
     // Services can be conditional
     findAnnotations<ConditionalService>().forEach { conditionalService ->
         conditionalService.checks.forEach {
-            val instance = Singletons[it]
-
-            fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
-                return ErrorType.FAILED_CONDITION.toError(
-                    errorMessage,
-                    nestedError = nestedError,
-                    // instance::checkServiceAvailability does not bind to the actual instance
-                    extra = mapOf(
-                        "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
-                        "For" to getProviderFunctionOrSignature()
-                    )
-                )
+            val conditionError = checkCondition(serviceContainer, checkedClass, it)
+            if (conditionError != null) {
+                return conditionError
             }
-
-            val errorMessage = try {
-                instance.checkServiceAvailability(serviceContainer, checkedClass.java)
-            } catch (e: ServiceException) {
-                val error = e.serviceError
-                return createError("A service required by the condition checker is missing", nestedError = error)
-            }
-
-            if (errorMessage == null) return@forEach
-
-            return createError(errorMessage)
         }
     }
 
     annotatedElement.findAllAnnotationsWith<Condition>().forEach { (userCondition, metadataAnnotation) ->
-        val checkerType = metadataAnnotation.type
-        @Suppress("UNCHECKED_CAST")
-        val checker = Singletons[checkerType] as CustomConditionChecker<Annotation>
-
-        // Check the checker processes the annotation we just found
-        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-        val expectedCondition = (userCondition as java.lang.annotation.Annotation).annotationType()
-        val actualCondition = checker.annotationType
-        require(expectedCondition == actualCondition) {
-            val conditionName = expectedCondition.simpleNestedName
-            val checkerName = checkerType.simpleNestedName
-
-            val requiredSuperclassName = CustomConditionChecker::class.simpleNestedName
-            val requiredCheckerTypeArgument = expectedCondition.simpleNestedName
-
-            "Custom condition checker $checkerName must implement $requiredSuperclassName<$requiredCheckerTypeArgument> to be usable in @$conditionName"
+        val customConditionError = checkCustomCondition(serviceContainer, checkedClass, userCondition, metadataAnnotation)
+        if (customConditionError != null) {
+            return customConditionError
         }
-
-        fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
-            val errorType = if (metadataAnnotation.fail) {
-                ErrorType.FAILED_FATAL_CUSTOM_CONDITION
-            } else {
-                ErrorType.FAILED_CUSTOM_CONDITION
-            }
-            return errorType.toError(
-                errorMessage,
-                nestedError = nestedError,
-                // checker::checkServiceAvailability does not bind to the actual instance
-                extra = mapOf(
-                    "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
-                    "For" to getProviderFunctionOrSignature()
-                )
-            )
-        }
-
-        val errorMessage = try {
-            checker.checkServiceAvailability(serviceContainer, checkedClass.java, userCondition)
-        } catch (e: ServiceException) {
-            val error = e.serviceError
-            return createError("A service required by the condition checker is missing", nestedError = error)
-        }
-
-        if (errorMessage == null) return@forEach
-
-        return createError(errorMessage)
     }
 
     //All checks passed, return no error message
     return null
+}
+
+private fun ServiceProvider.checkDependency(serviceContainer: BCServiceContainerImpl, dependency: KClass<*>): ServiceError? {
+    return serviceContainer.canCreateService(dependency)?.let { serviceError ->
+        ErrorType.UNAVAILABLE_DEPENDENCY.toError(
+            "Conditional service '${primaryType.simpleNestedName}' depends on ${dependency.simpleNestedName} but it is not available",
+            nestedError = serviceError
+        )
+    }
+}
+
+private fun ServiceProvider.checkCondition(serviceContainer: BCServiceContainerImpl, checkedClass: KClass<*>, checkerType: KClass<out ConditionalServiceChecker>): ServiceError? {
+    val instance = Singletons[checkerType]
+
+    fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
+        return ErrorType.FAILED_CONDITION.toError(
+            errorMessage,
+            nestedError = nestedError,
+            // instance::checkServiceAvailability does not bind to the actual instance
+            extra = mapOf(
+                "Failed check" to instance::checkServiceAvailability.resolveBestReference(),
+                "For" to getProviderFunctionOrSignature()
+            )
+        )
+    }
+
+    try {
+        return when (val errorMessage = instance.checkServiceAvailability(serviceContainer, checkedClass.java)) {
+            null -> null
+            else -> createError(errorMessage)
+        }
+    } catch (e: ServiceException) {
+        val error = e.serviceError
+        return createError("A service required by the condition checker is missing", nestedError = error)
+    }
+}
+
+private fun ServiceProvider.checkCustomCondition(serviceContainer: BCServiceContainerImpl, checkedClass: KClass<*>, userCondition: Annotation, metadataAnnotation: Condition): ServiceError? {
+    val checkerType = metadataAnnotation.type
+    @Suppress("UNCHECKED_CAST")
+    val checker = Singletons[checkerType] as CustomConditionChecker<Annotation>
+
+    // Check the checker processes the annotation we just found
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+    val expectedCondition = (userCondition as java.lang.annotation.Annotation).annotationType()
+    val actualCondition = checker.annotationType
+    require(expectedCondition == actualCondition) {
+        val conditionName = expectedCondition.simpleNestedName
+        val checkerName = checkerType.simpleNestedName
+
+        val requiredSuperclassName = CustomConditionChecker::class.simpleNestedName
+        val requiredCheckerTypeArgument = expectedCondition.simpleNestedName
+
+        "Custom condition checker $checkerName must implement $requiredSuperclassName<$requiredCheckerTypeArgument> to be usable in @$conditionName"
+    }
+
+    fun createError(errorMessage: String, nestedError: ServiceError? = null): ServiceError {
+        val errorType = if (metadataAnnotation.fail) {
+            ErrorType.FAILED_FATAL_CUSTOM_CONDITION
+        } else {
+            ErrorType.FAILED_CUSTOM_CONDITION
+        }
+        return errorType.toError(
+            errorMessage,
+            nestedError = nestedError,
+            // checker::checkServiceAvailability does not bind to the actual instance
+            extra = mapOf(
+                "Failed check" to checker::checkServiceAvailability.resolveBestReference(),
+                "For" to getProviderFunctionOrSignature()
+            )
+        )
+    }
+
+    try {
+        return when (val errorMessage = checker.checkServiceAvailability(serviceContainer, checkedClass.java, userCondition)) {
+            null -> null
+            else -> createError(errorMessage)
+        }
+    } catch (e: ServiceException) {
+        val error = e.serviceError
+        return createError("A service required by the condition checker is missing", nestedError = error)
+    }
 }
 
 internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedInstantiation<T> {
