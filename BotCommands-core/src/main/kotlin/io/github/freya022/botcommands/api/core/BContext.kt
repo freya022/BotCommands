@@ -92,10 +92,8 @@ interface BContext {
      */
     val serviceContainer: ServiceContainer
 
-    //TODO docs
     fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = serviceContainer.tryGetService(clazz)
 
-    //TODO docs
     fun <T : Any> getService(clazz: Class<T>): T = serviceContainer.getService(clazz)
     //endregion
 
