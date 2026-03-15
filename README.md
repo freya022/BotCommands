@@ -1,6 +1,6 @@
 [bc-maven-central-shield]: https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?label=Maven%20central&logo=apachemaven&versionPrefix=3
 [bc-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands
-[bc-releases]: #installation
+[bc-releases]: #-installation
 [jda-version]: https://img.shields.io/badge/JDA-6.3.2+-important?logo=data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAAGNbWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAsaWxvYwAAAABEAAACAAEAAAABAAADhgAAAH0AAgAAAAEAAAG1AAAB0QAAAEJpaW5mAAAAAAACAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAAAaaW5mZQIAAAAAAgAAYXYwMUFscGhhAAAAABppcmVmAAAAAAAAAA5hdXhsAAIAAQABAAAAw2lwcnAAAACdaXBjbwAAABRpc3BlAAAAAAAAAEAAAAAvAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAMAAAAABNjb2xybmNseAACAAIABoAAAAAOcGl4aQAAAAABCAAAAAxhdjFDgQAcAAAAADhhdXhDAAAAAHVybjptcGVnOm1wZWdCOmNpY3A6c3lzdGVtczphdXhpbGlhcnk6YWxwaGEAAAAAHmlwbWEAAAAAAAAAAgABBAECgwQAAgQBBYYHAAACVm1kYXQSAAoGGBV/u5VAMsQDGYBFcWjRfnvfQGK2RVRDm3mQHZYdniSAnTNueRTnA3322BUI8WYH8cbvaJOI7TYzDcxEhAtictt8XAknV+wzOYbYlbmBjrZ02hI+g5duvTHq4dfV1flM3q1qLS61XIEjnbRVOSSZ0AR0h5bgz3E4HaAMaRwHoEYHgGBkMUeWaz2KAGGLGgDvjrkadbwaS9gRwg1QvRm1s1XHO8shLVjZPy9Ec184Y8sYV1HKkMZMkU4t3sd0BMWj+8n00jkc1ncfPh+iVzu+W79Zq+HfFOgwRxWbyI8QWVP7ucZZMqrSaIIfN38e1giSADDizzWkDcIVWid2p4o4IOD+4vb3rwp9KuXIRT/xOW46I5OBN9pdoj1wPNcxU8nYooaa+WiFolKPUJmQomZLAuRrF1ghg3M9u+j3/MqAzXpPnJqxNLArxR7mTC3n/IgNbdlBJJpyFnmeDOhIIU5rQ0meBq4UwZoY6qjk/JDjkACRc/S8sT5Fp3ylStsDh24N8YuOjX7Blr41x4XZFuGOL/LJ9w5r1BvYKn4bxQ8zSekBnw5bHrhB3GidNP9ebWAIfvbRGftqMYjQtFrgWjeunLb88NjtaZU96bxBsNASAAoJGBV/u5IEBA0IMm5GYAAAEBCsBSQWO/F/+CLxcHCegywscOJVmyRW5DGFKOGjkgNf6igltcnWSK0aL8l8S3ThyMIgH8UZV/JWbWRztUFGUQjxZoVbuFffuH13zdQjN9V4E1lJ88XVLBQ3oMG4wfljykFslOwhdeD56Q==
 [jda-releases]: https://github.com/discord-jda/JDA/releases
 [discord-shield]: https://img.shields.io/discord/848502702731165738?logo=discord&logoColor=white&color=e0e3ff&label=Chat
@@ -91,7 +91,7 @@ class TextBan {
 
 Can then be used as `@Bot ban @freya02 1 days A totally valid reason`
 
-Here's how the help content would look with [a subcommand and a few more variations](src/test/kotlin/io/github/freya022/botcommands/test/readme/TextBan.kt):
+Here's how the help content would look with [a subcommand and a few more variations](test-bot/src/test/kotlin/dev/freya02/botcommands/bot/readme/TextBan.kt):
 
 ![Help content example](assets/command_help_embed_example.png)
 </details>
@@ -331,7 +331,7 @@ while larger breaking changes should be seing an increase of the **major** versi
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
 
 It would be appreciated to focus on improving the documentation,
-such as the [wiki](https://github.com/freya022/BotCommands-Wiki/), the library documentation, or by [creating examples](src/examples).<br>
+such as the [wiki](https://github.com/freya022/BotCommands-Wiki/), the library documentation, or by [creating examples](BotCommands-core/src/examples).<br>
 Maintainers will focus on bug reports and feature requests, which you can create issues for. 
 
 Read [the contributing guide](.github/CONTRIBUTING.md) for more details.
