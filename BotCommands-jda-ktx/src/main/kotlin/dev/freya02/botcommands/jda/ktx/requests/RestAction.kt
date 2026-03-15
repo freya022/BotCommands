@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.requests
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -9,7 +8,6 @@ import net.dv8tion.jda.api.requests.RestAction
 /**
  * Awaits the completion of this RestAction.
  */
-@DeprecatedInBcCore
 suspend fun RestAction<*>.awaitUnit() {
     await()
 }
@@ -17,7 +15,6 @@ suspend fun RestAction<*>.awaitUnit() {
 /**
  * Awaits the completion of this RestAction and returns `null`.
  */
-@DeprecatedInBcCore
 suspend fun <R> RestAction<*>.awaitNull(): R? {
     await()
     return null
@@ -30,7 +27,6 @@ suspend fun <R> RestAction<*>.awaitNull(): R? {
  *
  * @see ErrorHandler
  */
-@DeprecatedInBcCore
 fun RestAction<*>.queueIgnoring(ignored: ErrorResponse, vararg errorResponses: ErrorResponse) {
     queue(null, ErrorHandler().ignore(ignored, *errorResponses))
 }
@@ -43,7 +39,6 @@ fun RestAction<*>.queueIgnoring(ignored: ErrorResponse, vararg errorResponses: E
  *
  * @see runIgnoringResponseOrNull
  */
-@DeprecatedInBcCore
 suspend fun <R> RestAction<R>.awaitOrNullOn(ignored: ErrorResponse, vararg errorResponses: ErrorResponse): R? {
     return runIgnoringResponseOrNull(ignored, *errorResponses) {
         await()
@@ -53,7 +48,6 @@ suspend fun <R> RestAction<R>.awaitOrNullOn(ignored: ErrorResponse, vararg error
 /**
  * Awaits the completion of this RestAction and wraps it in a Result.
  */
-@DeprecatedInBcCore
 suspend fun <R> RestAction<R>.awaitCatching(): RestResult<R> {
     return runCatchingRest { await() }
 }

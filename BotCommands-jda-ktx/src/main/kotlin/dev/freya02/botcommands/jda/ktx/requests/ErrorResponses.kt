@@ -2,7 +2,6 @@
 
 package dev.freya02.botcommands.jda.ktx.requests
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.contracts.ExperimentalContracts
@@ -16,7 +15,6 @@ import kotlin.contracts.contract
  * @see runIgnoringResponse
  * @see runIgnoringResponseOrNull
  */
-@DeprecatedInBcCore
 inline fun <R> runCatchingResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -34,7 +32,6 @@ inline fun <R> runCatchingResponse(ignored: ErrorResponse, vararg ignoredRespons
  * @see ignore
  * @see runIgnoringResponseOrNull
  */
-@DeprecatedInBcCore
 inline fun runIgnoringResponse(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -59,7 +56,6 @@ inline fun runIgnoringResponse(ignored: ErrorResponse, vararg ignoredResponses: 
  * @see runIgnoringResponse
  * @see awaitOrNullOn
  */
-@DeprecatedInBcCore
 inline fun <R> runIgnoringResponseOrNull(ignored: ErrorResponse, vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)

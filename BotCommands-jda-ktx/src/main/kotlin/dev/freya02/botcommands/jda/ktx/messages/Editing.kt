@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.messages
 
-import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -25,7 +24,6 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest
  *
  * @see IMessageEditCallback.editMessage
  */
-@ReplaceJdaKtx
 @Suppress("FunctionName") // To facilitate imports
 inline fun IMessageEditCallback.editMessage_(
     content: String? = null,
@@ -50,7 +48,6 @@ inline fun IMessageEditCallback.editMessage_(
  *
  * @see InteractionHook.editMessageById
  */
-@ReplaceJdaKtx
 inline fun InteractionHook.editMessage(
     id: String = "@original",
     content: String? = null,
@@ -75,7 +72,6 @@ inline fun InteractionHook.editMessage(
  *
  * @see MessageChannel.editMessageById
  */
-@ReplaceJdaKtx
 inline fun MessageChannel.editMessage(
     id: String,
     content: String? = null,
@@ -99,7 +95,6 @@ inline fun MessageChannel.editMessage(
  *
  * @see Message.editMessage
  */
-@ReplaceJdaKtx
 inline fun Message.edit(
     content: String? = null,
     embeds: Collection<MessageEmbed>? = null,

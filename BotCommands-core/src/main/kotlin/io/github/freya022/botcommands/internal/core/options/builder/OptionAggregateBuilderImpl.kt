@@ -1,16 +1,10 @@
 package io.github.freya022.botcommands.internal.core.options.builder
 
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
-import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.options.builder.OptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
-import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
 import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KFunction
 
@@ -41,9 +35,6 @@ internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>
         }
     }
 
-    protected abstract val context: BContext
-    protected abstract val declarationSiteHolder: IDeclarationSiteHolder
-
     final override fun hasVararg(): Boolean = aggregateContainer.hasVararg()
 
     final override fun serviceOption(declaredName: String) {
@@ -51,10 +42,6 @@ internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>
     }
 
     final override fun customOption(declaredName: String) {
-        if (context.serviceContainer.canCreateWrappedService(aggregatorParameter.typeCheckingParameter) == null) {
-            objectLogger().warn { "Using ${this::customOption.resolveBestReference().getSignature(source = false)} **for services** has been deprecated, please use ${this::serviceOption.resolveBestReference().getSignature(source = false)} instead, parameter '$declaredName' of ${declarationSiteHolder.declarationSite}" }
-            return serviceOption(declaredName)
-        }
         this += CustomOptionBuilderImpl(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 

@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.components
 
-import dev.freya02.botcommands.jda.ktx.ReplaceJdaKtx
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent
 import net.dv8tion.jda.api.components.buttons.Button
@@ -50,21 +49,16 @@ inline fun ActionRow(uniqueId: Int = -1, block: InlineActionRow.() -> Unit): Act
 /**
  * Construct an [ActionRow] from the provided components
  */
-@ReplaceJdaKtx
 fun row(component: ActionRowChildComponent, vararg components: ActionRowChildComponent) = ActionRow.of(component, *components)
 
 /**
  * Construct an [ActionRow] from the provided components
  */
-@ReplaceJdaKtx
 fun Collection<ActionRowChildComponent>.row() = ActionRow.of(this)
 
-@ReplaceJdaKtx("dev.minn.jda.ktx.messages")
 @JvmName("intoComponents")
 fun <T : ActionRowChildComponent> Collection<T>.into(): List<ActionRow> = listOf(this.row())
 
-@ReplaceJdaKtx("dev.minn.jda.ktx.messages")
 fun ActionRowChildComponent.into(): List<ActionRow> = row(this).into()
 
-@ReplaceJdaKtx("dev.minn.jda.ktx.messages")
 fun <T : ActionRow> T.into(): List<T> = listOf(this)

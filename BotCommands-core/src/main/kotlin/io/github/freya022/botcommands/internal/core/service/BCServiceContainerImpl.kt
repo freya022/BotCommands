@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.internal.core.service
 
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
@@ -31,8 +29,7 @@ private val logger = KotlinLogging.loggerOf<ServiceContainer>()
 
 internal class BCServiceContainerImpl internal constructor(
     internal val serviceBootstrap: BCBotCommandsBootstrap
-) : BCServiceContainer,
-    DefaultServiceContainer {
+) : BCServiceContainer {
 
     internal val serviceConfig: BServiceConfig get() = serviceBootstrap.serviceConfig
     internal val serviceProviders: ServiceProviders get() = serviceBootstrap.serviceProviders

@@ -30,7 +30,7 @@ internal class TextCommandVariationBuilderImpl internal constructor(
 
     private val aggregateContainer =
         OptionAggregateBuilderContainerMixinImpl(function) { aggregatorParameter, aggregator ->
-            TextCommandOptionAggregateBuilderImpl(context, this, aggregatorParameter, aggregator)
+            TextCommandOptionAggregateBuilderImpl(aggregatorParameter, aggregator)
         }
 
     override val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>

@@ -2,7 +2,6 @@
 
 package dev.freya02.botcommands.jda.ktx.requests
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.contracts.ExperimentalContracts
@@ -21,7 +20,6 @@ import kotlin.reflect.KClass
  */
 @JvmInline
 @Suppress("UNCHECKED_CAST")
-@DeprecatedInBcCore
 value class RestResult<out T> @PublishedApi internal constructor(
     @PublishedApi internal val value: Any?
 ) {
@@ -175,7 +173,6 @@ value class RestResult<out T> @PublishedApi internal constructor(
  *
  * Returns the original `RestResult` unchanged.
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.onErrorResponseException(block: (ErrorResponseException) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -194,7 +191,6 @@ inline fun <T> RestResult<T>.onErrorResponseException(block: (ErrorResponseExcep
  * @see ignore
  * @see handle
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.onErrorResponse(block: (ErrorResponse) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -213,7 +209,6 @@ inline fun <T> RestResult<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Re
  * @see ignore
  * @see handle
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -232,7 +227,6 @@ inline fun <T> RestResult<T>.onErrorResponse(error: ErrorResponse, block: (Error
  *
  * @see handle
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResult<T> {
     contract {
         callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
@@ -259,7 +253,6 @@ inline fun <T> RestResult<T>.ignore(predicate: (Throwable) -> Boolean): RestResu
  *
  * @see handle
  */
-@DeprecatedInBcCore
 fun <T> RestResult<T>.ignore(ignored: ErrorResponse, vararg responses: ErrorResponse): RestResult<T> =
     ignore { it is ErrorResponseException && (it.errorResponse == ignored || it.errorResponse in responses) }
 
@@ -272,7 +265,6 @@ fun <T> RestResult<T>.ignore(ignored: ErrorResponse, vararg responses: ErrorResp
  *
  * @see handle
  */
-@DeprecatedInBcCore
 fun <T> RestResult<T>.ignore(ignored: KClass<out Throwable>, vararg types: KClass<out Throwable>): RestResult<T> =
     ignore { throwable -> ignored.isInstance(throwable) || types.any { it.isInstance(throwable) } }
 
@@ -284,7 +276,6 @@ fun <T> RestResult<T>.ignore(ignored: KClass<out Throwable>, vararg types: KClas
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, block: (Throwable) -> R): RestResult<R> {
     contract {
         callsInPlace(predicate, InvocationKind.AT_MOST_ONCE)
@@ -309,7 +300,6 @@ inline fun <T : R, R> RestResult<T>.recover(predicate: (Throwable) -> Boolean, b
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(response: ErrorResponse, vararg responses: ErrorResponse, block: (ErrorResponseException) -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -329,7 +319,6 @@ inline fun <T : R, R> RestResult<T>.recover(response: ErrorResponse, vararg resp
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T : R, R> RestResult<T>.recover(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> R): RestResult<R> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -351,7 +340,6 @@ inline fun <T : R, R> RestResult<T>.recover(type: KClass<out Throwable>, vararg 
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (Throwable) -> Unit): RestResult<T> {
     contract {
         callsInPlace(predicate, InvocationKind.UNKNOWN)
@@ -379,7 +367,6 @@ inline fun <T> RestResult<T>.handle(predicate: (Throwable) -> Boolean, block: (T
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.handle(type: ErrorResponse, vararg responses: ErrorResponse, block: (ErrorResponseException) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -401,7 +388,6 @@ inline fun <T> RestResult<T>.handle(type: ErrorResponse, vararg responses: Error
  *
  * @see ignore
  */
-@DeprecatedInBcCore
 inline fun <T> RestResult<T>.handle(type: KClass<out Throwable>, vararg types: KClass<out Throwable>, block: (Throwable) -> Unit): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
@@ -418,7 +404,6 @@ inline fun <T> RestResult<T>.handle(type: KClass<out Throwable>, vararg types: K
  * catching any [Throwable] exception that was thrown from the [block] function execution
  * and encapsulating it as a failure.
  */
-@DeprecatedInBcCore
 inline fun <T> runCatchingRest(block: () -> T): RestResult<T> {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)

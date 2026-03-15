@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationGenera
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.commands.application.options.builder.ApplicationCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.options.builder.ApplicationGeneratedOptionBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
@@ -12,15 +11,12 @@ import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 internal class SlashCommandOptionAggregateBuilderImpl internal constructor(
-    override val context: BContext,
+    private val context: BContext,
     private val commandBuilder: SlashCommandBuilderImpl,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilderImpl<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator),
     SlashCommandOptionAggregateBuilder {
-
-    override val declarationSiteHolder: IDeclarationSiteHolder
-        get() = commandBuilder
 
     override fun option(declaredName: String, optionName: String, block: SlashCommandOptionBuilder.() -> Unit) {
         this += SlashCommandOptionBuilderImpl(

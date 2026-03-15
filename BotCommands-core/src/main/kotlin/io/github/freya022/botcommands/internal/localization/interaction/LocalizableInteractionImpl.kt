@@ -1,12 +1,8 @@
-@file:Suppress("removal", "DEPRECATION")
-
 package io.github.freya022.botcommands.internal.localization.interaction
 
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.localization.DefaultMessages
-import io.github.freya022.botcommands.api.localization.DefaultMessagesFactory
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
@@ -25,7 +21,6 @@ internal class LocalizableInteractionImpl internal constructor(
     localizationConfig: BLocalizationConfig,
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
-    private val defaultMessagesFactory: DefaultMessagesFactory,
     private val messagesFactory: BotCommandsMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService),
     LocalizableInteraction {
@@ -39,12 +34,6 @@ internal class LocalizableInteractionImpl internal constructor(
             .setGuildLocaleProvider(guildLocaleProvider, deferrableCallback)
             .setUserLocaleProvider(userLocaleProvider, deferrableCallback)
             .build()
-    }
-
-    @Suppress("DEPRECATION", "removal")
-    @Deprecated("Replaced with getBotCommandsMessages()")
-    override fun getDefaultMessages(): DefaultMessages {
-        return defaultMessagesFactory.get(deferrableCallback)
     }
 
     override fun getBotCommandsMessages(): BotCommandsMessages {

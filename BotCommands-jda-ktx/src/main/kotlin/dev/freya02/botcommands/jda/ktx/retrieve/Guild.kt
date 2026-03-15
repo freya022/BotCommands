@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.jda.ktx.retrieve
 
-import dev.freya02.botcommands.jda.ktx.DeprecatedInBcCore
 import dev.freya02.botcommands.jda.ktx.IgnoreForMatch
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.deferredRestAction
@@ -37,7 +36,6 @@ import net.dv8tion.jda.internal.requests.RestActionImpl
  *
  * @see Guild.retrieveMemberById
  */
-@DeprecatedInBcCore
 suspend fun Guild.retrieveMemberByIdOrNull(userId: String, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMemberById(userId).useCache(useCache).await()
@@ -55,7 +53,6 @@ suspend fun Guild.retrieveMemberByIdOrNull(userId: String, @IgnoreForMatch useCa
  *
  * @see Guild.retrieveMemberById
  */
-@DeprecatedInBcCore
 suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMemberById(userId).useCache(useCache).await()
@@ -73,7 +70,6 @@ suspend fun Guild.retrieveMemberByIdOrNull(userId: Long, @IgnoreForMatch useCach
  *
  * @see Guild.retrieveMember
  */
-@DeprecatedInBcCore
 suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake, @IgnoreForMatch useCache: Boolean = true): Member? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.UNKNOWN_USER) {
         retrieveMember(user).useCache(useCache).await()
@@ -87,7 +83,6 @@ suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake, @IgnoreForMatch useC
  *
  * @see Guild.retrieveBan
  */
-@DeprecatedInBcCore
 suspend fun Guild.retrieveBanOrNull(user: UserSnowflake): Ban? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_BAN) {
         retrieveBan(user).await()
@@ -102,7 +97,6 @@ suspend fun Guild.retrieveBanOrNull(user: UserSnowflake): Ban? {
  *
  * @see Guild.retrieveVanityInvite
  */
-@DeprecatedInBcCore
 suspend fun Guild.retrieveVanityInviteOrNull(): VanityInvite? {
     if (vanityCode == null) return null
 
@@ -118,9 +112,8 @@ suspend fun Guild.retrieveVanityInviteOrNull(): VanityInvite? {
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
  *
- * @see retrieveThreadChannelOrNull
+ * @see retrieveThreadChannelByIdOrNull
  */
-@DeprecatedInBcCore
 fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
     return jda.deferredRestAction(
         valueSupplier = { getThreadChannelById(id) },
@@ -144,29 +137,10 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
  *
- * @see retrieveThreadChannelOrNull
+ * @see retrieveThreadChannelByIdOrNull
  */
 fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> {
     return retrieveThreadChannelById(MiscUtil.parseSnowflake(id))
-}
-
-/**
- * Retrieves a thread by ID.
- *
- * The cached threads are checked first, and then a request is made.
- *
- * The returned thread may be null if:
- * - It doesn't exist
- * - The bot doesn't have access to it
- * - The channel isn't a thread
- *
- * @see retrieveThreadChannelById
- */
-@DeprecatedInBcCore
-@Deprecated("Replaced by retrieveThreadChannelByIdOrNull")
-@Suppress("deprecated")
-suspend fun Guild.retrieveThreadChannelOrNull(id: Long): ThreadChannel? {
-    return retrieveThreadChannelByIdOrNull(id)
 }
 
 /**

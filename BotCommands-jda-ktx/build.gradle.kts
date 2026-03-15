@@ -5,8 +5,6 @@ plugins {
     id("kotlin-conventions")
     id("publish-conventions")
     id("dokka-conventions")
-
-    alias(libs.plugins.ksp)
 }
 
 dependencies {
@@ -14,8 +12,6 @@ dependencies {
 
     compileOnly(libs.jda)
     api(libs.kotlinx.coroutines.core)
-
-    ksp(projects.jdaKtxDeprecationProcessor)
 
     // -------------------- TEST DEPENDENCIES --------------------
 
@@ -29,8 +25,6 @@ dependencies {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
-
-    environment("KSP_OUTPUT", layout.buildDirectory.dir("generated/ksp").get().asFile.path)
 }
 
 publishedProjectEnvironment {

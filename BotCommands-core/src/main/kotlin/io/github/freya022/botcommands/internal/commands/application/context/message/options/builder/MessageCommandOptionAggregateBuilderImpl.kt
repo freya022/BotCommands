@@ -2,16 +2,12 @@ package io.github.freya022.botcommands.internal.commands.application.context.mes
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.context.message.options.builder.MessageCommandOptionAggregateBuilder
-import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.commands.application.options.builder.ApplicationCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.options.builder.ApplicationGeneratedOptionBuilderImpl
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 internal class MessageCommandOptionAggregateBuilderImpl internal constructor(
-    override val context: BContext,
-    override val declarationSiteHolder: IDeclarationSiteHolder,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilderImpl<MessageCommandOptionAggregateBuilder>(aggregatorParameter, aggregator),
@@ -29,5 +25,5 @@ internal class MessageCommandOptionAggregateBuilderImpl internal constructor(
     }
 
     override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
-        MessageCommandOptionAggregateBuilderImpl(context, declarationSiteHolder, aggregatorParameter, aggregator)
+        MessageCommandOptionAggregateBuilderImpl(aggregatorParameter, aggregator)
 }

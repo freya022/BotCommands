@@ -12,7 +12,6 @@ jackson = "2.21.1"
 java-string-similarity = "2.0.0"
 jda = "6.3.2"
 jda-emojis = "3.0.0"
-jda-ktx = "0.12.0"
 jemoji = "1.7.5"
 jetbrains-annotations = "26.0.2"
 jetbrains-markdown = "0.7.3"
@@ -59,7 +58,6 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 java-string-similarity = { module = "info.debatty:java-string-similarity", version.ref = "java-string-similarity" }
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 jda-emojis = { module = "dev.freya02:jda-emojis", version.ref = "jda-emojis" }
-jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
 jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
@@ -77,7 +75,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-ksp-aa = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 maven-publish-plugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish-plugin" }
 mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
