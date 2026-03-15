@@ -35,4 +35,6 @@ dependencies {
 
 To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
 
-[//]: # (TODO add usage section with link to wiki's getting started)
+## Usage
+
+To get started, read [the wiki](https://bc.freya02.dev/3.X/setup/getting-started-spring-boot/).
