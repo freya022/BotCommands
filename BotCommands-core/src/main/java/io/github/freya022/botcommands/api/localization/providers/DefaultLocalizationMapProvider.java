@@ -21,7 +21,7 @@ import java.util.Locale;
  * followed by the templates of broader locales.
  *
  * <p>Additionally, this reads bundles with a {@code -default} postfix on the base name,
- * such as {@code DefaultMessage-default_fr_FR}.
+ * such as {@code BotCommandsMessages-default_fr_FR}.
  */
 @BService
 @NullMarked

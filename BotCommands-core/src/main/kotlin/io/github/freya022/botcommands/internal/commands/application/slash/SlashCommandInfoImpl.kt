@@ -154,8 +154,8 @@ private fun onUnresolvableOption(
         else -> {
             //Only use the generic message if the user didn't handle this situation
             if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                val defaultMessages = option.context.getService<BotCommandsMessagesFactory>().get(event)
-                event.reply(defaultMessages.slashCommandUnresolvableOption(event, option))
+                val messages = option.context.getService<BotCommandsMessagesFactory>().get(event)
+                event.reply(messages.slashCommandUnresolvableOption(event, option))
                     .setEphemeral(true)
                     .queue()
             }
