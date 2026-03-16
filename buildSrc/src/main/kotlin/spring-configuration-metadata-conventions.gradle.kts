@@ -17,19 +17,14 @@ val generateSpringConfigurationMetadata by tasks.registering(GenerateSpringConfi
         exclude("**/internal/**")
     })
 
-    outputFile = springConfigurationMetadataSourceRoot.get().file("META-INF/spring-configuration-metadata.json")
-}
-
-// Generate metadata (a resource) before processing resources
-tasks.named("processResources") {
-    dependsOn(generateSpringConfigurationMetadata)
+    outputRoot = layout.buildDirectory.dir("generated/spring-configuration-metadata/main/resources")
 }
 
 // Register our generated sources
 sourceSets {
     main {
         resources {
-            srcDir(springConfigurationMetadataSourceRoot)
+            srcDir(generateSpringConfigurationMetadata)
         }
     }
 }
