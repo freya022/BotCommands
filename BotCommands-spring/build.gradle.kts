@@ -6,8 +6,7 @@ plugins {
     id("kotlin-conventions")
     id("publish-conventions")
     id("dokka-conventions")
-
-    alias(libs.plugins.ksp)
+    id("spring-configuration-metadata-conventions")
 }
 
 dependencies {
@@ -24,10 +23,6 @@ dependencies {
     api(libs.spring.boot.autoconfigure)
 
     compileOnly(libs.spring.boot.devtools)
-
-    // -------------------- ANNOTATION PROCESSORS --------------------
-
-    ksp(projects.springPropertiesProcessor)
 }
 
 dokka {

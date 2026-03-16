@@ -1,9 +1,9 @@
-package io.github.freya022.botcommands.properties.processor
+package dev.freya02.botcommands.spring.metadata.generator.data
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SpringMetadata(
+internal class SpringMetadata(
     val groups: MutableList<GroupMetadata>,
     val properties: MutableList<PropertyMetadata>,
     val hints: MutableList<ClassReferenceHint>,
@@ -12,19 +12,19 @@ class SpringMetadata(
 }
 
 @Serializable
-class GroupMetadata(
+internal class GroupMetadata(
     val name: String,
     val type: String,
     val sourceType: String,
 )
 
 @Serializable
-class PropertyMetadata(
+internal class PropertyMetadata(
     val name: String,
     val defaultValue: String?,
     val type: String,
     val sourceType: String,
-    val description: String?,
+    val description: String,
     val deprecation: Deprecation?
 ) {
 
@@ -37,7 +37,7 @@ class PropertyMetadata(
 }
 
 @Serializable
-class ClassReferenceHint(val name: String, val providers: List<Provider>) {
+internal class ClassReferenceHint(val name: String, val providers: List<Provider>) {
 
     @Serializable
     class Provider(val name: String, val parameters: Parameters) {

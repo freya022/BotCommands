@@ -14,7 +14,6 @@ jda = "6.3.2"
 jda-emojis = "3.0.0"
 jemoji = "1.7.5"
 jetbrains-annotations = "26.0.2"
-jetbrains-markdown = "0.7.3"
 jsr305 = "3.0.2"
 junit = "6.0.1"
 konsist = "0.17.3"
@@ -22,7 +21,6 @@ kotlin = "2.3.10"
 kotlin-logging = "7.0.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.6"
 logback-classic = "1.5.16"
 maven-publish-plugin = "0.36.0"
 mockk = "1.14.4"
@@ -36,8 +34,8 @@ trove4j-core = "3.1.0"
 
 [plugins]
 jmh = "me.champeau.jmh:0.7.3"
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"
 
 [libraries]
@@ -60,7 +58,6 @@ jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 jda-emojis = { module = "dev.freya02:jda-emojis", version.ref = "jda-emojis" }
 jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
-jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrains-markdown" }
 jspecify = "org.jspecify:jspecify:1.0.0"
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
@@ -74,7 +71,6 @@ kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", versi
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 maven-publish-plugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "maven-publish-plugin" }
 mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }

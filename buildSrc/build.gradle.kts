@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.kotlin.plugin)
     implementation(libs.maven.publish.plugin)
     implementation(libs.dokka.plugin)
+
+    implementation("dev.freya02:spring-configuration-metadata-generator")
 }
 
 tasks.withType<JavaCompile> {

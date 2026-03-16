@@ -9,8 +9,7 @@ plugins {
     id("kotlin-conventions")
     id("publish-conventions")
     id("dokka-conventions")
-
-    alias(libs.plugins.ksp)
+    id("spring-configuration-metadata-conventions")
 }
 
 // Register other source sets
@@ -89,10 +88,6 @@ dependencies {
     api(libs.jsr305)
     compileOnly(libs.jetbrains.annotations)
     api(libs.jspecify)
-
-    // -------------------- ANNOTATION PROCESSORS --------------------
-
-    ksp(projects.springPropertiesProcessor)
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
 

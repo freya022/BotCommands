@@ -11,7 +11,6 @@ include(
     ":BotCommands-method-accessors:kotlin-reflect",
 )
 include(":BotCommands-jda-ktx")
-include(":spring-properties-processor")
 include(":BotCommands-spring")
 include(
     ":BotCommands-typesafe-messages:core",
