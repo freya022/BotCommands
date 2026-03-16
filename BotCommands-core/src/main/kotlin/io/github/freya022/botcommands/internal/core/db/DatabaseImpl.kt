@@ -75,11 +75,7 @@ internal class DatabaseImpl internal constructor(
                     executeQuery().read()
                 } catch (e: Exception) {
                     e.rethrow(
-                        """
-                            Could not check BC schema version, did you either:
-                            - Set up migration? See https://bc.freya02.dev/3.X/using-botcommands/database/#using-migration
-                            - Or, run the SQL scripts (in 'bc_database_scripts')
-                        """.trimIndent()
+                        "Could not check BC schema version, did you set up migration? See https://bc.freya02.dev/3.X/using-botcommands/database/#using-migration"
                     )
                 }
 
