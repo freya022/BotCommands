@@ -18,7 +18,7 @@ interface BTextConfig : IConfig, BTextConfigProps {
 
 interface BTextConfigProps {
     /**
-     * Whether text commands should be listened for.
+     * Whether the text commands feature should be enabled.
      *
      * You can use [@RequiresTextCommands][RequiresTextCommands]
      * to disable services when this is set to `false`.
@@ -27,7 +27,11 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.enable`
      */
-    @ConfigurationValue(path = "botcommands.text.enable", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.text.enable",
+        description = "Whether the text commands feature should be enabled.",
+        defaultValue = "true",
+    )
     val enable: Boolean
 
     /**
@@ -41,7 +45,11 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.usePingAsPrefix`
      */
-    @ConfigurationValue(path = "botcommands.text.usePingAsPrefix", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.text.usePingAsPrefix",
+        description = "Whether the bot should look for commands when it is mentioned. See the documentation for more details.",
+        defaultValue = "false",
+    )
     val usePingAsPrefix: Boolean
 
     /**
@@ -53,7 +61,10 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.prefixes`
      */
-    @ConfigurationValue(path = "botcommands.text.prefixes")
+    @get:ConfigurationValue(
+        path = "botcommands.text.prefixes",
+        description = "Prefixes the bot should listen to.",
+    )
     val prefixes: List<String>
 
     /**
@@ -65,7 +76,11 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.isHelpDisabled`
      */
-    @ConfigurationValue(path = "botcommands.text.isHelpDisabled", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.text.isHelpDisabled",
+        description = "Whether the default help command is disabled. This also disables help content when a user misuses a command. You can still define your own [IHelpCommand].",
+        defaultValue = "false",
+    )
     val isHelpDisabled: Boolean
 
     /**
@@ -75,7 +90,11 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.showSuggestions`
      */
-    @ConfigurationValue(path = "botcommands.text.showSuggestions", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.text.showSuggestions",
+        description = "Whether command suggestions will be shown when a user tries to use an invalid command.",
+        defaultValue = "true",
+    )
     val showSuggestions: Boolean
 
     // 🐟 was also a strong candidate
@@ -88,7 +107,12 @@ interface BTextConfigProps {
      *
      * Spring property: `botcommands.text.dmClosedEmoji`
      */
-    @ConfigurationValue(path = "botcommands.text.dmClosedEmoji", defaultValue = "mailbox_closed", type = "java.lang.String")
+    @get:ConfigurationValue(
+        path = "botcommands.text.dmClosedEmoji",
+        description = "Emoji used to indicate a user that their DMs are closed, in the case where replying is not allowed either.",
+        defaultValue = "mailbox_closed",
+        type = "java.lang.String",
+    )
     val dmClosedEmoji: Emoji
 }
 

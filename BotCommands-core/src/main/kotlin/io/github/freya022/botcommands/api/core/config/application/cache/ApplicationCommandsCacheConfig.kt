@@ -46,7 +46,11 @@ interface ApplicationCommandsCacheConfig {
      *
      * Spring property: `botcommands.application.cache.checkOnline`
      */
-    @ConfigurationValue(path = "botcommands.application.cache.checkOnline", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.application.cache.checkOnline",
+        description = "Enables the library to compare local commands against Discord's command, to check if application commands need to be updated. See the documentation for more details.",
+        defaultValue = "false",
+    )
     val checkOnline: Boolean
 
     /**
@@ -59,7 +63,11 @@ interface ApplicationCommandsCacheConfig {
      *
      * Spring property: `botcommands.application.cache.diffEngine`
      */
-    @ConfigurationValue(path = "botcommands.application.cache.diffEngine", defaultValue = "new")
+    @get:ConfigurationValue(
+        path = "botcommands.application.cache.diffEngine",
+        description = "The diff engine to use when comparing old and new application commands, to determine if commands needs to be updated.",
+        defaultValue = "new",
+    )
     val diffEngine: DiffEngine
 
     /**
@@ -69,7 +77,11 @@ interface ApplicationCommandsCacheConfig {
      *
      * Spring property: `botcommands.application.cache.logDataIf`
      */
-    @ConfigurationValue(path = "botcommands.application.cache.logDataIf", defaultValue = "never")
+    @get:ConfigurationValue(
+        path = "botcommands.application.cache.logDataIf",
+        description = "Whether the raw JSON of the application commands should be logged on `TRACE` when the condition is met.",
+        defaultValue = "never",
+    )
     val logDataIf: LogDataIf
 }
 

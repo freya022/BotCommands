@@ -22,6 +22,7 @@ import kotlin.reflect.KClass
 
 @InjectedService
 interface BConfig : IConfig, BConfigProps {
+
     override val configType get() = BConfig::class.java
 
     val eventManagerConfig: BEventManagerConfig
@@ -49,6 +50,7 @@ interface BConfig : IConfig, BConfigProps {
 }
 
 interface BConfigProps {
+
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
      * and having [hidden commands][Hidden] shown.
@@ -59,7 +61,10 @@ interface BConfigProps {
      *
      * Spring property: `botcommands.core.predefinedOwnerIds`
      */
-    @ConfigurationValue(path = "botcommands.core.predefinedOwnerIds")
+    @get:ConfigurationValue(
+        path = "botcommands.core.predefinedOwnerIds",
+        description = "Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks, and having [Hidden] commands shown. See the documentation for more details.",
+    )
     val predefinedOwnerIds: Set<Long>
 
     /**
@@ -67,24 +72,36 @@ interface BConfigProps {
      *
      * Spring property: `botcommands.core.packages`
      */
-    @ConfigurationValue(path = "botcommands.core.packages")
+    @get:ConfigurationValue(
+        path = "botcommands.core.packages",
+        description = "The packages the framework will scan through for services, commands, handlers...",
+    )
     val packages: Set<String>
+
     /**
      * Additional classes the framework will scan through for services, commands, handlers...
      *
      * Spring property: `botcommands.core.classes`
      */
-    @ConfigurationValue(path = "botcommands.core.classes", type = "java.util.Set<java.lang.Class<?>>")
+    @get:ConfigurationValue(
+        path = "botcommands.core.classes",
+        description = "Additional classes the framework will scan through for services, commands, handlers...",
+        type = "java.util.Set<java.lang.Class<?>>",
+    )
     val classes: Set<Class<*>>
 
     /**
-     * Disables sending exceptions to the bot owners
+     * Disables sending exceptions to the bot owners.
      *
      * Default: `false`
      *
      * Spring property: `botcommands.core.disableExceptionsInDMs`
      */
-    @ConfigurationValue(path = "botcommands.core.disableExceptionsInDMs", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.core.disableExceptionsInDMs",
+        description = "Disables sending exceptions to the bot owners.",
+        defaultValue = "false",
+    )
     val disableExceptionsInDMs: Boolean
 
     /**
@@ -96,17 +113,24 @@ interface BConfigProps {
      *
      * @see BotOwners
      */
-    @ConfigurationValue(path = "botcommands.core.enableOwnerBypass", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.core.enableOwnerBypass",
+        description = "Enables *bot* owners to bypass certain limits.",
+        defaultValue = "false",
+    )
     val enableOwnerBypass: Boolean
 
     /**
-     * Gateway intents to ignore when checking for [event listeners][BEventListener] intents.
+     * Gateway intents to ignore when checking for required intents of [event listeners][BEventListener].
      *
      * Spring property: `botcommands.core.ignoredIntents`
      *
      * @see BEventListener.ignoreIntents
      */
-    @ConfigurationValue(path = "botcommands.core.ignoredIntents")
+    @get:ConfigurationValue(
+        path = "botcommands.core.ignoredIntents",
+        description = "Gateway intents to ignore when checking for required intents of event listeners.",
+    )
     val ignoredIntents: Set<GatewayIntent>
 
     /**
@@ -118,7 +142,11 @@ interface BConfigProps {
      *
      * @see PriorityGlobalRestRateLimiter
      */
-    @ConfigurationValue("botcommands.core.ignoreRestRateLimiter", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.core.ignoreRestRateLimiter",
+        description = "Suppresses warnings about the default [RestRateLimiter] being used for large bots.",
+        defaultValue = "false",
+    )
     val ignoreRestRateLimiter: Boolean
 
     val classGraphProcessors: List<ClassGraphProcessor>
@@ -132,7 +160,11 @@ interface BConfigProps {
      *
      * Spring property: `botcommands.core.enableShutdownHook`
      */
-    @ConfigurationValue("botcommands.core.enableShutdownHook", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.core.enableShutdownHook",
+        description = "Whether to use a shutdown hook to call [BContext.shutdownNow] when the JVM is exiting **gracefully**.",
+        defaultValue = "true",
+    )
     val enableShutdownHook: Boolean
 }
 
@@ -152,6 +184,7 @@ inline fun <reified T : IConfig> BConfig.getConfigOrNull(): T? = getConfigOrNull
 
 @ConfigDSL
 class BConfigBuilder : BConfigProps {
+
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
 
@@ -159,6 +192,7 @@ class BConfigBuilder : BConfigProps {
 
     @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+
     @set:JvmName("enableOwnerBypass")
     override var enableOwnerBypass = false
 

@@ -143,7 +143,11 @@ internal class BotCommandsApplicationConfiguration(
          * @see BApplicationConfigBuilder.databaseCache
          * @see BApplicationConfigBuilder.disableCache
          */
-        @ConfigurationValue("botcommands.application.cache.type", defaultValue = "file")
+        @get:ConfigurationValue(
+            "botcommands.application.cache.type",
+            description = "Type of application command cache. See the documentation for more details.",
+            defaultValue = "file",
+        )
         val type: Type = Type.FILE,
         val file: File = File(),
         val database: Database = Database(),

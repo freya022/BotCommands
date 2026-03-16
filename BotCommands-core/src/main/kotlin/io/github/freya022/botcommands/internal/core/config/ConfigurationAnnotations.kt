@@ -2,17 +2,17 @@ package io.github.freya022.botcommands.internal.core.config
 
 import org.intellij.lang.annotations.Language
 
-@Target(AnnotationTarget.PROPERTY)
-@Retention(AnnotationRetention.SOURCE)
-@MustBeDocumented
+@Target(AnnotationTarget.PROPERTY_GETTER)
+@Retention(AnnotationRetention.BINARY)
 annotation class ConfigurationValue(
     val path: String,
+    val description: String,
     val defaultValue: String = "",
     @Language("Java", prefix = "", suffix = " x = null;") val type: String = "java.lang.Byte",
 )
 
-@Target(AnnotationTarget.PROPERTY)
-@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.PROPERTY_GETTER)
+@Retention(AnnotationRetention.BINARY)
 @MustBeDocumented
 annotation class DeprecatedValue(
     val reason: String,
@@ -25,6 +25,6 @@ annotation class DeprecatedValue(
     }
 }
 
-@Target(AnnotationTarget.PROPERTY)
-@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.PROPERTY_GETTER)
+@Retention(AnnotationRetention.BINARY)
 annotation class IgnoreDefaultValue
