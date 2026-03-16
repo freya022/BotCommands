@@ -16,7 +16,7 @@ interface BEventManagerConfig : IConfig, BEventManagerConfigProps {
 
 interface BEventManagerConfigProps {
     /**
-     * The time applied to all event listeners by default before their coroutine is cancelled.
+     * The time applied to all event listeners by default before their coroutine is canceled.
      *
      * A `null`, non-positive or non-finite value equals to no timeout.
      *
@@ -26,12 +26,17 @@ interface BEventManagerConfigProps {
      *
      * @see BEventListener.timeout
      */
-    @ConfigurationValue(path = "botcommands.event.manager.defaultTimeout", type = "java.time.Duration", defaultValue = "null")
+    @get:ConfigurationValue(
+        path = "botcommands.event.manager.defaultTimeout",
+        description = "The time applied to all event listeners by default before their coroutine is canceled.",
+        type = "java.time.Duration",
+        defaultValue = "null",
+    )
 //    @get:JvmSynthetic // TODO Can't use this until https://github.com/mockk/mockk/issues/1417 is fixed
     val defaultTimeout: Duration?
 
     /**
-     * The time applied to all event listeners by default before their coroutine is cancelled.
+     * The time applied to all event listeners by default before their coroutine is canceled.
      *
      * A `null`, non-positive or non-finite value equals to no timeout.
      *
@@ -50,7 +55,7 @@ class BEventManagerConfigBuilder internal constructor() : BEventManagerConfigPro
     override var defaultTimeout: Duration? = null
 
     /**
-     * The time applied to all event listeners by default before their coroutine is cancelled.
+     * The time applied to all event listeners by default before their coroutine is canceled.
      *
      * A `null`, non-positive or non-finite value equals to no timeout.
      *

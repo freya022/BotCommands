@@ -29,7 +29,10 @@ interface BLocalizationConfigProps {
      *
      * @see BApplicationConfigBuilder.addLocalizations
      */
-    @ConfigurationValue(path = "botcommands.localization.responseBundles")
+    @get:ConfigurationValue(
+        path = "botcommands.localization.responseBundles",
+        description = "Localization bundles available for localizing interaction responses, with [LocalizableInteraction]. See the documentation for more details.",
+    )
     val responseBundles: Set<String>
 }
 

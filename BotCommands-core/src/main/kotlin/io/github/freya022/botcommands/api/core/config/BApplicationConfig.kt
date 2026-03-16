@@ -30,12 +30,14 @@ import kotlin.io.path.Path
 
 @InjectedService
 interface BApplicationConfig : IConfig, BApplicationConfigProps {
+
     override val configType get() = BApplicationConfig::class.java
 }
 
 interface BApplicationConfigProps {
+
     /**
-     * Whether application commands should be listened for.
+     * Whether the application commands feature should be enabled.
      *
      * You can use [@RequiresApplicationCommands][RequiresApplicationCommands]
      * to disable services when this is set to `false`.
@@ -44,7 +46,11 @@ interface BApplicationConfigProps {
      *
      * Spring property: `botcommands.application.enable`
      */
-    @ConfigurationValue(path = "botcommands.application.enable", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.application.enable",
+        description = "Whether the application commands feature should be enabled.",
+        defaultValue = "true",
+    )
     val enable: Boolean
 
     /**
@@ -54,17 +60,23 @@ interface BApplicationConfigProps {
      *
      * Spring property: `botcommands.application.guildsToUpdate`
      */
-    @ConfigurationValue(path = "botcommands.application.guildsToUpdate")
+    @get:ConfigurationValue(
+        path = "botcommands.application.guildsToUpdate",
+        description = "If not empty, application commands will only be updated in these guilds. Existing commands won't be removed in other guilds, global commands will still be updated.",
+    )
     val guildsToUpdate: List<Long>
 
     /**
-     * Test guilds IDs for all commands annotated with [Test]
+     * Test guilds IDs for all commands annotated with [Test].
      *
      * Spring property: `botcommands.application.testGuildIds`
      *
      * @see Test @Test
      */
-    @ConfigurationValue(path = "botcommands.application.testGuildIds")
+    @get:ConfigurationValue(
+        path = "botcommands.application.testGuildIds",
+        description = "Test guilds IDs for all commands annotated with [Test].",
+    )
     val testGuildIds: List<Long>
 
     /**
@@ -76,7 +88,11 @@ interface BApplicationConfigProps {
      *
      * Spring property: `botcommands.application.disableAutocompleteCache`
      */
-    @ConfigurationValue(path = "botcommands.application.disableAutocompleteCache", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.application.disableAutocompleteCache",
+        description = "Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.",
+        defaultValue = "false",
+    )
     val disableAutocompleteCache: Boolean
 
     /**
@@ -102,7 +118,11 @@ interface BApplicationConfigProps {
      *
      * Spring property: `botcommands.application.forceGuildCommands`
      */
-    @ConfigurationValue(path = "botcommands.application.forceGuildCommands", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.application.forceGuildCommands",
+        description = "Whether all application commands should be registered on each guild, regardless of the command scope on the annotation.",
+        defaultValue = "false",
+    )
     val forceGuildCommands: Boolean
 
     /**
@@ -129,7 +149,10 @@ interface BApplicationConfigProps {
      * @see DefaultLocalizationMapProvider
      * @see JacksonLocalizationMapReader
      */
-    @ConfigurationValue(path = "botcommands.application.localizations")
+    @get:ConfigurationValue(
+        path = "botcommands.application.localizations",
+        description = "Map where the key is the base bundle name, and the values are the supported locales, see the docs of [BApplicationConfigBuilder#addLocalization].",
+    )
     val baseNameToLocalesMap: Map<String, List<DiscordLocale>>
 
     /**
@@ -143,16 +166,22 @@ interface BApplicationConfigProps {
      *
      * Spring property: `botcommands.application.logMissingLocalizationKeys`
      */
-    @ConfigurationValue(path = "botcommands.application.logMissingLocalizationKeys", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.application.logMissingLocalizationKeys",
+        description = "Whether to log a `WARN` if a localization key isn't found when registering the commands.",
+        defaultValue = "false",
+    )
     val logMissingLocalizationKeys: Boolean
 }
 
 @ConfigDSL
 class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps {
+
     @set:JvmName("enable")
     override var enable: Boolean = true
     override val guildsToUpdate: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
+
     @set:DevConfig
     @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false

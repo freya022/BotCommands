@@ -12,10 +12,12 @@ import kotlin.time.toKotlinDuration
 
 @InjectedService
 interface BDatabaseConfig : IConfig, BDatabaseConfigProps {
+
     override val configType get() = BDatabaseConfig::class.java
 }
 
 interface BDatabaseConfigProps {
+
     /**
      * Whether transactions should trigger a coroutine dump & thread dump
      * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
@@ -30,8 +32,13 @@ interface BDatabaseConfigProps {
      * @see DebugProbes
      * @see DebugProbes.enableCreationStackTraces
      */
-    @ConfigurationValue(path = "botcommands.database.dumpLongTransactions", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.database.dumpLongTransactions",
+        description = "Whether transactions should trigger a coroutine dump & thread dump when running longer than the max transaction duration, see the documentation for more details.",
+        defaultValue = "false",
+    )
     val dumpLongTransactions: Boolean
+
     /**
      * Determines whether *all* SQL queries should be logged on `TRACE`.
      *
@@ -41,8 +48,13 @@ interface BDatabaseConfigProps {
      *
      * Spring property: `botcommands.database.logQueries`
      */
-    @ConfigurationValue(path = "botcommands.database.logQueries", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.database.logQueries",
+        description = "Determines whether *all* SQL queries should be logged on the `TRACE` level of the querying class.",
+        defaultValue = "false",
+    )
     val logQueries: Boolean
+
     /**
      * Determines if the SQL query logger will replace query parameters by their value.
      *
@@ -50,15 +62,24 @@ interface BDatabaseConfigProps {
      *
      * Spring property: `botcommands.database.logQueryParameters`
      */
-    @ConfigurationValue(path = "botcommands.database.logQueryParameters", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.database.logQueryParameters",
+        description = "Determines if the SQL query logger will replace query parameters by their value.",
+        defaultValue = "true",
+    )
     val logQueryParameters: Boolean
+
     /**
      * The duration a query has to run for it to be logged on `WARN`.
      *
      * Spring property: `botcommands.database.queryLogThreshold`,
      * see [duration conversions](https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.conversion.durations)
      */
-    @ConfigurationValue(path = "botcommands.database.queryLogThreshold", type = "java.time.Duration")
+    @get:ConfigurationValue(
+        path = "botcommands.database.queryLogThreshold",
+        description = "The duration a query has to run for it to be logged on `WARN`.",
+        type = "java.time.Duration",
+    )
     val queryLogThreshold: Duration
 
     /**
@@ -72,13 +93,17 @@ interface BDatabaseConfigProps {
 
 @ConfigDSL
 class BDatabaseConfigBuilder internal constructor() : BDatabaseConfigProps {
+
     @set:DevConfig
     @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false
+
     @set:JvmName("logQueries")
     override var logQueries: Boolean = false
+
     @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
+
     @set:JvmSynthetic
     override var queryLogThreshold: Duration = Duration.INFINITE
 

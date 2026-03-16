@@ -15,21 +15,31 @@ class JDAConfiguration internal constructor(
     /**
      * The intents for each shard.
      *
+     * This does not apply automatically, this is only here for your convenience.
+     *
      * Default: [JDAService.defaultIntents]
      *
      * Spring property: `jda.intents`
      */
-    @IgnoreDefaultValue
-    @ConfigurationValue("jda.intents")
+    @get:IgnoreDefaultValue
+    @get:ConfigurationValue(
+        path = "jda.intents",
+        description = "The intents for each shard. This does not apply automatically, this is only here for your convenience.",
+    )
     val intents: Set<GatewayIntent> = JDAService.defaultIntents,
     /**
      * The cache flags for each shard.
+     *
+     * This does not apply automatically, this is only here for your convenience.
      *
      * Default: None
      *
      * Spring property: `jda.intents`
      */
-    @IgnoreDefaultValue
-    @ConfigurationValue("jda.cacheFlags")
+    @get:IgnoreDefaultValue
+    @get:ConfigurationValue(
+        path = "jda.cacheFlags",
+        description = "The cache flags for each shard. This does not apply automatically, this is only here for your convenience.",
+    )
     val cacheFlags: Set<CacheFlag> = emptySet(),
 )

@@ -7,10 +7,12 @@ import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
 @InjectedService
 interface BAppEmojisConfig : IConfig, BAppEmojisConfigProps {
+
     override val configType get() = BAppEmojisConfig::class.java
 }
 
 interface BAppEmojisConfigProps {
+
     /**
      * Allows uploading application emojis at startup, and retrieving them from [AppEmojisRegistry].
      *
@@ -18,7 +20,11 @@ interface BAppEmojisConfigProps {
      *
      * Spring property: `botcommands.app.emojis.enable`
      */
-    @ConfigurationValue(path = "botcommands.app.emojis.enable", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.app.emojis.enable",
+        description = "Allows uploading application emojis at startup, and retrieving them from [AppEmojisRegistry].",
+        defaultValue = "false",
+    )
     val enable: Boolean
 
     /**
@@ -31,12 +37,17 @@ interface BAppEmojisConfigProps {
      *
      * Spring property: `botcommands.app.emojis.deleteOnOutOfSlots`
      */
-    @ConfigurationValue(path = "botcommands.app.emojis.deleteOnOutOfSlots", defaultValue = "false")
+    @get:ConfigurationValue(
+        path = "botcommands.app.emojis.deleteOnOutOfSlots",
+        description = "Allows deleting application emojis that are not managed by this application, starting from the oldest. This keeps emojis by name, not by content.",
+        defaultValue = "false",
+    )
     val deleteOnOutOfSlots: Boolean
 }
 
 @ConfigDSL
 class BAppEmojisConfigBuilder internal constructor() : BAppEmojisConfigProps {
+
     @set:JvmName("enable")
     override var enable: Boolean = false
 

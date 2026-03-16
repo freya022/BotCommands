@@ -12,7 +12,7 @@ interface BModalsConfig : IConfig, BModalsConfigProps {
 
 interface BModalsConfigProps {
     /**
-     * Whether modal interactions should be listened for.
+     * Whether the modals feature should be enabled.
      *
      * You can use [@RequiresModals][RequiresModals] to disable services when this is set to `false`.
      *
@@ -20,7 +20,11 @@ interface BModalsConfigProps {
      *
      * Spring property: `botcommands.modals.enable`
      */
-    @ConfigurationValue(path = "botcommands.modals.enable", defaultValue = "true")
+    @get:ConfigurationValue(
+        path = "botcommands.modals.enable",
+        description = "Whether the modals feature should be enabled.",
+        defaultValue = "true",
+    )
     val enable: Boolean
 }
 

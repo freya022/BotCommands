@@ -17,8 +17,11 @@ interface FileApplicationCommandsCacheConfig : ApplicationCommandsCacheConfig {
      *
      * Spring property: `botcommands.application.cache.file.path`
      */
-    @IgnoreDefaultValue
-    @ConfigurationValue(path = "botcommands.application.cache.file.path")
+    @get:IgnoreDefaultValue
+    @get:ConfigurationValue(
+        path = "botcommands.application.cache.file.path",
+        description = "Path at which the application commands cache would be saved to. An application-specific folder will be created inside. See the documentation for more details.",
+    )
     val path: Path
 }
 
