@@ -87,8 +87,10 @@ abstract class PublishedProjectEnvironmentConfig(
         }
 
         project.extensions.configure<MavenPublishBaseExtension>("mavenPublishing") {
-            // Publish empty JAR if the project has no API, and thus no docs
-            if (dokkaExtension == null) {
+            // Publish empty JAR
+            // if the project has no API, and thus no docs,
+            // or, we are publishing a snapshot (wasted disk space and CI time imo)
+            if (dokkaExtension == null || canPublishSnapshot) {
                 configure(KotlinJvm(javadocJar = JavadocJar.Empty()))
             }
 
