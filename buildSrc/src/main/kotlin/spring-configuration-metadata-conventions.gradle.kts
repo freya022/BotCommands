@@ -7,7 +7,6 @@ plugins {
 
 val compileKotlin by tasks.getting(KotlinCompile::class)
 
-val springConfigurationMetadataSourceRoot: Provider<Directory> = layout.buildDirectory.dir("generated/spring-configuration-metadata/main/resources")
 val generateSpringConfigurationMetadata by tasks.registering(GenerateSpringConfigurationMetadataTask::class) {
     classesRoot = layout.buildDirectory.dir("classes/kotlin/main").get().asFile.path
 
@@ -17,7 +16,7 @@ val generateSpringConfigurationMetadata by tasks.registering(GenerateSpringConfi
         exclude("**/internal/**")
     })
 
-    outputRoot = layout.buildDirectory.dir("generated/spring-configuration-metadata/main/resources")
+    outputRoot = layout.buildDirectory.dir("generated/sources/spring-configuration-metadata/main/resources")
 }
 
 // Register our generated sources
