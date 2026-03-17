@@ -64,7 +64,7 @@ public final class LocalizationMapProviders {
                     return bundle;
                 }
             } catch (Exception e) {
-                LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
+                LOGGER.warn("An error occurred while getting a bundle w/ parents '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName(), e);
             }
         }
 
@@ -94,7 +94,7 @@ public final class LocalizationMapProviders {
                     return bundle;
                 }
             } catch (Exception e) {
-                LOGGER.error("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName());
+                LOGGER.warn("An error occurred while getting a bundle '{}' with locale '{}' with provider '{}'", baseName, locale, provider.getClass().getName(), e);
             }
         }
 

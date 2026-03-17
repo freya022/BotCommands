@@ -14,9 +14,7 @@ internal object InternalAggregators {
     internal fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
 
     //The types should not matter as the checks are made against the command function
-    @Suppress("MemberVisibilityCanBePrivate")
     internal fun singleAggregator(it: Any) = it
 
-    @Suppress("MemberVisibilityCanBePrivate")
     internal fun varargAggregator(args: List<Any>) = args
 }

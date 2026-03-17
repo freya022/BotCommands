@@ -192,6 +192,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun List<Command>.filterActualCommands() = filter {
+        @Suppress("REDUNDANT_ELSE_IN_WHEN") // Guard against new additions
         when (it.type) {
             SLASH, USER, MESSAGE -> true
             UNKNOWN -> {

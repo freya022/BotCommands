@@ -45,7 +45,7 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
      * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
      *
      * ### Rate limit cancellation
-     * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+     * The rate limit can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
      *
      * ### Example
      *
@@ -94,7 +94,7 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
  * This cooldown cannot be referenced anywhere else as it is not registered.
  *
  * ### Cooldown cancellation
- * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ * The cooldown can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
  * @param duration       The duration before the cooldown expires
  * @param scope          The scope of the cooldown

@@ -69,7 +69,7 @@ fun <K, V> MutableMap<K, V>.putIfAbsentOrNull(key: K, value: V): V? {
 @OptIn(ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 inline fun <T, R> Iterable<T>.flatMap(transform: (T) -> Array<R>): List<R> {
-    return flatMapTo(ArrayList<R>(), transform)
+    return flatMapTo(ArrayList(), transform)
 }
 
 @OptIn(ExperimentalTypeInference::class)

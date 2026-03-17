@@ -65,7 +65,7 @@ abstract class RateLimitManager internal constructor() {
      * **Note:** The cooldown won't apply if you are a [bot owner][BotOwners.isOwner].
      *
      * ### Cooldown cancellation
-     * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+     * The cooldown can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
      *
      * @param group    The name of the underlying rate limiter
      * @param scope    The scope of the cooldown
@@ -96,7 +96,7 @@ abstract class RateLimitManager internal constructor() {
  * **Note:** The cooldown won't apply if you are a [bot owner][BotOwners.isOwner].
  *
  * ### Cooldown cancellation
- * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ * The cooldown can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
  * @param group          The name of the underlying rate limiter
  * @param scope          The scope of the cooldown

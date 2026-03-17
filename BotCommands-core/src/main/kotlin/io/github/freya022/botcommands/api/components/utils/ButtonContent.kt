@@ -88,7 +88,7 @@ data class ButtonContent(val style: ButtonStyle, val label: String?, val emoji: 
         }
 
         /**
-         * Constructs a [ButtonContent] with an unicode emoji,
+         * Constructs a [ButtonContent] with a Unicode emoji,
          * see [Emoji.fromUnicode] for accepted formats.
          */
         @JvmStatic

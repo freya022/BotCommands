@@ -81,7 +81,10 @@ internal class SpringServiceContainer internal constructor(private val applicati
     }
 
     override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
-        return getInterfacedServices(clazz).map { it::class as KClass<T> }
+        return getInterfacedServices(clazz).map {
+            @Suppress("UNCHECKED_CAST")
+            it::class as KClass<T>
+        }
     }
 
     override fun <T : Any> getInterfacedServices(clazz: KClass<T>): List<T> {

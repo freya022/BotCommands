@@ -24,7 +24,6 @@ public class BCInfo {
     public static final String COMMIT_HASH;
     public static final String BUILD_JDA_VERSION;
 
-    @SuppressWarnings("ConstantConditions")
     public static final String VERSION;
 
     static {

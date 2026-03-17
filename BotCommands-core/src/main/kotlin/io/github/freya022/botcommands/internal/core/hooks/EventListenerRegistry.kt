@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
@@ -91,7 +92,7 @@ internal class EventListenerRegistry internal constructor(
             if (!annotation.ignoreIntents && eventErasure.isSubclassOf<Event>()) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure as Class<out Event>)
-                val missingIntents = requiredIntents - jdaService.intents - config.ignoredIntents - annotation.ignoredIntents
+                val missingIntents = requiredIntents - jdaService.intents - config.ignoredIntents - enumSetOf(*annotation.ignoredIntents)
                 if (missingIntents.isNotEmpty()) {
                     return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
                 }

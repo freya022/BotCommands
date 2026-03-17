@@ -8,33 +8,29 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
-import java.util.*
+
+private val logger = KotlinLogging.logger { }
 
 @BService
 @RequiresApplicationCommands
 internal class ApplicationUpdaterListener(private val applicationCommandsBuilder: ApplicationCommandsBuilder) {
-    private val logger = KotlinLogging.logger { }
-
-    private val failedGuilds: MutableSet<Long> = Collections.synchronizedSet(hashSetOf())
 
     @BEventListener(mode = RunMode.ASYNC)
     suspend fun onGuildAvailable(event: GuildAvailableEvent) {
         logger.trace { "Trying to force update commands due to an unavailable guild becoming available" }
-        tryUpdate(event.guild, force = true)
+        tryUpdate(event.guild)
     }
 
     @BEventListener(mode = RunMode.ASYNC)
     suspend fun onGuildJoin(event: GuildJoinEvent) {
         logger.trace { "Trying to force update commands due to a joined guild" }
-        tryUpdate(event.guild, force = true)
+        tryUpdate(event.guild)
     }
 
-    private suspend fun tryUpdate(guild: Guild, force: Boolean) {
+    private suspend fun tryUpdate(guild: Guild) {
         try {
-            val hadFailed = failedGuilds.remove(guild.idLong)
-            applicationCommandsBuilder.updateGuildCommands(guild, force = force || hadFailed)
+            applicationCommandsBuilder.updateGuildCommands(guild, force = true)
         } catch (e: Throwable) {
-            failedGuilds.add(guild.idLong)
             applicationCommandsBuilder.handleGuildCommandUpdateException(guild, e)
         }
     }

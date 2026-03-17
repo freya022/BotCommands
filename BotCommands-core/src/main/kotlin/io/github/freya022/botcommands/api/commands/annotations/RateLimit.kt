@@ -92,7 +92,7 @@ annotation class Refill(
  * alongside [RateLimiter.Companion.createDefaultProxied].
  *
  * ### Rate limit cancellation
- * The rate limit can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ * The rate limit can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
  * ### Example
  * ```java

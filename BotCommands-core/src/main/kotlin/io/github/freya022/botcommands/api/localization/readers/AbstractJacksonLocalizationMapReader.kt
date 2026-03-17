@@ -104,16 +104,22 @@ abstract class AbstractJacksonLocalizationMapReader(
         entries.forEach { (prefix, value) ->
             val key = appendPath(currentPath, prefix)
 
-            if (value is Map<*, *>) {
-                @Suppress("UNCHECKED_CAST")
-                discoverEntries(request, (value as Map<String, *>).entries, currentPath = key)
-            } else if (value is String) {
-                val template = templateFunction.apply(value, request.requestedLocale)
-                putIfAbsentOrThrow(key, template) { oldValue ->
-                    "Two localization templates exist at the same key '$key'"
+            when (value) {
+                is Map<*, *> -> {
+                    @Suppress("UNCHECKED_CAST")
+                    discoverEntries(request, (value as Map<String, *>).entries, currentPath = key)
                 }
-            } else {
-                throwArgument("Key '$key' in bundle ${request.baseName} (locale '${request.requestedLocale}') can only be a String or a Map (an object if you prefer), found ${value?.javaClass?.name}")
+
+                is String -> {
+                    val template = templateFunction.apply(value, request.requestedLocale)
+                    putIfAbsentOrThrow(key, template) { _ ->
+                        "Two localization templates exist at the same key '$key'"
+                    }
+                }
+
+                else -> {
+                    throwArgument("Key '$key' in bundle ${request.baseName} (locale '${request.requestedLocale}') can only be a String or a Map (an object if you prefer), found ${value?.javaClass?.name}")
+                }
             }
         }
     }

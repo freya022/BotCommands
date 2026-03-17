@@ -20,6 +20,7 @@ internal class InternalDatabase internal constructor(private val database: Datab
             }
 
             override fun close() {
+                @Suppress("ConvertTryFinallyToUseCall")
                 try {
                     schema = defaultSchema
                 } finally {

@@ -117,9 +117,9 @@ internal class BContextImpl internal constructor(
                 .filterNot { "kotlin.coroutines.jvm.internal" in it }
                 .filterNot { "dev.reformator.stacktracedecoroutinator" in it }
                 .filterNot { "kotlinx.coroutines.DispatchedTask.run" in it }
-                .filterNot { "java.base/java.util.concurrent.Executors\$RunnableAdapter.call" in it }
+                .filterNot { $$"java.base/java.util.concurrent.Executors$RunnableAdapter.call" in it }
                 .filterNot { "java.base/java.util.concurrent.FutureTask.run" in it }
-                .filterNot { "java.base/java.util.concurrent.ScheduledThreadPoolExecutor\$ScheduledFutureTask.run" in it }
+                .filterNot { $$"java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run" in it }
                 .filterNot { "java.base/java.util.concurrent.ThreadPoolExecutor" in it }
                 .filterNot { "java.base/java.lang.Thread.run" in it }
                 //Remove lines without a source line number,

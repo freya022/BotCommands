@@ -35,7 +35,7 @@ class ButtonFactory internal constructor(
     }
 
     /**
-     * Creates a new button factory with the provided emoji alias / emoji unicode.
+     * Creates a new button factory with the provided emoji alias / emoji Unicode.
      *
      * ### Example
      * ```kt

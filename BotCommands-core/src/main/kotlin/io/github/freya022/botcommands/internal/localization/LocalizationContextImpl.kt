@@ -36,7 +36,7 @@ internal class LocalizationContextImpl(
         }
 
     init {
-        // At least the root bundle must exists
+        // At least the root bundle must exist
         requireNotNull(localizationService.getInstance(localizationBundle, Locale.ROOT)) {
             "A root localization bundle must exist for $localizationBundle"
         }

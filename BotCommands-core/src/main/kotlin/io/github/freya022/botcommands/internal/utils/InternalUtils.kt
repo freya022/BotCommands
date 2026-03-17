@@ -41,18 +41,6 @@ internal fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
 
 internal fun Guild?.asScopeString() = if (this == null) "global scope" else "guild '${this.name}' (${this.id})"
 
-@OptIn(ExperimentalContracts::class)
-internal inline fun <reified T> downcast(obj: Any): T {
-    contract {
-        returns() implies (obj is T)
-    }
-
-    if (obj as? T == null) {
-        throwInternal("${obj::class.simpleName} should implement ${T::class.simpleName}")
-    }
-    return obj
-}
-
 internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V) {
     if (key in this)
         throwInternal("Key '$key' is already present in the map")

@@ -76,9 +76,7 @@ internal class CommandPathImpl internal constructor(
 
         other as CommandPathImpl
 
-        if (path != other.path) return false
-
-        return true
+        return path == other.path
     }
 
     override fun hashCode(): Int {

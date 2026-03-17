@@ -25,9 +25,7 @@ class ParameterType private constructor(val type: KType) {
 
         other as ParameterType
 
-        if (type != other.type) return false
-
-        return true
+        return type == other.type
     }
 
     override fun hashCode(): Int {

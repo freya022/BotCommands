@@ -35,7 +35,6 @@ open class DefaultPermissionLocalization(
         return cache.getOrPut(key) {
             val permissionsLocalization: Localization? = localizationService.getInstance(bundleName, locale)
 
-            @Suppress("UsePropertyAccessSyntax") // `permission.name` targets Enum#name() which is definitely not the same
             permissionsLocalization?.get(permission.name)?.localize() ?: permission.getName()
         }
     }

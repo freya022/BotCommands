@@ -76,6 +76,15 @@ class PriorityGlobalRestRateLimiter(
             else -> 0
         }
 
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is PriorityWork) return false
+
+            return id == other.id
+        }
+
+        override fun hashCode(): Int = id.hashCode()
+
         private companion object {
             private val _id = AtomicLong(0)
         }
@@ -140,7 +149,7 @@ class PriorityGlobalRestRateLimiter(
     }
 
     override fun cancelRequests(): Int = lock.withLock {
-        val toBeCancelled = queue.filter { !it.task.isPriority && !it.task.isCancelled }
+        val toBeCancelled = queue.filterTo(hashSetOf()) { !it.task.isPriority && !it.task.isCancelled }
         queue.removeAll(toBeCancelled)
         toBeCancelled.forEach { it.task.cancel() }
 

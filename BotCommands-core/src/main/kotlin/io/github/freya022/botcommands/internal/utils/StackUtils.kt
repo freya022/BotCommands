@@ -22,7 +22,7 @@ internal fun currentFrame(): StackFrame {
     return stackWalker.walk { stream ->
         stream
             // Filter out the synthetic method responsible for creating default parameters
-            .filter { !it.methodName.endsWith("\$default") }
+            .filter { !it.methodName.endsWith($$"$default") }
             .skip(1)
             .findFirst().get()
     }
@@ -37,7 +37,7 @@ internal fun findCaller(skip: Long = 0): StackFrame {
     return stackWalker.walk { stream ->
         stream
             // Filter out the synthetic method responsible for creating default parameters
-            .filter { !it.methodName.endsWith("\$default") }
+            .filter { !it.methodName.endsWith($$"$default") }
             // Skip this method + the method calling this
             .skip(2 + skip)
             .filter { !it.declaringClass.isAnnotationPresent(IgnoreStackFrame::class.java) }

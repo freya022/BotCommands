@@ -46,23 +46,3 @@ internal class DiffLoggerImpl(private val title: String) : DiffLogger() {
         }
     }
 }
-
-internal fun DiffLogger.logSame(indent: Int, message: () -> Any?): Boolean {
-    log {
-        "\t".repeat(indent) + message()
-    }
-    return true
-}
-
-internal fun DiffLogger.logDifferent(indent: Int, message: () -> Any?): Boolean {
-    log {
-        "\t".repeat(indent) + message()
-    }
-    return false
-}
-
-internal inline fun DiffLogger.withKey(key: String, block: DiffLogger.() -> Unit) {
-    block(this)
-}
-
-internal inline fun <R> DiffLogger.ignoreLogs(block: DiffLogger.() -> R): R = block(DiffLoggerNoop)

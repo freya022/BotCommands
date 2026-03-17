@@ -26,7 +26,7 @@ import java.time.temporal.ChronoUnit
  * alongside [RateLimiter.createDefaultProxied][RateLimiter.Companion.createDefaultProxied].
  *
  * ### Cooldown cancellation
- * The cooldown can be cancelled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
+ * The cooldown can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
  * @see RateLimit @RateLimit
  *

@@ -25,7 +25,7 @@ internal object SlashUtils {
 
     internal val fakeSlashFunction = SlashUtils::fakeFunction.reflectReference()
 
-    @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
+    @Suppress("unused")
     internal fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
 
     internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction

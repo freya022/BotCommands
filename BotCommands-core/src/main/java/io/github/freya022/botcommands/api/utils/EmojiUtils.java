@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.NoSuchElementException;
 
 /**
- * Utility class to resolve alias emojis into unicode, and getting an {@link UnicodeEmoji} out of them.
+ * Utility class to resolve alias emojis into Unicode, and getting an {@link UnicodeEmoji} out of them.
  */
 @NullMarked
 public class EmojiUtils {
@@ -19,17 +19,17 @@ public class EmojiUtils {
     private static final int REGIONAL_INDICATOR_Z_CODEPOINT = 127487;
 
     /**
-     * Returns the unicode emoji from a Discord alias (e.g. {@code :joy:}).
+     * Returns the Unicode emoji from a Discord alias (e.g. {@code :joy:}).
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
-     * <p>This will return itself if the input is a valid unicode emoji.
+     * <p>This will return itself if the input is a valid Unicode emoji.
      *
-     * @param input An emoji alias or unicode
+     * @param input An emoji alias or Unicode
      *
-     * @return The unicode string of this emoji
+     * @return The Unicode string of this emoji
      *
-     * @throws NoSuchElementException if no emoji alias or unicode matches
+     * @throws NoSuchElementException if no emoji alias or Unicode matches
      * @see #resolveJDAEmoji(String)
      */
     public static String resolveEmoji(String input) {
@@ -39,15 +39,15 @@ public class EmojiUtils {
     }
 
     /**
-     * Returns the unicode emoji from a Discord alias (e.g. {@code :joy:}), or {@code null} if unresolvable.
+     * Returns the Unicode emoji from a Discord alias (e.g. {@code :joy:}), or {@code null} if unresolvable.
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
-     * <p>This will return itself if the input is a valid unicode emoji.
+     * <p>This will return itself if the input is a valid Unicode emoji.
      *
-     * @param input An emoji alias or unicode
+     * @param input An emoji alias or Unicode
      *
-     * @return The unicode string of this emoji, {@code null} if unresolvable
+     * @return The Unicode string of this emoji, {@code null} if unresolvable
      *
      * @see #resolveJDAEmojiOrNull(String)
      */
@@ -85,13 +85,13 @@ public class EmojiUtils {
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
-     * <p>This will return itself if the input is a valid unicode emoji.
+     * <p>This will return itself if the input is a valid Unicode emoji.
      *
-     * @param input An emoji alias or unicode
+     * @param input An emoji alias or Unicode
      *
      * @return The {@link UnicodeEmoji} of this emoji
      *
-     * @throws NoSuchElementException if no emoji alias or unicode matches
+     * @throws NoSuchElementException if no emoji alias or Unicode matches
      * @see #resolveEmoji(String)
      */
     public static UnicodeEmoji resolveJDAEmoji(String input) {
@@ -103,9 +103,9 @@ public class EmojiUtils {
      *
      * <p><b>Note:</b> The input string is case-sensitive!
      *
-     * <p>This will return itself if the input is a valid unicode emoji.
+     * <p>This will return itself if the input is a valid Unicode emoji.
      *
-     * @param input An emoji alias or unicode
+     * @param input An emoji alias or Unicode
      *
      * @return The {@link UnicodeEmoji} of this emoji
      *
