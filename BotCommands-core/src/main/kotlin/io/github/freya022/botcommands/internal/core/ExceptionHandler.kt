@@ -6,7 +6,7 @@ import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.Level
 import net.dv8tion.jda.api.events.Event
 
-internal class ExceptionHandler(private val context: BContext, private val logger: KLogger) {
+class ExceptionHandler(private val context: BContext, private val logger: KLogger) {
     fun handleException(event: Event?, e: Throwable, locationDescription: String, extraContext: Map<String, Any?> = emptyMap(), level: Level = Level.ERROR) {
         val unreflectedException = e.unwrap()
         val handler = context.globalExceptionHandler

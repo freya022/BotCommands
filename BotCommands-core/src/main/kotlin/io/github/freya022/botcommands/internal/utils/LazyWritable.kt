@@ -8,7 +8,7 @@ import kotlin.reflect.KProperty
 private val NO_VALUE = Any()
 
 @Suppress("UNCHECKED_CAST")
-internal class LazyWritable<T> internal constructor(initializer: () -> T) : ReadWriteProperty<Any?, T> {
+class LazyWritable<T> internal constructor(initializer: () -> T) : ReadWriteProperty<Any?, T> {
     private val lock = ReentrantLock()
     private var initializer: (() -> T)? = initializer
     private var value: T = NO_VALUE as T
@@ -36,4 +36,4 @@ internal class LazyWritable<T> internal constructor(initializer: () -> T) : Read
     }
 }
 
-internal fun <T> lazyWritable(initializer: () -> T): LazyWritable<T> = LazyWritable(initializer)
+fun <T> lazyWritable(initializer: () -> T): LazyWritable<T> = LazyWritable(initializer)

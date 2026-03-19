@@ -34,6 +34,7 @@ dependencies {
     // ---------------------- AGGREGATED DOCS DEPENDENCIES ----------------------
 
     dokka(projects.botCommandsCore)
+    dokka(projects.botCommandsPagination)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)
     dokka(projects.botCommandsMethodAccessors.core)

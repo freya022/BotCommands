@@ -56,7 +56,7 @@ internal inline fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V,
 internal fun Duration.toTimestampIfFinite(): Instant? =
     takeIfFinite()?.let { Clock.System.now() + it }
 
-internal fun Duration.takeIfFinite(): Duration? =
+fun Duration.takeIfFinite(): Duration? =
     takeIf { it.isFinite() && it.isPositive() }
 
 internal inline fun <reified T : Any> T?.ifNullThrowInternal(message: () -> String): T {

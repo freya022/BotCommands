@@ -8,6 +8,7 @@ plugins {
 dependencies {
     testImplementation(libs.jda)
     testImplementation(projects.botCommandsCore)
+    testImplementation(projects.botCommandsPagination)
     testImplementation(libs.kotlin.logging)
     testImplementation(projects.botCommandsJdaKtx)
 

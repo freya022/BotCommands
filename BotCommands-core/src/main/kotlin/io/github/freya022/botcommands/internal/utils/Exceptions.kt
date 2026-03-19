@@ -28,7 +28,7 @@ internal fun throwInternal(message: String, declarationSite: DeclarationSite? = 
         else -> throw InternalException("$message\n    Declared at: $declarationSite")
     }
 
-internal fun throwArgument(function: KFunction<*>, message: String): Nothing =
+fun throwArgument(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("$message\n    Function: ${function.shortSignature}")
 
 internal fun Throwable.rethrow(message: String): Nothing =
@@ -43,7 +43,7 @@ internal fun Throwable.rethrowAt(message: String, declarationSite: DeclarationSi
 internal fun Throwable.rethrowAt(exceptionSupplier: (String, Throwable) -> Throwable, message: String, declarationSite: DeclarationSite): Nothing =
     throw exceptionSupplier("$message\n    Declared at: $declarationSite", unwrap())
 
-internal fun throwArgument(message: String, declarationSite: DeclarationSite? = null): Nothing =
+fun throwArgument(message: String, declarationSite: DeclarationSite? = null): Nothing =
     when (declarationSite) {
         null -> throw IllegalArgumentException(message)
         else -> throw IllegalArgumentException("$message\n    Declared at: $declarationSite")

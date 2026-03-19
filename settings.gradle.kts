@@ -4,6 +4,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":test-commons")
 include(":BotCommands-core")
+include(":BotCommands-pagination")
 include(
     ":BotCommands-method-accessors",
     ":BotCommands-method-accessors:core",
