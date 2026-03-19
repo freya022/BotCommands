@@ -5,13 +5,14 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.builder.RateLimitBuilderImpl
 import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
 
-internal class RateLimitManagerImpl internal constructor(override val context: BContext) : RateLimitManager() {
-    private val container = context.getService<RateLimitContainer>()
+internal class RateLimitManagerImpl internal constructor(
+    override val context: BContext,
+    private val container: RateLimitContainer,
+) : RateLimitManager() {
 
     override fun createRateLimit(
         group: String,

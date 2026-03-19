@@ -16,7 +16,7 @@ internal class RateLimitDeclarationRunner internal constructor(
     rateLimitContainer: RateLimitContainer
 ) {
     init {
-        val manager = RateLimitManagerImpl(context)
+        val manager = RateLimitManagerImpl(context, rateLimitContainer)
         rateLimitProviders.forEach { it.declareRateLimit(manager) }
 
         if (logger.isTraceEnabled()) {
