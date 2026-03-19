@@ -32,12 +32,11 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 @RequiresApplicationCommands
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
+    private val applicationCommandsContext: ApplicationCommandsContextImpl,
     private val globalApplicationCommandProviders: List<GlobalApplicationCommandProvider>,
     private val guildApplicationCommandProviders: List<GuildApplicationCommandProvider>
 ) {
     private val logger = KotlinLogging.logger {  }
-
-    private val applicationCommandsContext = context.applicationCommandsContext
 
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()

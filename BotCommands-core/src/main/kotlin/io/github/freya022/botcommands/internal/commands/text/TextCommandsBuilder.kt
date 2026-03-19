@@ -15,6 +15,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 @RequiresTextCommands
 internal class TextCommandsBuilder internal constructor(
     context: BContextImpl,
+    textContext: TextCommandsContextImpl,
     providers: List<TextCommandProvider>,
 ) {
     init {
@@ -71,6 +72,6 @@ internal class TextCommandsBuilder internal constructor(
             logger.debug { "Loaded ${textCommands.size} text commands" }
         }
 
-        textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
+        textCommands.forEach { textContext.addTextCommand(it) }
     }
 }

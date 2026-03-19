@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
+import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
+import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.BotOwners
@@ -61,9 +63,9 @@ internal class BContextImpl internal constructor(
 
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
 
-    override val textCommandsContext: TextCommandsContextImpl by serviceContainer.lazy()
+    override val textCommandsContext: TextCommandsContext by serviceContainer.lazy()
 
-    override val applicationCommandsContext: ApplicationCommandsContextImpl by serviceContainer.lazy()
+    override val applicationCommandsContext: ApplicationCommandsContext by serviceContainer.lazy()
 
     private val bcRegex = Regex("at ${Regex.escape("io.github.freya022.botcommands.")}(?:api|internal)[.a-z]*\\.(.+)")
     private var nextExceptionDispatch: Long = 0
