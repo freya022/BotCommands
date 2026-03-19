@@ -3,17 +3,13 @@ package io.github.freya022.botcommands.api.commands.ratelimit.bucket
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.local.LocalBucket
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope.*
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction
@@ -36,6 +32,7 @@ class InMemoryBucketAccessor(
     private val configurationSupplier: BucketConfigurationSupplier
 ) : BucketAccessor {
 
+    // TODO make this common with ProxyBucketAccessor's BucketKeySupplier
     private sealed interface Key {
         override fun equals(other: Any?): Boolean
         override fun hashCode(): Int
@@ -47,9 +44,17 @@ class InMemoryBucketAccessor(
 
     private val map: MutableMap<Key, Bucket> = ConcurrentHashMap()
 
-    override suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket {
-        return map.computeIfAbsent(commandInfo.getRateLimitKey(event)) {
-            configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
+    override suspend fun getBucket(context: RateLimitingContext): Bucket {
+        // TODO use BucketKeySupplier
+        val key = when (context) {
+            is TextCommandRateLimitingContext -> context.commandInfo.getRateLimitKey(context.event)
+            is ApplicationCommandRateLimitingContext -> getRateLimitKey(context.event)
+            is ComponentRateLimitingContext -> getRateLimitKey(context.event, context.rateLimitReference)
+            else -> error("Unsupported context: ${context.javaClass.name}")
+        }
+
+        return map.computeIfAbsent(key) {
+            configurationSupplier.getConfiguration(context).toBucket()
         }
     }
 
@@ -61,18 +66,6 @@ class InMemoryBucketAccessor(
             USER_PER_CHANNEL -> UserAtPlaceKey(path.fullPath, event.channel.idLong, event.author.idLong)
             GUILD -> PlaceKey(path.fullPath, event.guild.idLong)
             CHANNEL -> PlaceKey(path.fullPath, event.channel.idLong)
-        }
-    }
-
-    override suspend fun getBucket(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Bucket {
-        return map.computeIfAbsent(getRateLimitKey(event)) {
-            configurationSupplier.getConfiguration(context, event, commandInfo).toBucket()
-        }
-    }
-
-    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference): Bucket {
-        return map.computeIfAbsent(getRateLimitKey(event, rateLimitReference)) {
-            configurationSupplier.getConfiguration(context, event).toBucket()
         }
     }
 

@@ -5,27 +5,24 @@ import dev.freya02.botcommands.jda.ktx.getChannel
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.bucket4j.ConsumptionProbe
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
-import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
+import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
+import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
+import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -52,17 +49,45 @@ class DefaultRateLimitHandler(
     private val scope: RateLimitScope,
     private val deleteOnRefill: Boolean = true
 ) : RateLimitHandler {
-    override suspend fun onRateLimit(
-        context: BContext,
-        event: MessageReceivedEvent,
-        commandInfo: TextCommandInfo,
+
+    private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context, probe ->
+        when (context) {
+            is TextCommandRateLimitingContext -> {
+                onRateLimit(context, probe)
+                true
+            }
+            is ApplicationCommandRateLimitingContext -> {
+                onInteractionRateLimit(context.context, context.event, probe)
+                true
+            }
+            is ComponentRateLimitingContext -> {
+                onInteractionRateLimit(context.context, context.event, probe)
+                true
+            }
+            else -> false
+        }
+    }
+
+    override suspend fun onRateLimit(context: RateLimitingContext, probe: ConsumptionProbe) {
+        for (handler in handlers) {
+            if (handler.handle(this, context, probe)) {
+                return
+            }
+        }
+
+        throwInternal("Unsupported context: ${context.javaClass.name}")
+    }
+
+    private suspend fun onRateLimit(
+        rateLimitingContext: TextCommandRateLimitingContext,
         probe: ConsumptionProbe
     ) {
+        val event = rateLimitingContext.event
         val channel = when {
             event.guildChannel.canTalk() -> event.channel
             else -> event.author.openPrivateChannel().await()
         }
-        val messages = context.getService<BotCommandsMessagesFactory>().get(event)
+        val messages = rateLimitingContext.context.getService<BotCommandsMessagesFactory>().get(event)
         val content = getRateLimitMessage(event, messages, probe)
 
         runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
@@ -80,24 +105,7 @@ class DefaultRateLimitHandler(
         }
     }
 
-    override suspend fun onRateLimit(
-        context: BContext,
-        event: GenericCommandInteractionEvent,
-        commandInfo: ApplicationCommandInfo,
-        probe: ConsumptionProbe
-    ) {
-        onRateLimit0(context, event, probe)
-    }
-
-    override suspend fun onRateLimit(
-        context: BContext,
-        event: GenericComponentInteractionCreateEvent,
-        probe: ConsumptionProbe
-    ) {
-        onRateLimit0(context, event, probe)
-    }
-
-    private suspend fun <T> onRateLimit0(
+    suspend fun <T> onInteractionRateLimit(
         context: BContext,
         event: T,
         probe: ConsumptionProbe
@@ -129,5 +137,9 @@ class DefaultRateLimitHandler(
             RateLimitScope.GUILD -> messages.guildRateLimited(event, deadline)
             RateLimitScope.CHANNEL -> messages.channelRateLimited(event, deadline)
         }
+    }
+
+    fun interface RequestHandler {
+        suspend fun handle(instance: DefaultRateLimitHandler, context: RateLimitingContext, probe: ConsumptionProbe): Boolean
     }
 }
