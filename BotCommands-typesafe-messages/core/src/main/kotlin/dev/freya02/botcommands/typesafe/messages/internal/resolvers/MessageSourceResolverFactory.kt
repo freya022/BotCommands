@@ -28,6 +28,8 @@ internal class MessageSourceResolverFactory(
 
     override val supportedTypesStr: List<String> = listOf("<out MessageSource>")
 
+    override val supportedResolvers = listOf(ICustomResolver::class.java)
+
     override fun isResolvable(request: ResolverRequest): Boolean {
         // Is it requesting a message source?
         val parameterErasure = request.parameter.erasure

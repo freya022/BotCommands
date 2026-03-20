@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.events.Event
 
 /**
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.events.Event
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ICustomResolver<T, R : Any> : IParameterResolver<T>
+interface ICustomResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : ICustomResolver<T, R> {
 

@@ -30,6 +30,8 @@ internal object ModalIMentionableResolverFactory :
         "List<${IMentionable::class.shortQualifiedName}>"
     )
 
+    override val supportedResolvers = inferSupportedResolversFrom<IMentionableResolver>()
+
     override fun isResolvable(request: ResolverRequest): Boolean {
         // Only support lists
         val rawErasure = request.parameter.erasure

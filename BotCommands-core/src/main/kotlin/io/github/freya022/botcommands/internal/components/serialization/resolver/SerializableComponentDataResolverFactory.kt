@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -24,6 +25,9 @@ internal class SerializableComponentDataResolverFactory(
 
     override val supportedTypesStr: List<String> =
         listOf("<any ${annotationRef<SerializableComponentData>()} or ${annotationRef<SerializableTimeoutData>()} parameter>")
+
+    override val supportedResolvers: List<Class<out IParameterResolver<*>>> =
+        listOf(ComponentParameterResolver::class.java, TimeoutParameterResolver::class.java)
 
     override fun isResolvable(request: ResolverRequest): Boolean {
         return request.parameter.hasAnnotation<SerializableComponentData>() || request.parameter.hasAnnotation<SerializableTimeoutData>()

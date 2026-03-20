@@ -4,8 +4,12 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
+import io.github.freya022.botcommands.api.core.utils.allInterfaces
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.annotations.ResolverMarker
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -51,6 +55,13 @@ abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resol
     abstract val supportedTypesStr: List<String>
 
     /**
+     * List of resolvers supported by this resolver factory.
+     *
+     * These should only be types directly extending `BuiltinResolver` (an internal interface).
+     */
+    abstract val supportedResolvers: List<Class<out IParameterResolver<*>>>
+
+    /**
      * The priority of this factory.
      *
      * When getting a resolver factory, the factory with the highest value that is [resolvable][isResolvable] is taken.
@@ -76,6 +87,27 @@ abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resol
     abstract fun get(request: ResolverRequest): T
 
     override fun toString(): String {
-        return "ParameterResolverFactory(resolverType=${resolverType.shortQualifiedName})"
+        return "ParameterResolverFactory(supportedResolvers=${supportedResolvers.map { it.simpleNestedName }}, supportedTypes=${supportedTypesStr})"
+    }
+
+    open fun toLogString(): String {
+        return "${this.javaClass.shortQualifiedName} ; priority $priority (${supportedTypesStr.joinToString()})"
+    }
+
+    companion object {
+        // TODO docs
+        @JvmStatic
+        fun inferSupportedResolversFrom(resolverType: Class<out IParameterResolver<*>>): List<Class<out IParameterResolver<*>>> {
+            @Suppress("UNCHECKED_CAST")
+            return resolverType
+                .allInterfaces
+                .filter { it.isSubclassOf<IParameterResolver<*>>() && ResolverMarker::class.java in it.interfaces }
+                    as List<Class<out IParameterResolver<*>>>
+        }
+
+        @JvmSynthetic
+        inline fun <reified T : IParameterResolver<*>> inferSupportedResolversFrom(): List<Class<out IParameterResolver<*>>> {
+            return inferSupportedResolversFrom(T::class.java)
+        }
     }
 }

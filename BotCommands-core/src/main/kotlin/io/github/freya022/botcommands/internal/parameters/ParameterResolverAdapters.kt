@@ -6,18 +6,27 @@ import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
+import kotlin.reflect.KClass
 import kotlin.reflect.full.withNullability
 import kotlin.reflect.jvm.javaType
+
+internal sealed interface ParameterResolverFactoryAdapter {
+    // TODO Use class
+    val resolverType: KClass<out IParameterResolver<*>>
+}
 
 private class ClassParameterResolverFactoryAdapter<T : ClassParameterResolver<out T, *>>(
     private val resolver: T,
     override val priority: Int,
-): ParameterResolverFactory<T>(resolver::class) {
+): ParameterResolverFactory<T>(resolver::class), ParameterResolverFactoryAdapter {
     override val supportedTypesStr: List<String> = listOf(resolver.jvmErasure.shortQualifiedName)
+    override val supportedResolvers = inferSupportedResolversFrom(resolver.javaClass)
 
     override fun isResolvable(request: ResolverRequest): Boolean = resolver.jvmErasure == request.parameter.erasure
     override fun get(request: ResolverRequest): T = resolver
     override fun toString(): String = "ClassParameterResolverFactoryAdapter(resolver=$resolver)"
+    override fun toLogString(): String = "${resolverType.java.shortQualifiedName} ; priority $priority (${supportedTypesStr.single()})"
 }
 
 internal fun <T : ClassParameterResolver<out T, *>> T.toResolverFactory(annotation: Resolver): ParameterResolverFactory<T> {
@@ -27,8 +36,9 @@ internal fun <T : ClassParameterResolver<out T, *>> T.toResolverFactory(annotati
 private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<out T, *>>(
     private val resolver: T,
     override val priority: Int,
-): ParameterResolverFactory<T>(resolver::class) {
+): ParameterResolverFactory<T>(resolver::class), ParameterResolverFactoryAdapter {
     override val supportedTypesStr: List<String> = listOf(resolver.type.shortQualifiedName)
+    override val supportedResolvers = inferSupportedResolversFrom(resolver.javaClass)
 
     override fun isResolvable(request: ResolverRequest): Boolean {
         val requestedType = request.parameter.type
@@ -45,6 +55,7 @@ private class TypedParameterResolverFactoryAdapter<T : TypedParameterResolver<ou
 
     override fun get(request: ResolverRequest): T = resolver
     override fun toString(): String = "TypedParameterResolverFactoryAdapter(resolver=$resolver)"
+    override fun toLogString(): String = "${resolverType.java.shortQualifiedName} ; priority $priority (${supportedTypesStr.single()})"
 }
 
 internal fun <T : TypedParameterResolver<out T, *>> T.toResolverFactory(annotation: Resolver): ParameterResolverFactory<T> {

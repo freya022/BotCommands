@@ -13,6 +13,7 @@ import io.github.freya022.botcommands.api.localization.interaction.UserLocalePro
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import io.github.freya022.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
@@ -34,6 +35,9 @@ internal class AppLocalizationContextResolverFactory(
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
 ) : TypedParameterResolverFactory<AppLocalizationContextResolver>(AppLocalizationContextResolver::class, typeOf<AppLocalizationContext>()) {
+
+    override val supportedResolvers = listOf(ICustomResolver::class.java)
+
     override fun get(request: ResolverRequest) =
         AppLocalizationContextResolver(
             userLocaleProvider,
@@ -50,6 +54,9 @@ internal class TextLocalizationContextResolverFactory(
     private val guildLocaleProvider: GuildLocaleProvider,
     private val textCommandLocaleProvider: TextCommandLocaleProvider,
 ) : TypedParameterResolverFactory<TextLocalizationContextResolver>(TextLocalizationContextResolver::class, typeOf<TextLocalizationContext>()) {
+
+    override val supportedResolvers = listOf(ICustomResolver::class.java)
+
     override fun get(request: ResolverRequest) =
         TextLocalizationContextResolver(
             userLocaleProvider,

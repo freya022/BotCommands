@@ -5,10 +5,13 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
+import io.github.freya022.botcommands.internal.utils.currentFrame
+import io.github.freya022.botcommands.internal.utils.sourceFile
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
@@ -337,9 +340,16 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  * @see ParameterResolver
  */
 inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(priority: Int = 0, crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory<T> {
+    val currentFrame = currentFrame()
+    val declarationSiteSignature =
+        "${currentFrame.declaringClass.shortQualifiedName}.${currentFrame.methodName.substringBefore('$')} (${currentFrame.sourceFile}:${currentFrame.lineNumber})"
     return object : TypedParameterResolverFactory<T>(T::class, R::class) {
         override val priority: Int get() = priority
 
+        override val supportedResolvers = inferSupportedResolversFrom<T>()
+
         override fun get(request: ResolverRequest): T = producer(request)
+
+        override fun toLogString(): String = "$declarationSiteSignature ; priority $priority (${supportedTypesStr.single()})"
     }
 }

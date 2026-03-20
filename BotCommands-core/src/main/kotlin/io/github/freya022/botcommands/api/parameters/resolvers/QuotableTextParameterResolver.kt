@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import java.util.regex.Pattern
 
 /**
@@ -13,7 +14,7 @@ import java.util.regex.Pattern
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface QuotableTextParameterResolver<T, R : Any> : TextParameterResolver<T, R>
+interface QuotableTextParameterResolver<T, R : Any> : TextParameterResolver<T, R>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : QuotableTextParameterResolver<T, R> {
     /**

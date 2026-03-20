@@ -174,6 +174,8 @@ internal class ChannelResolverFactory(private val context: BContext) : Parameter
 
     override val supportedTypesStr: List<String> = listOf("<out GuildChannel>")
 
+    override val supportedResolvers = inferSupportedResolversFrom<ChannelResolver>()
+
     @Suppress("UNCHECKED_CAST")
     override fun isResolvable(request: ResolverRequest): Boolean {
         val parameter = request.parameter

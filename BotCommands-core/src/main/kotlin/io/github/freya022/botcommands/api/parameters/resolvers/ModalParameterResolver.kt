@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.annotations.ModalInput
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload
 import net.dv8tion.jda.api.components.checkbox.Checkbox
 import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup
@@ -58,7 +59,7 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>
+interface ModalParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : ModalParameterResolver<T, R> {
     /**

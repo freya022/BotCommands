@@ -68,6 +68,8 @@ internal object MentionsStringResolverFactory : ParameterResolverFactory<Mention
 
     override val supportedTypesStr: List<String> = listOf(IMentionable::class.shortQualifiedName)
 
+    override val supportedResolvers = listOf(SlashParameterResolver::class.java)
+
     override fun isResolvable(request: ResolverRequest): Boolean {
         val parameter = request.parameter
         if (!parameter.hasAnnotation<MentionsString>())

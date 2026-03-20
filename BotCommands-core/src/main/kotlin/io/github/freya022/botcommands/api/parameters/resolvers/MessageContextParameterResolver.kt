@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.context.message.options.MessageContextCommandOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import kotlin.reflect.KParameter
@@ -18,7 +19,7 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface MessageContextParameterResolver<T, R : Any> : IParameterResolver<T>
+interface MessageContextParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : MessageContextParameterResolver<T, R> {
 

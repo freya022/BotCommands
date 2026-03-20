@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.parameters.resolvers
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
@@ -24,7 +25,7 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>
+interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : UserContextParameterResolver<T, R> {
 

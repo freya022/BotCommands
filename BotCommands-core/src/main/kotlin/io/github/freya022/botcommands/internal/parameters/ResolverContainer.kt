@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotat
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.internal.parameters.resolvers.annotations.ResolverMarker
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -65,23 +66,46 @@ internal class ResolverContainer internal constructor(
             addResolver(resolver, annotation)
         }
 
-        factories += resolverFactories
+        factories += resolverFactories.also(::validateFactories)
 
         logger.trace {
-            val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
+            val factoriesByResolverType = hashMapOf<Class<*>, MutableList<ParameterResolverFactory<*>>>()
+            for (factory in factories) {
+                for (supportedResolver in factory.supportedResolvers) {
+                    factoriesByResolverType.computeIfAbsent(supportedResolver) { arrayListOf() }.add(factory)
+                }
+            }
+
+            val resolversStr = factoriesByResolverType.entries.joinToString("\n") { (interfaceClass, factories) ->
                 buildString {
-                    val factories = factories
-                        .filter { factory -> factory.resolverType.isSubclassOf(interfaceClass) }
-                        .sortedBy { it.resolverType.simpleNestedName }
+                    val factories = factories.sortedBy { it.factoryTypeOrAdaptedResolverType.simpleNestedName }
 
                     appendLine("${interfaceClass.simpleNestedName} (${factories.size}):")
-                    append(factories.joinAsList(linePrefix = "\t-") { "${it.resolverType.shortQualifiedName} ; priority ${it.priority} (${it.supportedTypesStr.joinToString()})" })
+                    append(factories.joinAsList(linePrefix = "\t-") { it.toLogString() })
                 }
             }
 
             "Found resolvers:\n$resolversStr"
         }
     }
+
+    private fun validateFactories(factories: List<ParameterResolverFactory<*>>) {
+        // TODO test this
+        // Check resolver factories are supporting the right interfaces
+        for (factory in factories) {
+            for (clazz in factory.supportedResolvers) {
+                require(clazz.isSubclassOf<IParameterResolver<*>>() && ResolverMarker::class.java in clazz.interfaces) {
+                    "${factory.toLogString()} declares supporting ${clazz.shortQualifiedName}, but it is not a built-in resolver"
+                }
+            }
+        }
+    }
+
+    private val ParameterResolverFactory<*>.factoryTypeOrAdaptedResolverType: Class<*>
+        get() = when (this) {
+            is ParameterResolverFactoryAdapter -> this.resolverType.java
+            else -> this.javaClass
+        }
 
     @Suppress("UNCHECKED_CAST")
     internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory<T>? {
@@ -100,7 +124,7 @@ internal class ResolverContainer internal constructor(
                 resolvableFactories.filter { it.priority == maxPriority }
             }
         require(resolvableFactories.size <= 1) {
-            val factoryNameList = resolvableFactories.joinAsList { it.resolverType.shortQualifiedName }
+            val factoryNameList = resolvableFactories.joinAsList { it.toLogString() }
             "Found multiple compatible resolvers, with the same priority\n$factoryNameList\nIncrease the priority of a resolver to override others"
         }
 

@@ -59,6 +59,7 @@ class ParameterResolverFactoryTest {
     private object OverrideableUserResolver : ClassParameterResolver<OverrideableUserResolver, User>(User::class), ICustomResolver<OverrideableUserResolver, User>
     private object OverrideableUserResolverFactory : TypedParameterResolverFactory<OverrideableUserResolver>(OverrideableUserResolver::class, User::class) {
         override var priority: Int = 0
+        override val supportedResolvers: List<Class<out IParameterResolver<*>>> = listOf(ICustomResolver::class.java)
         override fun get(request: ResolverRequest): OverrideableUserResolver = OverrideableUserResolver
     }
 }

@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.components.serialization.SerializedCom
 import io.github.freya022.botcommands.api.components.serialization.annotations.SerializableComponentData
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -42,7 +43,7 @@ import kotlin.reflect.KType
  * @param T Type of the implementation
  * @param R Type of the returned resolved objects
  */
-interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>
+interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
         where T : ParameterResolver<T, R>,
               T : ComponentParameterResolver<T, R> {
 
