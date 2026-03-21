@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.parameters
 
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
@@ -27,7 +26,6 @@ class ParameterResolverFactoryTest {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf("userResolver")
             every { findAnnotationOnService("userResolver", Resolver::class) } returns Resolver(0)
             every { getService("userResolver", ParameterResolver::class) } returns CustomUserResolver
-            every { getService(BotCommandsMessagesFactory::class) } returns mockk()
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(OverrideableUserResolverFactory))
 
