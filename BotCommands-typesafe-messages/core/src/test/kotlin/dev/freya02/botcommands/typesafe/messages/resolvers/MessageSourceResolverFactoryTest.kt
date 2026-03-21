@@ -4,7 +4,8 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.internal.resolvers.MessageSourceResolverFactory
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
-import io.github.freya022.botcommands.api.parameters.ResolverRequest
+import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.internal.parameters.TypedResolverRequest
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -37,7 +38,7 @@ object MessageSourceResolverFactoryTest {
             every { parameter } returns function.valueParameters[1]
             every { erasure } answers { parameter.type.jvmErasure }
         }
-        val request = ResolverRequest(wrapper)
+        val request = TypedResolverRequest(ICustomResolver::class.java, wrapper)
         assertTrue(resolverFactory.isResolvable(request))
 
         assertDoesNotThrow { resolverFactory.get(request) }

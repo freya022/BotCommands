@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
+import io.github.freya022.botcommands.internal.parameters.TypedResolverRequest
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.typeOf
 import kotlin.test.Test
@@ -13,7 +14,7 @@ class TypedParameterResolverFactoryTest {
 
     @Test
     fun `Java types are checked by resolvers`() {
-        val request = ResolverRequest(ParameterWrapper(::javaStringListFunc.valueParameters[0]))
+        val request = TypedResolverRequest(IParameterResolver::class.java, ParameterWrapper(::javaStringListFunc.valueParameters[0]))
 
         assertTrue(StringListResolverFactory.isResolvable(request))
     }

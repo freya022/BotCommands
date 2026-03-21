@@ -71,7 +71,7 @@ abstract class ParameterResolverFactory {
     /**
      * Determines if a given parameter is supported.
      *
-     * Out of all factories supporting the given resolver type, and with the same [priority], only one must return `true`.
+     * Out of all factories supporting the given [ResolverRequest.resolverType], and with the same [priority], only one must return `true`.
      *
      * This only runs for resolvers declared as supported by [supportedResolvers].
      */

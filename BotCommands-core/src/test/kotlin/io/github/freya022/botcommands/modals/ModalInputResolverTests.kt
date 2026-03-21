@@ -8,10 +8,10 @@ import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
-import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
 import io.github.freya022.botcommands.internal.modals.resolvers.*
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
+import io.github.freya022.botcommands.internal.parameters.TypedResolverRequest
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -88,9 +88,9 @@ object ModalInputResolverTests {
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
 
         val parameter = ::userFunc.valueParameters[index]
-        val request = ResolverRequest(ParameterWrapper(parameter))
+        val request = TypedResolverRequest(ModalParameterResolver::class.java, ParameterWrapper(parameter))
 
-        val resolver = resolvers.getResolver(ModalParameterResolver::class, request)
+        val resolver = resolvers.getResolver(request)
         val modalMapping = mockk<ModalMapping> {
             every { getter(this@mockk) } returns value
             every { this@mockk.type } returns type

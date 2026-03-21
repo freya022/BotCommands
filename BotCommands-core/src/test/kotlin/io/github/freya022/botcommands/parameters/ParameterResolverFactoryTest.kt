@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.parameters.TypedParameterResolverFacto
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
+import io.github.freya022.botcommands.internal.parameters.TypedResolverRequest
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.entities.User
@@ -30,13 +31,13 @@ class ParameterResolverFactoryTest {
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(OverrideableUserResolverFactory))
 
-        val request = ResolverRequest(ParameterWrapper(::userFunc.valueParameters[0]))
+        val request = TypedResolverRequest(ICustomResolver::class.java, ParameterWrapper(::userFunc.valueParameters[0]))
 
         // Test our resolver is overridden by built-in
         run {
             resolvers.clearCache()
             OverrideableUserResolverFactory.priority = -1
-            val resolver = resolvers.getResolver(ICustomResolver::class, request)
+            val resolver = resolvers.getResolver(request)
             assertIs<CustomUserResolver>(resolver)
         }
 
@@ -44,7 +45,7 @@ class ParameterResolverFactoryTest {
         run {
             resolvers.clearCache()
             OverrideableUserResolverFactory.priority = 1
-            val resolver = resolvers.getResolver(ICustomResolver::class, request)
+            val resolver = resolvers.getResolver(request)
             assertIs<OverrideableUserResolver>(resolver)
         }
     }

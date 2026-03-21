@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.api.parameters.ResolverData
-import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
@@ -15,6 +14,7 @@ import io.github.freya022.botcommands.internal.core.options.builder.InternalAggr
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
+import io.github.freya022.botcommands.internal.parameters.TypedResolverRequest
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -42,7 +42,7 @@ internal object CommandOptions {
                 is T -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    val resolver = resolverContainer.getResolverOfType<R>(ResolverRequest(parameter, resolverData))
+                    val resolver = resolverContainer.getResolverOfType(TypedResolverRequest(R::class.java, parameter, resolverData))
                     optionFinalizer(parent, optionBuilder, resolver)
                 }
                 is AbstractGeneratedOptionBuilderImpl -> optionBuilder.toGeneratedOption(parent)
@@ -50,7 +50,7 @@ internal object CommandOptions {
                 is CustomOptionBuilderImpl -> {
                     val parameter = optionBuilder.innerWrappedParameter
 
-                    val resolver = resolverContainer.getResolverOfType<ICustomResolver<*, *>>(ResolverRequest(parameter, resolverData))
+                    val resolver = resolverContainer.getResolverOfType(TypedResolverRequest(ICustomResolver::class.java, parameter, resolverData))
                     CustomMethodOption(parent, optionBuilder.optionParameter, resolver)
                 }
                 else -> throwInternal("Unsupported option builder: $optionBuilder")

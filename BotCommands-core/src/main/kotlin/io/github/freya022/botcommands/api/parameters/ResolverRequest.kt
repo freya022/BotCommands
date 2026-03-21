@@ -1,32 +1,29 @@
 package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 
 /**
  * Data used when retrieving a [resolver factory][ParameterResolverFactory].
- *
- * @param parameter    The parameter this resolver factory will be bound to
- * @param resolverData Contextual data which might be used to do further filtering in [ParameterResolverFactory.isResolvable]
  */
-class ResolverRequest(
-    val parameter: ParameterWrapper,
-    val resolverData: ResolverData? = null
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+interface ResolverRequest {
 
-        other as ResolverRequest
+    /**
+     * The type of built-in resolver being requested
+     */
+    val resolverType: Class<out IParameterResolver<*>>
 
-        if (parameter != other.parameter) return false
-        if (resolverData != other.resolverData) return false
+    /**
+     * The parameter this resolver factory will be bound to
+     */
+    val parameter: ParameterWrapper
 
-        return true
-    }
+    /**
+     * Contextual data which might be used to do further filtering in [ParameterResolverFactory.isResolvable]
+     */
+    val resolverData: ResolverData?
 
-    override fun hashCode(): Int {
-        var result = parameter.hashCode()
-        result = 31 * result + (resolverData?.hashCode() ?: 0)
-        return result
-    }
+    abstract override fun equals(other: Any?): Boolean
+
+    abstract override fun hashCode(): Int
 }

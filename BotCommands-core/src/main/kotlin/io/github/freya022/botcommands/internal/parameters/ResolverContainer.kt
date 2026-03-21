@@ -14,8 +14,6 @@ import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMark
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.KClass
-import kotlin.reflect.cast
 
 private val logger = KotlinLogging.logger { }
 private val compatibleInterfaces = listOf(
@@ -35,13 +33,8 @@ internal class ResolverContainer internal constructor(
     serviceContainer: ServiceContainer,
     resolverFactories: List<ParameterResolverFactory>,
 ) {
-    private data class CacheKey(
-        private val requestedType: KClass<out IParameterResolver<*>>,
-        private val resolverRequest: ResolverRequest
-    )
-
     private val factories: MutableList<ParameterResolverFactory> = arrayOfSize(50)
-    private val cache: MutableMap<CacheKey, ParameterResolverFactory?> = hashMapOf()
+    private val cache: MutableMap<ResolverRequest, ParameterResolverFactory?> = hashMapOf()
 
     init {
         fun addResolver(resolver: ParameterResolver<*, *>, annotation: Resolver) {
@@ -108,12 +101,11 @@ internal class ResolverContainer internal constructor(
             else -> this.javaClass
         }
 
-    internal fun <T : IParameterResolver<T>> getResolverFactoryOrNull(resolverType: KClass<out T>, request: ResolverRequest): ParameterResolverFactory? {
-        val key = CacheKey(resolverType, request)
-        cache[key]?.let { return it as ParameterResolverFactory? }
+    internal fun getResolverFactoryOrNull(request: ResolverRequest): ParameterResolverFactory? {
+        cache[request]?.let { return it as ParameterResolverFactory? }
 
         val resolvableFactories = factories
-            .filter { it.supportedResolvers.any { supportedResolver -> supportedResolver == resolverType.java } }
+            .filter { it.supportedResolvers.any { supportedResolver -> supportedResolver == request.resolverType } }
             .filter { it.isResolvable(request) }
             .let { resolvableFactories ->
                 if (resolvableFactories.isEmpty())
@@ -128,24 +120,25 @@ internal class ResolverContainer internal constructor(
         }
 
         val factory = resolvableFactories.firstOrNull()
-        cache[key] = factory
+        cache[request] = factory
         return factory
     }
 
     internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
-        return hasResolverOfType<T>(ResolverRequest(parameter))
+        return hasResolver(TypedResolverRequest(T::class.java, parameter))
     }
 
-    internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(request: ResolverRequest): Boolean {
-        return getResolverFactoryOrNull(T::class, request) != null
+    internal fun hasResolver(request: ResolverRequest): Boolean {
+        return getResolverFactoryOrNull(request) != null
     }
 
-    internal inline fun <reified T : IParameterResolver<T>> getResolverOfType(request: ResolverRequest): T {
-        return getResolver(T::class, request)
+    internal fun <T : IParameterResolver<T>> getResolverOfType(request: TypedResolverRequest<T>): T {
+        return getResolver(request)
     }
 
-    internal fun <T : IParameterResolver<T>> getResolver(resolverType: KClass<T>, request: ResolverRequest): T {
-        val factory = getResolverFactoryOrNull(resolverType, request)
+    internal fun <T : IParameterResolver<T>> getResolver(request: TypedResolverRequest<T>): T {
+        val resolverType = request.resolverType
+        val factory = getResolverFactoryOrNull(request)
         if (factory == null) {
             val wrapper = request.parameter
             wrapper.throwUser("No ${resolverType.simpleNestedName} found for parameter '${wrapper.name}: ${wrapper.type.shortQualifiedName}'")
