@@ -34,7 +34,7 @@ internal class AppLocalizationContextResolverFactory(
     private val localizationService: LocalizationService,
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
-) : TypedParameterResolverFactory<AppLocalizationContextResolver>(AppLocalizationContextResolver::class, typeOf<AppLocalizationContext>()) {
+) : TypedParameterResolverFactory(typeOf<AppLocalizationContext>()) {
 
     override val supportedResolvers = listOf(ICustomResolver::class.java)
 
@@ -53,7 +53,7 @@ internal class TextLocalizationContextResolverFactory(
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
     private val textCommandLocaleProvider: TextCommandLocaleProvider,
-) : TypedParameterResolverFactory<TextLocalizationContextResolver>(TextLocalizationContextResolver::class, typeOf<TextLocalizationContext>()) {
+) : TypedParameterResolverFactory(typeOf<TextLocalizationContext>()) {
 
     override val supportedResolvers = listOf(ICustomResolver::class.java)
 

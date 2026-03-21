@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.parameters
 import io.github.freya022.botcommands.api.core.reflect.KotlinTypeToken
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
-import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
@@ -21,19 +20,16 @@ import kotlin.reflect.jvm.javaType
  * @see ParameterResolverFactory
  * @see resolverFactory
  *
- * @param resolverType Class of the returned parameter resolver
- * @param type         Type of the objects returned by the parameter resolver
- * @param T            Type of the returned parameter resolver
+ * @param type Type of the objects returned by the parameter resolver
  */
-abstract class TypedParameterResolverFactory<out T : IParameterResolver<T>>(
-    resolverType: KClass<out T>,
+abstract class TypedParameterResolverFactory(
     val type: KType
-) : ParameterResolverFactory<T>(resolverType) {
+) : ParameterResolverFactory() {
     override val supportedTypesStr: List<String> = listOf(type.shortQualifiedName)
 
-    constructor(resolverType: KClass<out T>, type: KClass<*>) : this(resolverType, type.starProjectedType)
-    constructor(resolverType: Class<out T>, type: Class<*>) : this(resolverType.kotlin, type.kotlin.starProjectedType)
-    constructor(resolverType: Class<out T>, typeToken: KotlinTypeToken<*>) : this(resolverType.kotlin, typeToken.type)
+    constructor(type: KClass<*>) : this(type.starProjectedType)
+    constructor(type: Class<*>) : this(type.kotlin.starProjectedType)
+    constructor(typeToken: KotlinTypeToken<*>) : this(typeToken.type)
 
     init {
         require(!type.isMarkedNullable) {

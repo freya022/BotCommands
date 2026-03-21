@@ -11,7 +11,6 @@ import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.TypedParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
-import io.github.freya022.botcommands.internal.modals.resolvers.ModalIMentionableResolverFactory.IMentionableResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -22,8 +21,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
 @ResolverFactory
-internal object ModalIMentionableResolverFactory :
-        ParameterResolverFactory<IMentionableResolver>(IMentionableResolver::class) {
+internal object ModalIMentionableResolverFactory : ParameterResolverFactory() {
 
     override val supportedTypesStr: List<String> = listOf(
         "<out ${IMentionable::class.shortQualifiedName}>",

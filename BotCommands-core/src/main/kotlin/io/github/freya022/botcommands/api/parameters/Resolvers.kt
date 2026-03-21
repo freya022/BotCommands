@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.internal.utils.currentFrame
@@ -279,6 +280,7 @@ inline fun <reified E : Enum<E>> enumResolver(
  */
 fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
 
+// TODO update docs
 /**
  * Creates a [parameter resolver factory][ParameterResolverFactory] from the provided resolver [producer].
  *
@@ -333,22 +335,36 @@ fun Enum<*>.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this
  *
  * @param priority Priority of this resolver factory, see [ParameterResolverFactory.priority]
  * @param producer Function providing a [resolver][ParameterResolver] for the provided function parameter
- * @param T Type of the produced parameter resolver
  * @param R Type of the object returned by the resolver
  *
  * @see ParameterResolverFactory
  * @see ParameterResolver
  */
-inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(priority: Int = 0, crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory<T> {
+inline fun <reified T : ParameterResolver<T, R>, reified R : Any> resolverFactory(priority: Int = 0, crossinline producer: (request: ResolverRequest) -> T): ParameterResolverFactory {
     val currentFrame = currentFrame()
     val declarationSiteSignature =
         "${currentFrame.declaringClass.shortQualifiedName}.${currentFrame.methodName.substringBefore('$')} (${currentFrame.sourceFile}:${currentFrame.lineNumber})"
-    return object : TypedParameterResolverFactory<T>(T::class, R::class) {
+    return object : TypedParameterResolverFactory(R::class) {
         override val priority: Int get() = priority
 
         override val supportedResolvers = inferSupportedResolversFrom<T>()
 
-        override fun get(request: ResolverRequest): T = producer(request)
+        override fun get(request: ResolverRequest): IParameterResolver<*> = producer(request)
+
+        override fun toLogString(): String = "$declarationSiteSignature ; priority $priority (${supportedTypesStr.single()})"
+    }
+}
+
+inline fun <reified R : Any> resolverFactory(supportedResolvers: List<Class<out IParameterResolver<*>>>, priority: Int = 0, crossinline producer: (request: ResolverRequest) -> IParameterResolver<*>): ParameterResolverFactory {
+    val currentFrame = currentFrame()
+    val declarationSiteSignature =
+        "${currentFrame.declaringClass.shortQualifiedName}.${currentFrame.methodName.substringBefore('$')} (${currentFrame.sourceFile}:${currentFrame.lineNumber})"
+    return object : TypedParameterResolverFactory(R::class) {
+        override val priority: Int get() = priority
+
+        override val supportedResolvers = supportedResolvers
+
+        override fun get(request: ResolverRequest): IParameterResolver<*> = producer(request)
 
         override fun toLogString(): String = "$declarationSiteSignature ; priority $priority (${supportedTypesStr.single()})"
     }

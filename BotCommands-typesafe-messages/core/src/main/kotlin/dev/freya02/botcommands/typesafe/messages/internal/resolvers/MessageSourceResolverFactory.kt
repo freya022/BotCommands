@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.jvmErasure
 @ResolverFactory
 internal class MessageSourceResolverFactory(
     private val messageSourceFactories: List<IMessageSourceFactory<*>>,
-) : ParameterResolverFactory<MessageSourceResolver>(MessageSourceResolver::class) {
+) : ParameterResolverFactory() {
 
     override val supportedTypesStr: List<String> = listOf("<out MessageSource>")
 

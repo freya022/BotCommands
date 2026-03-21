@@ -9,8 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
-import io.github.freya022.botcommands.internal.parameters.resolvers.annotations.ResolverMarker
-import kotlin.reflect.KClass
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import kotlin.reflect.KType
 
 /**
@@ -36,14 +35,11 @@ import kotlin.reflect.KType
  *
  * In case you want to read the annotations, you can use the methods supplied by [ParameterWrapper].
  *
- * @param T Type of the returned parameter resolver
- *
  * @see TypedParameterResolverFactory
  * @see ParameterResolver
  */
 @InterfacedService(acceptMultiple = true)
-abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resolverType: KClass<out T>) {
-    constructor(resolverType: Class<out T>) : this(resolverType.kotlin)
+abstract class ParameterResolverFactory {
 
     /**
      * List of types as strings that are supported by this resolver factory.
@@ -73,9 +69,11 @@ abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resol
     open val priority: Int get() = 0
 
     /**
-     * Determines if a given parameter is supported, only one factory must return `true`.
+     * Determines if a given parameter is supported.
      *
-     * This only gets called if the requested resolver is compatible with [resolverType].
+     * Out of all factories supporting the given resolver type, and with the same [priority], only one must return `true`.
+     *
+     * This only runs for resolvers declared as supported by [supportedResolvers].
      */
     abstract fun isResolvable(request: ResolverRequest): Boolean
 
@@ -84,7 +82,7 @@ abstract class ParameterResolverFactory<out T : IParameterResolver<T>>(val resol
      *
      * This is only called if [isResolvable] returned `true`.
      */
-    abstract fun get(request: ResolverRequest): T
+    abstract fun get(request: ResolverRequest): IParameterResolver<*>
 
     override fun toString(): String {
         return "ParameterResolverFactory(supportedResolvers=${supportedResolvers.map { it.simpleNestedName }}, supportedTypes=${supportedTypesStr})"

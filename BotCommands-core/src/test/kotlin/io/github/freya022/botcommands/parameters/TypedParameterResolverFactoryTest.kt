@@ -20,7 +20,7 @@ class TypedParameterResolverFactoryTest {
 
     private fun javaStringListFunc(@Suppress("unused") list: java.util.List<String>) {}
     private object StringListResolver : IParameterResolver<StringListResolver>
-    private object StringListResolverFactory : TypedParameterResolverFactory<StringListResolver>(StringListResolver::class, typeOf<List<String>>()) {
+    private object StringListResolverFactory : TypedParameterResolverFactory(typeOf<List<String>>()) {
         override val supportedResolvers: List<Class<out IParameterResolver<*>>> get() = emptyList()
         override fun get(request: ResolverRequest): StringListResolver = StringListResolver
     }

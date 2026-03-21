@@ -24,7 +24,6 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.internal.parameters.resolvers.ChannelResolverFactory.ChannelResolver
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -48,7 +47,7 @@ internal sealed interface IChannelResolver {
 }
 
 @ResolverFactory
-internal class ChannelResolverFactory(private val context: BContext) : ParameterResolverFactory<ChannelResolver>(ChannelResolver::class) {
+internal class ChannelResolverFactory(private val context: BContext) : ParameterResolverFactory() {
     internal class ChannelResolver(
         context: BContext,
         private val type: Class<out GuildChannel>,

@@ -36,7 +36,7 @@ import kotlin.reflect.safeCast
 import kotlin.reflect.typeOf
 
 @ResolverFactory
-internal object MentionsStringResolverFactory : ParameterResolverFactory<MentionsStringResolverFactory.MentionsStringResolver>(MentionsStringResolver::class) {
+internal object MentionsStringResolverFactory : ParameterResolverFactory() {
     internal class MentionsStringResolver private constructor(
         private val mentionTypes: Array<out MentionType>,
         private val transform: (IMentionable) -> IMentionable?

@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 @ResolverFactory
 internal class SerializableComponentDataResolverFactory(
     private val globalSerializer: GlobalComponentDataSerializer,
-) : ParameterResolverFactory<SerializableComponentDataResolverFactory.Resolver>(Resolver::class) {
+) : ParameterResolverFactory() {
 
     override val supportedTypesStr: List<String> =
         listOf("<any ${annotationRef<SerializableComponentData>()} or ${annotationRef<SerializableTimeoutData>()} parameter>")
