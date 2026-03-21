@@ -84,7 +84,6 @@ internal class ResolverContainer internal constructor(
     }
 
     private fun validateFactories(factories: List<ParameterResolverFactory>) {
-        // TODO test this
         // Check resolver factories are supporting the right interfaces
         for (factory in factories) {
             for (clazz in factory.supportedResolvers) {
