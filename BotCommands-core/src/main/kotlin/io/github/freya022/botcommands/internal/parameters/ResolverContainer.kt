@@ -9,24 +9,13 @@ import io.github.freya022.botcommands.api.core.service.findAnnotationOnService
 import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotation
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.*
-import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
-private val compatibleInterfaces = listOf(
-    TextParameterResolver::class,
-    QuotableTextParameterResolver::class,
-    SlashParameterResolver::class,
-    ComponentParameterResolver::class,
-    UserContextParameterResolver::class,
-    MessageContextParameterResolver::class,
-    ModalParameterResolver::class,
-    TimeoutParameterResolver::class,
-    ICustomResolver::class
-)
 
 @BService
 internal class ResolverContainer internal constructor(
@@ -37,30 +26,8 @@ internal class ResolverContainer internal constructor(
     private val cache: MutableMap<ResolverRequest, ParameterResolverFactory?> = hashMapOf()
 
     init {
-        fun addResolver(resolver: ParameterResolver<*, *>, annotation: Resolver) {
-            fun ParameterResolver<*, *>.hasCompatibleInterface(): Boolean {
-                return compatibleInterfaces.any { it.isInstance(this) }
-            }
-
-            require(resolver.hasCompatibleInterface()) {
-                "The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}"
-            }
-
-            factories += when (resolver) {
-                is ClassParameterResolver -> resolver.toResolverFactory(annotation)
-                is TypedParameterResolver -> resolver.toResolverFactory(annotation)
-            }
-        }
-
-        // Add resolvers with their annotation
-        serviceContainer.getServiceNamesForAnnotation<Resolver>().forEach { resolverName ->
-            val annotation = serviceContainer.findAnnotationOnService<Resolver>(resolverName)
-                ?: throwInternal("DI said ${annotationRef<Resolver>()} was present but isn't")
-            val resolver = serviceContainer.getService(resolverName, ParameterResolver::class)
-            addResolver(resolver, annotation)
-        }
-
         factories += resolverFactories.also(::validateFactories)
+        factories += createWrappedResolvers(serviceContainer)
 
         logger.trace {
             val factoriesByResolverType = hashMapOf<Class<*>, MutableList<ParameterResolverFactory>>()
@@ -90,6 +57,17 @@ internal class ResolverContainer internal constructor(
                 require(clazz.isSubclassOf<IParameterResolver<*>>() && ResolverMarker::class.java in clazz.interfaces) {
                     "${factory.toLogString()} declares supporting ${clazz.shortQualifiedName}, but it is not a built-in resolver"
                 }
+            }
+        }
+    }
+
+    private fun createWrappedResolvers(serviceContainer: ServiceContainer): List<ParameterResolverFactory> {
+        return serviceContainer.getServiceNamesForAnnotation<Resolver>().map { resolverName ->
+            val annotation = serviceContainer.findAnnotationOnService<Resolver>(resolverName)
+                ?: throwInternal("DI said ${annotationRef<Resolver>()} was present but isn't")
+            when (val resolver = serviceContainer.getService(resolverName, ParameterResolver::class)) {
+                is ClassParameterResolver -> resolver.toResolverFactory(annotation)
+                is TypedParameterResolver -> resolver.toResolverFactory(annotation)
             }
         }
     }
