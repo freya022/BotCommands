@@ -31,10 +31,7 @@ internal object ModalStringResolver :
                 }
                 values.firstOrNull()
             }
-            Component.Type.TEXT_INPUT, Component.Type.RADIO_GROUP -> when {
-                option.isRequired -> modalMapping.asString
-                else -> modalMapping.asOptionalString
-            }
+            Component.Type.TEXT_INPUT, Component.Type.RADIO_GROUP -> modalMapping.asOptionalString
             else -> error("Cannot get a String from a ${modalMapping.type} input")
         }
     }
