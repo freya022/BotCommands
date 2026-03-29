@@ -60,7 +60,7 @@ object ModalInputResolverTests {
 
     @MethodSource("modalInputs")
     @ParameterizedTest
-    suspend fun `Modal input parameter can be resolved`(index: Int, type: Component.Type, expected: Any?) {
+    suspend fun <R> `Modal input parameter can be resolved`(index: Int, type: Component.Type, getter: (ModalMapping) -> R, value: R, expected: Any?) {
         val serviceContainer = mockk<ServiceContainer> {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
@@ -89,11 +89,7 @@ object ModalInputResolverTests {
 
         val resolver = resolvers.getResolver(ModalParameterResolver::class, request)
         val modalMapping = mockk<ModalMapping> {
-            every { asString } returns STRING
-            every { asOptionalString } returns null
-            every { asStringList } returns strings
-            every { asMentions } returns mentions
-            every { asAttachmentList } returns attachments
+            every { getter(this@mockk) } returns value
             every { this@mockk.type } returns type
         }
 
@@ -111,32 +107,32 @@ object ModalInputResolverTests {
     @JvmStatic
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
-            arguments("TextInput String", 0, TEXT_INPUT, STRING),
-            arguments("TextInput empty as null", 18, TEXT_INPUT, null),
-            arguments("TextInput empty with default value", 19, TEXT_INPUT, null),
-            arguments("Select menu string", 16, STRING_SELECT, STRING),
-            arguments("Select menu strings", 1, STRING_SELECT, strings),
-            arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, role),
-            arguments("Select menu mentionables", 3, MENTIONABLE_SELECT, roles),
-            arguments("Select menu role", 4, ROLE_SELECT, role),
-            arguments("Select menu roles", 5, ROLE_SELECT, roles),
-            arguments("Select menu user", 6, USER_SELECT, user),
-            arguments("Select menu users", 7, USER_SELECT, users),
-            arguments("Select menu input user", 8, USER_SELECT, inputUser),
-            arguments("Select menu input users", 9, USER_SELECT, inputUsers),
-            arguments("Select menu member", 10, USER_SELECT, member),
-            arguments("Select menu members", 11, USER_SELECT, members),
-            arguments("Select menu channel", 12, CHANNEL_SELECT, channel),
-            arguments("Select menu channels", 13, CHANNEL_SELECT, channels),
-            arguments("Select menu mentions", 14, MENTIONABLE_SELECT, mentions),
-            arguments("Attachment", 17, FILE_UPLOAD, attachments.first()),
-            arguments("Attachments", 15, FILE_UPLOAD, attachments),
+            arguments("TextInput String", 0, TEXT_INPUT, ModalMapping::getAsOptionalString, STRING, STRING),
+            arguments("TextInput null as null", 18, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
+            arguments("TextInput null with default value", 19, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
+            arguments("Select menu string", 16, STRING_SELECT, ModalMapping::getAsStringList, strings, STRING),
+            arguments("Select menu strings", 1, STRING_SELECT, ModalMapping::getAsStringList, strings, strings),
+            arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, role),
+            arguments("Select menu mentionables", 3, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, roles),
+            arguments("Select menu role", 4, ROLE_SELECT, ModalMapping::getAsMentions, mentions, role),
+            arguments("Select menu roles", 5, ROLE_SELECT, ModalMapping::getAsMentions, mentions, roles),
+            arguments("Select menu user", 6, USER_SELECT, ModalMapping::getAsMentions, mentions, user),
+            arguments("Select menu users", 7, USER_SELECT, ModalMapping::getAsMentions, mentions, users),
+            arguments("Select menu input user", 8, USER_SELECT, ModalMapping::getAsMentions, mentions, inputUser),
+            arguments("Select menu input users", 9, USER_SELECT, ModalMapping::getAsMentions, mentions, inputUsers),
+            arguments("Select menu member", 10, USER_SELECT, ModalMapping::getAsMentions, mentions, member),
+            arguments("Select menu members", 11, USER_SELECT, ModalMapping::getAsMentions, mentions, members),
+            arguments("Select menu channel", 12, CHANNEL_SELECT, ModalMapping::getAsMentions, mentions, channel),
+            arguments("Select menu channels", 13, CHANNEL_SELECT, ModalMapping::getAsMentions, mentions, channels),
+            arguments("Select menu mentions", 14, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, mentions),
+            arguments("Attachment", 17, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments.first()),
+            arguments("Attachments", 15, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments),
         )
         return listOf
     }
 
-    private fun arguments(name: String, index: Int, type: Component.Type, expected: Any?) =
-        argumentSet(name, index, type, expected)
+    private fun <R> arguments(name: String, index: Int, type: Component.Type, getter: (ModalMapping) -> R, value: R, expected: Any?) =
+        argumentSet(name, index, type, getter, value, expected)
 
     private fun userFunc(
         @Suppress("unused") textInput: String,
