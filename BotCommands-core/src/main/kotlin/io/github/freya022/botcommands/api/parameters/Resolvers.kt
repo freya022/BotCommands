@@ -1,21 +1,19 @@
 package io.github.freya022.botcommands.api.parameters
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
-import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.parameters.Resolvers.toHumanName
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ResolverProvider
+import io.github.freya022.botcommands.api.parameters.resolvers.enumerations.EnumResolverBuilder
+import io.github.freya022.botcommands.internal.parameters.resolvers.enumerations.EnumResolverBuilderImpl
+import io.github.freya022.botcommands.internal.utils.StackSensitive
 import io.github.freya022.botcommands.internal.utils.currentFrame
+import io.github.freya022.botcommands.internal.utils.findCaller
 import io.github.freya022.botcommands.internal.utils.sourceFile
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
+import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 
 /**
@@ -23,119 +21,41 @@ import javax.annotation.CheckReturnValue
  */
 object Resolvers {
     /**
-     * Creates an enum resolver for [slash][SlashParameterResolver] commands,
-     * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
-     *
-     * ### Text command support
-     * To add support for text command options,
-     * you have to use [EnumResolverBuilder.withTextSupport].
-     *
-     * ### Using choices
-     *
-     * You have to enable [SlashOption.usePredefinedChoices] for the choices to appear on your slash command option.
+     * Creates an enum resolver for the provided enum type.
+     * This supports no handler type by default, you need to explicitly register them,
+     * each handler type as its own, for example, `SlashCommandEnumResolver`.
      *
      * ### Registration
      *
-     * The created resolver needs to be registered as a service factory, with [@Resolver][Resolver], for example:
+     * The returned object can be registered as a service factory, with [@Resolver][Resolver],
+     * or be registered in a [ResolverProvider].
      *
-     * ```java
-     * @BConfiguration
-     * public class EnumResolvers {
-     *     // Resolver for DAYS/HOURS/MINUTES (and SECONDS in the test guild), where the displayed name is given by 'Resolvers#toHumanName'
-     *     @Resolver
-     *     public ParameterResolver<?, ?> timeUnitResolver() {
-     *         return Resolvers.enumResolver(
-     *             TimeUnit.class,
-     *             guild -> Utils.isTestGuild(guild)
-     *                 ? EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS)
-     *                 : EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
-     *         );
-     *     }
-     *
-     *     ...other resolvers...
-     * }
-     * ```
-     *
-     * ### Localization
-     *
-     * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
-     * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
-     * as required by [LocalizationFunction].
-     *
-     * The choice name is produced by [the name function][EnumResolverBuilder.nameFunction],
-     * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
-     *
-     * For example, using the [default name function][toHumanName]:
-     *
-     * 1. `MY_ENUM_VALUE` (Raw enum name)
-     * 2. `My enum value` (Choice name displayed on Discord)
-     * 3. `my_enum_value` (Choice name in your localization file)
-     *
-     * @param e                   The enum type
-     * @param guildValuesSupplier Retrieves the values used for slash command choices, for each [Guild]
-     *
-     * @see toHumanName
+     * @param enumType The enum type
      */
     @JvmStatic
     @CheckReturnValue
-    fun <E : Enum<E>> enumResolver(e: Class<E>, guildValuesSupplier: EnumValuesSupplier<E>): EnumResolverBuilder<E> {
-        return EnumResolverBuilder(e, guildValuesSupplier)
+    fun <E : Enum<E>> ofEnum(enumType: Class<E>, block: Consumer<EnumResolverBuilder<E>>): ParameterResolverFactory {
+        @OptIn(StackSensitive::class)
+        val caller = findCaller()
+        val callerSig = "${caller.declaringClass.shortQualifiedName}.${caller.methodName.substringBefore('$')} (${caller.sourceFile}:${caller.lineNumber})"
+        return EnumResolverBuilderImpl(enumType, callerSig).apply(block::accept).build()
     }
 
     /**
-     * Creates an enum resolver for [slash][SlashParameterResolver] commands,
-     * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
-     *
-     * ### Text command support
-     * To add support for text command options,
-     * you have to use [EnumResolverBuilder.withTextSupport][EnumResolverBuilder.withTextSupport].
-     *
-     * ### Using choices
-     *
-     * You have to enable [SlashOption.usePredefinedChoices] for the choices to appear on your slash command option.
+     * Creates an enum resolver for the provided enum type.
+     * This supports no handler type by default, you need to explicitly register them,
+     * each handler type as its own, for example, `SlashCommandEnumResolver`.
      *
      * ### Registration
      *
-     * The created resolver needs to be registered as a service factory, with [@Resolver][Resolver], for example:
+     * The returned object can be registered as a service factory, with [@Resolver][Resolver],
+     * or be registered in a [ResolverProvider].
      *
-     * ```java
-     * @BConfiguration
-     * public class EnumResolvers {
-     *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers#toHumanName'
-     *     @Resolver
-     *     public ParameterResolver<?, ?> timeUnitResolver() {
-     *         return Resolvers.enumResolver(TimeUnit.class, EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)).build();
-     *     }
-     *
-     *     ...other resolvers...
-     * }
-     * ```
-     *
-     * ### Localization
-     *
-     * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
-     * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
-     * as required by [LocalizationFunction].
-     *
-     * The choice name is produced by [the name function][EnumResolverBuilder.nameFunction],
-     * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
-     *
-     * For example, using the [default name function][toHumanName]:
-     *
-     * 1. `MY_ENUM_VALUE` (Raw enum name)
-     * 2. `My enum value` (Choice name displayed on Discord)
-     * 3. `my_enum_value` (Choice name in your localization file)
-     *
-     * @param e      The enum type
-     * @param values The values used for slash command choices
-     *
-     * @see toHumanName
+     * @param E The enum type
      */
-    @JvmStatic
-    @JvmOverloads
-    @CheckReturnValue
-    fun <E : Enum<E>> enumResolver(e: Class<E>, values: Collection<E> = EnumSet.allOf(e)): EnumResolverBuilder<E> {
-        return EnumResolverBuilder(e, guildValuesSupplier = { values })
+    @JvmSynthetic
+    inline fun <reified E : Enum<E>> ofEnum(noinline block: EnumResolverBuilder<E>.() -> Unit): ParameterResolverFactory {
+        return ofEnum(E::class.java, block)
     }
 
     /**
@@ -152,125 +72,6 @@ object Resolvers {
             .replaceFirstChar { it.uppercaseChar() }
     }
 }
-
-/**
- * Creates an enum resolver for [slash][SlashParameterResolver] commands,
- * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
- *
- * ### Text command support
- * To add support for text command options,
- * you have to use [EnumResolverBuilder.withTextSupport] in the configuration [block].
- *
- * ### Using choices
- *
- * You have to enable [SlashOption.usePredefinedChoices] for the choices to appear on your slash command option.
- *
- * ### Registration
- *
- * The created resolver needs to be registered as a service factory, with [@Resolver][Resolver], for example:
- *
- * ```kt
- * @BConfiguration
- * object EnumResolvers {
- *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers.Enum#toHumanName'
- *     @Resolver
- *     fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
- *
- *     ...other resolvers...
- * }
- * ```
- *
- * ### Localization
- *
- * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
- * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
- * as required by [LocalizationFunction].
- *
- * The choice name is produced by [the name function][nameFunction],
- * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
- *
- * For example, using the [default name function][toHumanName]:
- *
- * 1. `MY_ENUM_VALUE` (Raw enum name)
- * 2. `My enum value` (Choice name displayed on Discord)
- * 3. `my_enum_value` (Choice name in your localization file)
- *
- * @param E            The enum type
- * @param nameFunction Retrieves a human friendly name for the enum value, defaults to [toHumanName]
- *
- * @see toHumanName
- */
-inline fun <reified E : Enum<E>> enumResolver(
-    vararg values: E = enumValues(),
-    noinline nameFunction: (e: E) -> String = { it.toHumanName() },
-    block: EnumResolverBuilder<E>.() -> Unit = {}
-): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, values.toCollection(enumSetOf<E>()))
-    .nameFunction(nameFunction)
-    .apply(block)
-    .build()
-
-/**
- * Creates an enum resolver for [slash][SlashParameterResolver] commands,
- * as well as [component data][ComponentParameterResolver] and [timeout data][TimeoutParameterResolver].
- *
- * ### Text command support
- * To add support for text command options,
- * you have to use [EnumResolverBuilder.withTextSupport] in the configuration [block].
- *
- * ### Using choices
- *
- * You have to enable [SlashOption.usePredefinedChoices] for the choices to appear on your slash command option.
- *
- * ### Registration
- *
- * The created resolver needs to be registered as a service factory, with [@Resolver][Resolver], for example:
- *
- * ```kt
- * @BConfiguration
- * object EnumResolvers {
- *     // Resolver for DAYS/HOURS/MINUTES (and SECONDS in the test guild), where the displayed name is given by 'Resolvers.Enum#toHumanName'
- *     @Resolver
- *     fun timeUnitResolver() = enumResolver<TimeUnit> { guild ->
- *         if (guild.isTestGuild()) {
- *             enumSetOf(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS)
- *         } else {
- *             enumSetOf(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
- *         }
- *     }
- *
- *     ...other resolvers...
- * }
- * ```
- *
- * ### Localization
- *
- * The choices are localized automatically by using the bundles defined by [BApplicationConfigBuilder.addLocalizations],
- * using a path similar to **my.command.path**.options.**my_option**.choices.**choice_name**.name,
- * as required by [LocalizationFunction].
- *
- * The choice name is produced by [the name function][nameFunction],
- * and is then lowercase with spaces modified to underscore by [LocalizationFunction].
- *
- * For example, using the [default name function][toHumanName]:
- *
- * 1. `MY_ENUM_VALUE` (Raw enum name)
- * 2. `My enum value` (Choice name displayed on Discord)
- * 3. `my_enum_value` (Choice name in your localization file)
- *
- * @param E                   The enum type
- * @param guildValuesSupplier Retrieves the values used for slash command choices, for each [Guild]
- * @param nameFunction        Retrieves a human friendly name for the enum value, defaults to [toHumanName]
- *
- * @see toHumanName
- */
-inline fun <reified E : Enum<E>> enumResolver(
-    guildValuesSupplier: EnumValuesSupplier<E>,
-    noinline nameFunction: (e: E) -> String = { it.toHumanName() },
-    block: EnumResolverBuilder<E>.() -> Unit = {}
-): ClassParameterResolver<*, E> = Resolvers.enumResolver(E::class.java, guildValuesSupplier)
-    .nameFunction(nameFunction)
-    .apply(block)
-    .build()
 
 /**
  * Convert an enum to a more human-friendly name.

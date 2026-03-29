@@ -85,7 +85,7 @@ object ModalInputResolverTests {
             every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver
             every { getService("modalBooleanResolver", ParameterResolver::class) } returns ModalBooleanResolver
         }
-        val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
+        val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory), listOf())
 
         val parameter = ::userFunc.valueParameters[index]
         val request = TypedResolverRequest(ModalParameterResolver::class.java, ParameterWrapper(parameter))

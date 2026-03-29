@@ -33,7 +33,7 @@ class ParameterResolverFactoryTest {
             override fun get(request: ResolverRequest): IParameterResolver<*> = throw UnsupportedOperationException()
         }
 
-        assertThrows<IllegalArgumentException> { ResolverContainer(serviceContainer, listOf(incorrect)) }
+        assertThrows<IllegalArgumentException> { ResolverContainer(serviceContainer, listOf(incorrect), listOf()) }
             .also { e ->
                 assertTrue("but it is not a built-in resolver" in e.message!!)
             }
@@ -45,7 +45,7 @@ class ParameterResolverFactoryTest {
             override fun get(request: ResolverRequest): IParameterResolver<*> = throw UnsupportedOperationException()
         }
 
-        assertDoesNotThrow { ResolverContainer(serviceContainer, listOf(correct)) }
+        assertDoesNotThrow { ResolverContainer(serviceContainer, listOf(correct), listOf()) }
     }
 
     @Test
@@ -55,7 +55,7 @@ class ParameterResolverFactoryTest {
             every { findAnnotationOnService("userResolver", Resolver::class) } returns Resolver(0)
             every { getService("userResolver", ParameterResolver::class) } returns CustomUserResolver
         }
-        val resolvers = ResolverContainer(serviceContainer, listOf(OverrideableUserResolverFactory))
+        val resolvers = ResolverContainer(serviceContainer, listOf(OverrideableUserResolverFactory), listOf())
 
         val request = TypedResolverRequest(ICustomResolver::class.java, ParameterWrapper(::userFunc.valueParameters[0]))
 
