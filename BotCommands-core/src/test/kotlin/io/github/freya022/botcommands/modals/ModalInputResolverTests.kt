@@ -68,6 +68,7 @@ object ModalInputResolverTests {
                 "modalStringListResolver",
                 "modalAttachmentResolver",
                 "modalAttachmentListResolver",
+                "modalBooleanResolver",
             )
 
             every { findAnnotationOnService("modalMentionsResolver", Resolver::class) } returns Resolver(0)
@@ -75,12 +76,14 @@ object ModalInputResolverTests {
             every { findAnnotationOnService("modalStringListResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalAttachmentResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalAttachmentListResolver", Resolver::class) } returns Resolver(0)
+            every { findAnnotationOnService("modalBooleanResolver", Resolver::class) } returns Resolver(0)
 
             every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver
             every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver
             every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver
             every { getService("modalAttachmentResolver", ParameterResolver::class) } returns ModalAttachmentResolver
             every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver
+            every { getService("modalBooleanResolver", ParameterResolver::class) } returns ModalBooleanResolver
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory))
 
@@ -127,6 +130,12 @@ object ModalInputResolverTests {
             arguments("Select menu mentions", 14, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, mentions),
             arguments("Attachment", 17, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments.first()),
             arguments("Attachments", 15, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments),
+            arguments("Checkbox", 20, CHECKBOX, ModalMapping::getAsBoolean, value = true, expected = true),
+            arguments("Checkbox group single", 21, CHECKBOX_GROUP, ModalMapping::getAsStringList, strings, STRING),
+            arguments("Checkbox group list", 22, CHECKBOX_GROUP, ModalMapping::getAsStringList, strings, strings),
+            arguments("Checkbox group none as null", 23, CHECKBOX_GROUP, ModalMapping::getAsStringList, emptyList(), null),
+            arguments("Radio group single", 24, RADIO_GROUP, ModalMapping::getAsOptionalString, STRING, STRING),
+            arguments("Radio group none as null", 25, RADIO_GROUP, ModalMapping::getAsOptionalString, null, null),
         )
         return listOf
     }
@@ -155,5 +164,11 @@ object ModalInputResolverTests {
         @Suppress("unused") attachment: Message.Attachment,
         @Suppress("unused") emptyTextInputAsNull: String?,
         @Suppress("unused") emptyTextInputAsOptional: String = "default value",
+        @Suppress("unused") checkbox: Boolean,
+        @Suppress("unused") checkboxGroupSingle: String,
+        @Suppress("unused") checkboxGroupList: List<String>,
+        @Suppress("unused") checkboxGroupNoneAsNull: String?,
+        @Suppress("unused") radioGroupSingle: String,
+        @Suppress("unused") radioGroupNoneAsNull: String?,
     ) {}
 }
