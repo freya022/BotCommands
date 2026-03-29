@@ -10,6 +10,8 @@ import io.github.freya022.botcommands.api.core.service.getServiceNamesForAnnotat
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.*
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
+import io.github.freya022.botcommands.api.parameters.resolvers.ResolverProvider
+import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverManagerImpl
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -21,6 +23,7 @@ private val logger = KotlinLogging.logger { }
 internal class ResolverContainer internal constructor(
     serviceContainer: ServiceContainer,
     resolverFactories: List<ParameterResolverFactory>,
+    resolverProviders: List<ResolverProvider>,
 ) {
     private val factories: MutableList<ParameterResolverFactory> = arrayOfSize(50)
     private val cache: MutableMap<ResolverRequest, ParameterResolverFactory?> = hashMapOf()
@@ -28,6 +31,12 @@ internal class ResolverContainer internal constructor(
     init {
         factories += resolverFactories.also(::validateFactories)
         factories += createWrappedResolvers(serviceContainer)
+
+        val resolverManager = ResolverManagerImpl()
+        for (provider in resolverProviders) {
+            provider.declare(resolverManager)
+        }
+        factories += resolverManager.resolverFactories.also(::validateFactories)
 
         logger.trace {
             val factoriesByResolverType = hashMapOf<Class<*>, MutableList<ParameterResolverFactory>>()
