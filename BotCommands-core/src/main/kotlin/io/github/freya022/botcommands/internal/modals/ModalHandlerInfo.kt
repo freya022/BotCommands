@@ -105,7 +105,7 @@ internal class ModalHandlerInfo internal constructor(
                     option.resolver.resolveSuspend(option, event, modalMapping).also { obj ->
                         // Technically not required, but provides additional info
                         requireUser(obj != null || option.isOptionalOrNullable) {
-                            "The parameter '${option.declaredName}' from $modalMapping and value '${modalMapping.valueAsString}' is required but could not be resolved into a ${option.type.simpleNestedName}"
+                            "The parameter '${option.declaredName}' from $modalMapping and value '${modalMapping.valueAsString}' is required but was resolved to null"
                         }
                     }
                 }
