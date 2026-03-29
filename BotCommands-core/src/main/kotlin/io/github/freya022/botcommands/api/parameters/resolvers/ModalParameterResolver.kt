@@ -50,7 +50,7 @@ import kotlin.reflect.KType
  *
  * #### [CheckboxGroup]
  * - `List<String>` (can be empty)
- * - `String` when a single value can be selected
+ * - `String` when a single value can be selected  (supports `null` when none selected)
  *
  * #### [Checkbox]
  * - (primitive) `Boolean`
