@@ -147,15 +147,14 @@ class RetrieveOrNullExtensionsPresenceTest {
         val returnType = loadClassAndGetMethod().kotlinFunction!!.returnType
         val returnTypeErasure = returnType.jvmErasure
 
-        return when {
-            returnTypeErasure.isSubclassOf(RestAction::class) ->
-                !returnType.findErasureOfAt<RestAction<*>>(0).jvmErasure.isSubclassOf(Iterable::class)
-
-            returnTypeErasure.isSubclassOf(Task::class) ->
-                !returnType.findErasureOfAt<Task<*>>(0).jvmErasure.isSubclassOf(Iterable::class)
-
+        val resultType = when {
+            returnTypeErasure == CacheRestAction::class -> returnType.findErasureOfAt<CacheRestAction<*>>(0)
+            returnTypeErasure.isSubclassOf(RestAction::class) -> returnType.findErasureOfAt<RestAction<*>>(0)
+            returnTypeErasure.isSubclassOf(Task::class) -> returnType.findErasureOfAt<Task<*>>(0)
             else -> error("Unhandled return type ${returnType.jvmErasure.jvmName}")
         }
+
+        return !resultType.jvmErasure.isSubclassOf(Iterable::class)
     }
 
     private fun isOrNullEquivalent(javaMethod: MethodInfo, kotlinFunction: MethodInfo): Boolean {
