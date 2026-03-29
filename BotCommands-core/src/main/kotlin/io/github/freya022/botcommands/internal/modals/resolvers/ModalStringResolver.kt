@@ -5,6 +5,8 @@ import io.github.freya022.botcommands.api.modals.ModalEvent
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ModalParameterResolver
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
+import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 
@@ -19,13 +21,17 @@ internal object ModalStringResolver :
         modalMapping: ModalMapping,
     ): String? {
         return when (modalMapping.type) {
-            Component.Type.STRING_SELECT -> {
+            Component.Type.STRING_SELECT, Component.Type.CHECKBOX_GROUP -> {
                 val values = modalMapping.asStringList
-                if (values.size > 1)
-                    error("Cannot get a String from a string select menu with more than a single value")
+                if (values.size > 1) {
+                    throwArgument(
+                        option.kParameter.function,
+                        "Cannot get a String from a ${modalMapping.type} with more than a single value"
+                    )
+                }
                 values.firstOrNull()
             }
-            Component.Type.TEXT_INPUT -> modalMapping.asString
+            Component.Type.TEXT_INPUT, Component.Type.RADIO_GROUP -> modalMapping.asOptionalString
             else -> error("Cannot get a String from a ${modalMapping.type} input")
         }
     }
