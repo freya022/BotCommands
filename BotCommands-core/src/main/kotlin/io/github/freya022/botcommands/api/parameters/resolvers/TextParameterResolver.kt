@@ -80,10 +80,10 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>
      *
      * ### Pattern flags
      *
-     * Flags added on this pattern will not affect other options,
-     * however, make sure to close "embedded flag expressions" if you do use them.
-     *
-     * Using flags without embedded flag expressions is not allowed.
+     * - Flags added on this pattern will not affect other options
+     * - If you use "embedded flag expressions" (e.g. `(?i)`), make sure you close them (`(?-i)`)
+     * - Using flags that do not have an embedded flag expression, is not allowed,
+     *     you can check if it has one from the flag's documentation
      *
      * [Pattern.UNICODE_CASE] and [Pattern.UNICODE_CHARACTER_CLASS] are enabled by default.
      *
