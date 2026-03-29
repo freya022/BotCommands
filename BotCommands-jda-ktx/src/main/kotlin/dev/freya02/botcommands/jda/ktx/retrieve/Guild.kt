@@ -276,3 +276,10 @@ suspend fun Guild.retrieveScheduledEventByIdOrNull(id: Long, @IgnoreForMatch use
 suspend fun Guild.retrieveScheduledEventByIdOrNull(id: String, @IgnoreForMatch useCache: Boolean = true): ScheduledEvent? {
     return retrieveScheduledEventById(id).useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_SCHEDULED_EVENT)
 }
+
+/**
+ * Same as [Guild.retrieveSoundboardSound], but returns `null` on [ErrorResponse.UNKNOWN_SOUND].
+ */
+suspend fun Guild.retrieveSoundboardSoundOrNull(soundboardSound: SoundboardSoundSnowflake, @IgnoreForMatch useCache: Boolean = true): SoundboardSound? {
+    return retrieveSoundboardSound(soundboardSound).useCache(useCache).awaitOrNullOn(ErrorResponse.UNKNOWN_SOUND)
+}
