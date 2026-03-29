@@ -1,6 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components.utils
 
-class ObservableAccumulator<T>(initialValues: Collection<T>, private val onUpdate: (newItems: List<T>) -> Unit) {
+class ObservableAccumulator<T : Any>(initialValues: Collection<T>, private val onUpdate: (newItems: List<T>) -> Unit) {
 
     private val items = initialValues.toMutableList()
 

@@ -1,6 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components.utils
 
-class MutableAccumulator<T>(val collection: MutableCollection<T>) {
+class MutableAccumulator<T : Any>(val collection: MutableCollection<T>) {
 
     operator fun T.unaryPlus() {
         collection += this
