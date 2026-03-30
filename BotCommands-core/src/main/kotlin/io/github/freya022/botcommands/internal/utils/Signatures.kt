@@ -6,5 +6,5 @@ import kotlin.reflect.KFunction
 internal val KFunction<*>.shortSignatureNoSrc: String
     get() = getSignature(returnType = true, source = false)
 
-internal val KFunction<*>.shortSignature: String
+val KFunction<*>.shortSignature: String
     get() = getSignature(returnType = true)

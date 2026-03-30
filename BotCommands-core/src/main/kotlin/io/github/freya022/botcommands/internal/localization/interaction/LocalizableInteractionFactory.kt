@@ -10,13 +10,13 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 
 // Don't require enabled feature, could be used by user's own impl
 @BService
-internal class LocalizableInteractionFactory internal constructor(
+class LocalizableInteractionFactory internal constructor(
     private val localizationService: LocalizationService,
     private val localizationConfig: BLocalizationConfig,
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
     private val messagesFactory: BotCommandsMessagesFactory,
 ) {
-    internal fun create(event: IReplyCallback) =
+    fun create(event: IReplyCallback) =
         LocalizableInteractionImpl(event, localizationService, localizationConfig, userLocaleProvider, guildLocaleProvider, messagesFactory)
 }

@@ -4,8 +4,8 @@ import io.github.freya022.botcommands.api.parameters.AggregatedParameter
 import io.github.freya022.botcommands.internal.core.options.AbstractGeneratedOption
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 
-internal abstract class AbstractGeneratedOptionBuilderImpl(
+abstract class AbstractGeneratedOptionBuilderImpl(
     optionParameter: OptionParameter
 ) : OptionBuilderImpl(optionParameter) {
-    internal abstract fun toGeneratedOption(parent: AggregatedParameter): AbstractGeneratedOption
+    abstract fun toGeneratedOption(parent: AggregatedParameter): AbstractGeneratedOption
 }

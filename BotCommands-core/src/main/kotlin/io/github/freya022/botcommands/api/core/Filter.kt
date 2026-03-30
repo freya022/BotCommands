@@ -27,7 +27,7 @@ interface Filter {
     val description: String get() = this.javaClass.simpleNestedName
 }
 
-internal inline fun <T : Filter> checkFilters(globalFilters: List<T>, commandFilters: List<T>, block: (filter: T) -> Unit) {
+inline fun <T : Filter> checkFilters(globalFilters: List<T>, commandFilters: List<T>, block: (filter: T) -> Unit) {
     val globalFilterIterator = globalFilters.iterator()
     val commandFilterIterator = commandFilters.iterator()
     while (true) {

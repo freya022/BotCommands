@@ -8,20 +8,20 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
-internal enum class InsertOptionResult {
+enum class InsertOptionResult {
     OK,
     SKIP,
     ABORT
 }
 
-internal inline fun List<AggregatedParameterMixin>.mapOptions(block: MutableMap<OptionImpl, Any?>.(OptionImpl) -> Unit): Map<OptionImpl, Any?> {
+inline fun List<AggregatedParameterMixin>.mapOptions(block: MutableMap<OptionImpl, Any?>.(OptionImpl) -> Unit): Map<OptionImpl, Any?> {
     val options = this.flatMap { it.allOptions }
     return buildMap(options.size) {
         options.forEach { block(it) }
     }
 }
 
-internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap: MutableMap<OptionImpl, Any?>): InsertOptionResult {
+fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap: MutableMap<OptionImpl, Any?>): InsertOptionResult {
     if (value != null) {
         optionMap[option] = value
         return InsertOptionResult.OK
@@ -44,7 +44,7 @@ internal fun tryInsertNullableOption(value: Any?, option: OptionImpl, optionMap:
 }
 
 context(executable: ExecutableMixin)
-internal suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
+suspend fun Collection<AggregatedParameterMixin>.mapFinalParameters(
     firstParam: Any,
     optionValues: Map<out OptionImpl, Any?>
 ): MethodArguments {

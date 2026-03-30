@@ -19,8 +19,8 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventPar
 import io.github.freya022.botcommands.internal.utils.requireAt
 import io.github.freya022.botcommands.internal.utils.throwInternal
 
-internal object CommandOptions {
-    internal inline fun <reified T : OptionBuilderImpl, reified R : IParameterResolver<R>, P : AggregatedParameter> transform(
+object CommandOptions {
+    inline fun <reified T : OptionBuilderImpl, reified R : IParameterResolver<R>, P : AggregatedParameter> transform(
         parent: P,
         resolverData: ResolverData?,
         aggregateBuilder: OptionAggregateBuilderImpl<*>,
@@ -58,7 +58,7 @@ internal object CommandOptions {
         }
     }
 
-    private val OptionBuilderImpl.innerWrappedParameter: ParameterWrapper
+    val OptionBuilderImpl.innerWrappedParameter: ParameterWrapper
         get() = when {
             optionParameter.executableFunction.isVarargAggregator() -> parameter.wrap().toListElementType()
             else -> parameter.wrap()

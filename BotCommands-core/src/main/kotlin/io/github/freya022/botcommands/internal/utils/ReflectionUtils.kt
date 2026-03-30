@@ -115,7 +115,7 @@ object ReflectionUtils {
             ?: javaField?.declaringClass?.kotlin
             ?: throwInternal("Cannot find declaring class of '$this'")
 
-    internal val KFunction<*>.declaringClass: KClass<*>
+    val KFunction<*>.declaringClass: KClass<*>
         get() = this.javaMethodOrConstructor.declaringClass.kotlin
 
 //    internal val KFunction<*>.isJava
@@ -124,7 +124,7 @@ object ReflectionUtils {
     internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
-    internal val KCallable<*>.nonEventParameters
+    val KCallable<*>.nonEventParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf<Event>() }
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
@@ -161,10 +161,10 @@ internal val KClass<*>.kind: ClassKind
 internal val KClass<*>.isObject: Boolean
     get() = kind == ClassKind.OBJECT
 
-internal fun KParameter.findDeclarationName(): String =
+fun KParameter.findDeclarationName(): String =
     name ?: throwArgument("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 
-internal val KFunction<*>.javaMethodInternal: Method
+val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
 inline fun <reified T : Any> KClass<*>.superErasureAt(index: Int): KType = superErasureAt(index, T::class)

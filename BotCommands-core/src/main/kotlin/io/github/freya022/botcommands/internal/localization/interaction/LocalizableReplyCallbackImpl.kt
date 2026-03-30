@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import java.util.*
 
-internal class LocalizableReplyCallbackImpl internal constructor(
+class LocalizableReplyCallbackImpl(
     private val replyCallback: IReplyCallback,
     private val interaction: LocalizableInteractionImpl
 ) : LocalizableReplyCallback {

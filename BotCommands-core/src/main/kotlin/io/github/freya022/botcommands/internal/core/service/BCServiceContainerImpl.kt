@@ -372,7 +372,7 @@ internal fun ServiceContainer.getFunctionServiceOrNull(function: KFunction<*>): 
  * NOTE: Lazy services do not get checked if they can be instantiated,
  * this aligns with the behavior of a user using `ServiceContainer.lazy`.
  */
-internal fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
+fun ServiceContainer.canCreateWrappedService(parameter: KParameter): ServiceError? {
     val typeErasure = parameter.type.jvmErasure
     if (typeErasure == LazyService::class) {
         return null //Lazy exception

@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 
-internal class ServiceMethodOption internal constructor(
+class ServiceMethodOption(
     override val parent: AggregatedParameter,
     optionParameter: OptionParameter,
     private val serviceContainer: ServiceContainer,
@@ -20,7 +20,7 @@ internal class ServiceMethodOption internal constructor(
     // Caches the service if:
     // 1. Is non-null
     // 2. Is not LazyService/List
-    internal fun getService(): Any? {
+    fun getService(): Any? {
         if (::cachedService.isInitialized) return cachedService
 
         val result = serviceContainer.tryGetWrappedService(kParameter)

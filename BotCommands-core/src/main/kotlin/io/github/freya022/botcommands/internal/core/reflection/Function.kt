@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.core.reflection
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
-internal sealed class Function<R>(boundFunction: KFunction<R>) {
+sealed class Function<R>(boundFunction: KFunction<R>) {
     internal val kFunction = boundFunction.reflectReference()
 
     override fun equals(other: Any?): Boolean {

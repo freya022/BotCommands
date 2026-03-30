@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import java.util.*
 
-internal abstract class AbstractLocalizableAction(
+abstract class AbstractLocalizableAction(
     localizationConfig: BLocalizationConfig,
     protected val localizationService: LocalizationService,
 ) : LocalizableAction {

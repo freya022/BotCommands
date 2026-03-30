@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstance
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 
-internal open class MemberFunction<R> internal constructor(
+open class MemberFunction<R> internal constructor(
     boundFunction: KFunction<R>,
     instanceSupplier: () -> Any
 ) : Function<R>(boundFunction) {

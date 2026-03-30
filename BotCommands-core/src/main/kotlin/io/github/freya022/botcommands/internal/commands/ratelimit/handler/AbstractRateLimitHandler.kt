@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.internal.commands.ratelimit.CancellableRateLimitImpl
 
-internal abstract class AbstractRateLimitHandler protected constructor() {
+abstract class AbstractRateLimitHandler protected constructor() {
     protected suspend fun tryRun(rateLimitingContext: RateLimitingContext, rateLimitInfo: RateLimitInfo, block: suspend (CancellableRateLimit) -> Boolean) {
         val bucket = rateLimitInfo.limiter.getBucket(rateLimitingContext)
         val probe = bucket.tryConsumeAndReturnRemaining(1)

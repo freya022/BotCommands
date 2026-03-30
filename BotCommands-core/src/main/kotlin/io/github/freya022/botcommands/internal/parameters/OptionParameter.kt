@@ -13,7 +13,7 @@ import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KFunction
 
-internal class OptionParameter internal constructor(
+class OptionParameter internal constructor(
     typeCheckingFunction: KFunction<*>,
     internal val typeCheckingParameterName: String,
     executableFunction: KFunction<*>,
@@ -29,13 +29,13 @@ internal class OptionParameter internal constructor(
     internal val executableFunction = executableFunction.reflectReference()
     internal val executableParameter = this.executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }
 
-    internal companion object {
-        internal fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
+    companion object {
+        fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
             SingleAggregatorParameter(commandFunction, parameterName).toOptionParameter(commandFunction, parameterName)
     }
 }
 
-internal fun OptionParameter.toFallbackOptionBuilder(
+fun OptionParameter.toFallbackOptionBuilder(
     serviceContainer: ServiceContainer,
     resolverContainer: ResolverContainer,
 ): OptionBuilderImpl {

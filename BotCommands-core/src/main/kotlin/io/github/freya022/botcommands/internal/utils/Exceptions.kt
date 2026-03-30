@@ -16,7 +16,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-internal fun throwInternal(message: String): Nothing =
+fun throwInternal(message: String): Nothing =
     throw InternalException(message)
 
 internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
@@ -34,7 +34,7 @@ fun throwArgument(function: KFunction<*>, message: String): Nothing =
 internal fun Throwable.rethrow(message: String): Nothing =
     throw RuntimeException(message, unwrap())
 
-internal fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothing =
+fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothing =
     throw RuntimeException("$message\n    Function: ${function.shortSignature}", unwrap())
 
 internal fun Throwable.rethrowAt(message: String, declarationSite: DeclarationSite): Nothing =
@@ -82,7 +82,7 @@ private fun exceptionMessage(message: String, function: KFunction<*>) =
 private fun exceptionMessage(message: String) = message
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun requireAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
+inline fun requireAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
@@ -138,7 +138,7 @@ internal fun Throwable.unwrap(): Throwable {
     return this
 }
 
-internal suspend fun IReplyCallback.replyExceptionMessage(
+suspend fun IReplyCallback.replyExceptionMessage(
     message: MessageCreateData
 ) = runIgnoringResponse(ErrorResponse.UNKNOWN_INTERACTION, ErrorResponse.UNKNOWN_WEBHOOK) {
     if (isAcknowledged) {

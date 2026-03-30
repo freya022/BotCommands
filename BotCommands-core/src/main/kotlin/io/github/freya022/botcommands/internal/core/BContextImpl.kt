@@ -48,7 +48,7 @@ import kotlin.time.toJavaDuration
 private val logger = KotlinLogging.loggerOf<BContext>()
 
 @BService
-internal class BContextImpl internal constructor(
+class BContextImpl internal constructor(
     override val config: BConfig,
     override val serviceContainer: ServiceContainer,
     override val botOwners: BotOwners

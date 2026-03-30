@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.internal.localization.AbstractLocalizableA
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback
 import java.util.*
 
-internal class LocalizableInteractionImpl internal constructor(
+class LocalizableInteractionImpl internal constructor(
     private val deferrableCallback: IDeferrableCallback,
     localizationService: LocalizationService,
     localizationConfig: BLocalizationConfig,

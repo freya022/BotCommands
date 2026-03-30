@@ -8,7 +8,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction
 
-internal interface ExecutableMixin : Executable {
+interface ExecutableMixin : Executable {
     val eventFunction: MemberParamFunction<*, *>
     override val function: KFunction<*>
         get() = eventFunction.kFunction

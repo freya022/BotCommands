@@ -9,17 +9,17 @@ import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KFunction
 
 @CommandDSL
-internal abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>> internal constructor(
+abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>> internal constructor(
     internal val aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>,
 ) : OptionAggregateBuilderContainerMixin<T>,
     OptionAggregateBuilder<T> {
 
-    internal val aggregator: KFunction<*> = aggregator.reflectReference()
-    internal val parameter = aggregatorParameter.typeCheckingParameter
+    val aggregator: KFunction<*> = aggregator.reflectReference()
+    val parameter = aggregatorParameter.typeCheckingParameter
 
     private val _optionBuilders: MutableMap<String, MutableList<OptionBuilderImpl>> = mutableMapOf()
-    internal val optionBuilders: Map<String, List<OptionBuilderImpl>>
+    val optionBuilders: Map<String, List<OptionBuilderImpl>>
         get() = _optionBuilders
 
     private val aggregateContainer = OptionAggregateBuilderContainerMixinImpl(aggregator, ::constructNestedAggregate)

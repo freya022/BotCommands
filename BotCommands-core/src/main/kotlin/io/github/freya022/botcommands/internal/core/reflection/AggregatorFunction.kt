@@ -15,7 +15,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-internal class AggregatorFunction private constructor(
+class AggregatorFunction private constructor(
     boundAggregator: KFunction<*>,
     /**
      * Nullable due to constructor aggregators
@@ -57,5 +57,5 @@ internal class AggregatorFunction private constructor(
     }
 }
 
-internal fun KFunction<*>.toAggregatorFunction(context: BContext, firstParamType: KClass<*>) =
+fun KFunction<*>.toAggregatorFunction(context: BContext, firstParamType: KClass<*>) =
     AggregatorFunction(context, this, firstParamType)

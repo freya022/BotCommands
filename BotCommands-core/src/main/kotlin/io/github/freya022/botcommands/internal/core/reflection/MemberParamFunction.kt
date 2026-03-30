@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 
-internal class MemberParamFunction<T : Any, R> internal constructor(
+class MemberParamFunction<T : Any, R>(
     boundFunction: KFunction<R>,
     instanceSupplier: () -> Any,
     paramClass: KClass<T>
@@ -32,13 +32,13 @@ internal class MemberParamFunction<T : Any, R> internal constructor(
     )
 }
 
-internal inline fun <reified T : Any> ClassPathFunction.toMemberParamFunction() =
+inline fun <reified T : Any> ClassPathFunction.toMemberParamFunction() =
     MemberParamFunction(function, instanceSupplier = { instance }, T::class)
 
 internal inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext) =
     MemberParamFunction(context, this, T::class)
 
-internal fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, paramType: KClass<T>) =
+fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, paramType: KClass<T>) =
     MemberParamFunction(context, this, paramType)
 
 internal inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {

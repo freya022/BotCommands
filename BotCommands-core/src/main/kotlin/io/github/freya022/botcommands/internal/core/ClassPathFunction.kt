@@ -11,7 +11,7 @@ import kotlin.reflect.KFunction
 
 private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
 
-internal sealed class ClassPathFunction {
+sealed class ClassPathFunction {
     abstract val clazz: KClass<*>
     abstract val javaClazz: Class<*>
     abstract val instance: Any
@@ -66,4 +66,4 @@ internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPath
 }
 
 internal fun <C : ClassPathFunctionIterable> C.withFilter(filter: FunctionFilter) = this.filter { filter(it.function, false) }
-internal fun <C : ClassPathFunctionIterable> C.requiredFilter(filter: FunctionFilter) = this.onEach { filter(it.function, true) }
+fun <C : ClassPathFunctionIterable> C.requiredFilter(filter: FunctionFilter) = this.onEach { filter(it.function, true) }

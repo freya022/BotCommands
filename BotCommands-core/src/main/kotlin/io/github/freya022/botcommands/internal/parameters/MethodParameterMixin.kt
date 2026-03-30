@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.isNullable
 import kotlin.reflect.KParameter
 
-internal interface MethodParameterMixin : MethodParameter {
+interface MethodParameterMixin : MethodParameter {
     /**
      * This is needed because autocomplete borrows the parameters and options of its slash command
      * But autocomplete execution needs the parameters of the autocomplete handler
@@ -14,7 +14,7 @@ internal interface MethodParameterMixin : MethodParameter {
         get() = kParameter
 }
 
-internal abstract class AbstractMethodParameter internal constructor(final override val kParameter: KParameter) : MethodParameterMixin {
+abstract class AbstractMethodParameter(final override val kParameter: KParameter) : MethodParameterMixin {
     final override val name = kParameter.findDeclarationName()
     final override val isNullable = kParameter.isNullable
     final override val isOptional = kParameter.isOptional

@@ -27,10 +27,10 @@ private class BasicOptionAggregateBuilderImpl(
         BasicOptionAggregateBuilderImpl(aggregatorParameter, aggregator)
 }
 
-internal inline fun <reified T : OptionAggregateBuilder<*>, R : MethodParameterMixin> Map<String, T>.transform(aggregateBlock: (T) -> R) =
+inline fun <reified T : OptionAggregateBuilder<*>, R : MethodParameterMixin> Map<String, T>.transform(aggregateBlock: (T) -> R) =
     values.map(aggregateBlock)
 
-internal fun <R : MethodParameterMixin> Function<*>.transformParameters(
+fun <R : MethodParameterMixin> Function<*>.transformParameters(
     builderBlock: (function: KFunction<*>, parameter: KParameter, declaredName: String) -> OptionBuilderImpl,
     aggregateBlock: (OptionAggregateBuilderImpl<*>) -> R
 ): List<R> = kFunction.nonInstanceParameters.drop(1).associate { parameter ->

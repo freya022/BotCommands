@@ -14,13 +14,13 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
-internal abstract class OptionImpl private constructor(
+abstract class OptionImpl private constructor(
     internal val optionParameter: OptionParameter,
-    internal val optionType: OptionType,
+    val optionType: OptionType,
     /** @see CommandOptionBuilderImpl.isOptional */
     optional: Boolean?
 ) : Option {
-    internal constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
+    constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
 
     internal constructor(commandOptionBuilder: CommandOptionBuilderImpl) : this(
         commandOptionBuilder.optionParameter,

@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.core.reflection.AggregatorFunction
 
-internal interface AggregatedParameterMixin : AggregatedParameter, MethodParameterMixin {
+interface AggregatedParameterMixin : AggregatedParameter, MethodParameterMixin {
     val aggregator: AggregatorFunction
     override val isVararg: Boolean
         get() = aggregator.aggregator.isVarargAggregator()

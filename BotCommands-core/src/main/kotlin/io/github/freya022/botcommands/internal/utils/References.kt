@@ -12,6 +12,6 @@ val KProperty<*>.reference: String
         return (callableReference.owner as KClass<*>).simpleNestedName + "." + this.name
     }
 
-internal inline fun <reified A : Annotation> annotationRef(): String = "@${classRef<A>()}"
+inline fun <reified A : Annotation> annotationRef(): String = "@${classRef<A>()}"
 
-internal inline fun <reified A : Any> classRef(): String = A::class.java.simpleNestedName
+inline fun <reified A : Any> classRef(): String = A::class.java.simpleNestedName

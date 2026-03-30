@@ -5,13 +5,13 @@ import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectRefe
 import kotlin.reflect.KFunction
 
 @BService //Enables reflection metadata
-internal object InternalAggregators {
+object InternalAggregators {
     internal val theSingleAggregator = InternalAggregators::singleAggregator.reflectReference()
     internal val theVarargAggregator = InternalAggregators::varargAggregator.reflectReference()
 
     internal fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
     internal fun KFunction<*>.isVarargAggregator() = this === theVarargAggregator
-    internal fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
+    fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
 
     //The types should not matter as the checks are made against the command function
     internal fun singleAggregator(it: Any) = it

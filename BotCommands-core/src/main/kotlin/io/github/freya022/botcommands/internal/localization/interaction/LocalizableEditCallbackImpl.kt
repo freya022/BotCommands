@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import java.util.*
 
-internal class LocalizableEditCallbackImpl internal constructor(
+class LocalizableEditCallbackImpl(
     private val editCallback: IMessageEditCallback,
     private val interaction: LocalizableInteractionImpl
 ) : LocalizableEditCallback {

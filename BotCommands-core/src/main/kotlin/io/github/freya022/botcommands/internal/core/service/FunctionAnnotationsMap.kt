@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 
 @BService(priority = Int.MAX_VALUE - 1)
-internal class FunctionAnnotationsMap(
+class FunctionAnnotationsMap(
     context: BContextImpl,
     instantiableServices: InstantiableServices,
     private val classAnnotationsMap: ClassAnnotationsMap
@@ -44,9 +44,9 @@ internal class FunctionAnnotationsMap(
         instanceAnnotationMap.computeIfAbsent(method) { ClassPathFunction(context, kClass, it) }
     }
 
-    internal fun <A : Annotation> get(annotationClass: KClass<A>): Collection<ClassPathFunction> =
+    fun <A : Annotation> get(annotationClass: KClass<A>): Collection<ClassPathFunction> =
         map[annotationClass]?.values ?: emptySet()
-    internal inline fun <reified A : Annotation> get(): Collection<ClassPathFunction> =
+    inline fun <reified A : Annotation> get(): Collection<ClassPathFunction> =
         get(A::class)
 
     internal fun <CLASS_A : Annotation, FUNCTION_A : Annotation> getWithClassAnnotation(classAnnotation: KClass<CLASS_A>, functionAnnotation: KClass<FUNCTION_A>): List<ClassPathFunction> {

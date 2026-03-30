@@ -15,7 +15,7 @@ import java.util.*
 
 private val logger = KotlinLogging.logger { }
 
-internal class DefaultBucketKeySupplier internal constructor(private val scope: RateLimitScope) : BucketKeySupplier {
+class DefaultBucketKeySupplier internal constructor(private val scope: RateLimitScope) : BucketKeySupplier {
 
     private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context ->
         when (context) {

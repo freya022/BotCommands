@@ -10,4 +10,4 @@ internal class InternalException @JvmOverloads internal constructor(
 
 internal fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
-internal fun internalErrorMessage(message: String) = "$message, please report this to the devs. ${getDiagnosticVersions()}"
+fun internalErrorMessage(message: String) = "$message, please report this to the devs. ${getDiagnosticVersions()}"

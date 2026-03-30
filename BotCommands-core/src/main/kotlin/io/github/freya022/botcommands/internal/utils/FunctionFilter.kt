@@ -17,7 +17,7 @@ import kotlin.reflect.typeOf
 private typealias Function = KFunction<*>
 private typealias FunctionIterable = Iterable<Function>
 
-internal abstract class FunctionFilter {
+abstract class FunctionFilter {
     abstract val errorMessage: String
 
     protected abstract fun filter(function: Function): Boolean
