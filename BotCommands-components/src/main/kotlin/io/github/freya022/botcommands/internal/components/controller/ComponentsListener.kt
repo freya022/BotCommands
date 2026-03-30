@@ -1,0 +1,158 @@
+package io.github.freya022.botcommands.internal.components.controller
+
+import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
+import io.github.freya022.botcommands.api.components.event.ButtonEvent
+import io.github.freya022.botcommands.api.components.event.EntitySelectEvent
+import io.github.freya022.botcommands.api.components.event.StringSelectEvent
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.Filter
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.checkFilters
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.components.data.ActionComponentData
+import io.github.freya022.botcommands.internal.components.data.PersistentComponentData
+import io.github.freya022.botcommands.internal.components.handler.ComponentHandlerExecutor
+import io.github.freya022.botcommands.internal.components.ratelimit.ComponentRateLimitHandler
+import io.github.freya022.botcommands.internal.core.ExceptionHandler
+import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
+import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.internal.utils.replyExceptionMessage
+import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+
+private val logger = KotlinLogging.logger { }
+
+@BService
+@RequiresComponents
+internal class ComponentsListener(
+    private val context: BContext,
+    private val messagesFactory: BotCommandsMessagesFactory,
+    private val localizableInteractionFactory: LocalizableInteractionFactory,
+    private val rateLimitHandler: ComponentRateLimitHandler,
+    filters: List<ComponentInteractionFilter>,
+    private val componentController: ComponentController,
+    private val continuationManager: ComponentContinuationManager,
+    private val componentHandlerExecutor: ComponentHandlerExecutor,
+) {
+    private val scope = context.coroutineScopesConfig.componentScope
+    private val exceptionHandler = ExceptionHandler(context, logger)
+
+    private val globalFilters = filters.filter { it.global }
+
+    @BEventListener
+    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
+        logger.trace { "Received ${event.componentType} interaction: ${event.component}" }
+
+        if (!ComponentController.isCompatibleComponent(event.componentId)) {
+            return logger.debug { "Ignoring an interaction for an external component format: '${event.componentId}'" }
+        }
+
+        scope.launch {
+            try {
+                handleComponent(event)
+            } catch (e: Exception) {
+                handleException(event, e)
+            }
+        }
+    }
+
+    private suspend fun handleComponent(event: GenericComponentInteractionCreateEvent) {
+        val componentId = ComponentController.parseComponentId(event.componentId)
+        val component = componentController.getActiveComponent(componentId)
+            ?: return event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+
+        if (component !is ActionComponentData)
+            throwInternal("Somehow retrieved a non-executable component on a component interaction: $component")
+
+        if (component.filters === ComponentFilters.INVALID_FILTERS) {
+            return event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+        }
+
+        component.filters.onEach { filter ->
+            require(!filter.global) {
+                "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
+            }
+        }
+
+        rateLimitHandler.tryRun(component, event) { cancellableRateLimit ->
+            val enhancedEvent = transformEvent(event, cancellableRateLimit)
+            onComponentUse(enhancedEvent, component)
+        }
+    }
+
+    private fun transformEvent(
+        event: GenericComponentInteractionCreateEvent,
+        cancellableRateLimit: CancellableRateLimit
+    ): GenericComponentInteractionCreateEvent {
+        val localizableInteraction = localizableInteractionFactory.create(event)
+        return when (event) {
+            is ButtonInteractionEvent -> ButtonEvent(context, event, cancellableRateLimit, localizableInteraction)
+            is StringSelectInteractionEvent -> StringSelectEvent(context, event, cancellableRateLimit, localizableInteraction)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event, cancellableRateLimit, localizableInteraction)
+            else -> throwInternal("Unhandled component event: ${event::class.simpleName}")
+        }
+    }
+
+    private suspend fun onComponentUse(
+        event: GenericComponentInteractionCreateEvent,
+        component: ActionComponentData
+    ): Boolean {
+        if (!component.constraints.isAllowed(event)) {
+            event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
+            return false
+        }
+
+        checkFilters(globalFilters, component.filters) { filter ->
+            val handlerName = (component as? PersistentComponentData)?.handler?.handlerName
+            val rejectionReason = filter.checkSuspend(event, handlerName)
+            if (rejectionReason != null) {
+                if (event.isAcknowledged) {
+                    logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}): $rejectionReason" }
+                } else {
+                    logger.warn { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction by user ${event.user.id} (handler: ${component.handler}) but did not acknowledge the interaction: $rejectionReason" }
+                }
+                return false
+            }
+        }
+
+        // Resume coroutines before deleting the component,
+        // as it will also delete the continuations (that we already consume anyway)
+        continuationManager.resumeCoroutines(component, event)
+
+        if (component.singleUse) {
+            // No timeout will be thrown as all continuations have been resumed.
+            // So, a timeout being thrown is an issue.
+            componentController.deleteComponent(component, throwTimeouts = true)
+        } else {
+            componentController.tryResetTimeout(component)
+        }
+
+        return componentHandlerExecutor.runHandler(component, event)
+    }
+
+    private suspend fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
+        if (e is CancellationException)
+            return logger.trace(e) { "Components handler of ID '${event.componentId}' was cancelled" }
+
+        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'", mapOf(
+            "Message" to event.message.jumpUrl,
+            "Component" to event.component
+        ))
+        if (e is InsufficientPermissionException) {
+            event.replyExceptionMessage(messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
+        } else {
+            event.replyExceptionMessage(messagesFactory.get(event).uncaughtException(event))
+        }
+    }
+}

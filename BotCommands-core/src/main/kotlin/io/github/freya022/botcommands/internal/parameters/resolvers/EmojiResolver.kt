@@ -3,19 +3,13 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
-import io.github.freya022.botcommands.api.components.options.ComponentOption
-import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
-import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
 import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
@@ -25,9 +19,7 @@ import java.util.regex.Pattern
 @Resolver
 class EmojiResolver : ClassParameterResolver<EmojiResolver, Emoji>(Emoji::class),
                       TextParameterResolver<EmojiResolver, Emoji>,
-                      SlashParameterResolver<EmojiResolver, Emoji>,
-                      ComponentParameterResolver<EmojiResolver, Emoji>,
-                      TimeoutParameterResolver<EmojiResolver, Emoji> {
+                      SlashParameterResolver<EmojiResolver, Emoji> {
 
     override val pattern: Pattern = Pattern.compile("(\\S+)")
     override val testExample: String = "<:name:1234>"
@@ -47,18 +39,6 @@ class EmojiResolver : ClassParameterResolver<EmojiResolver, Emoji>(Emoji::class)
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
     ): Emoji? = getEmoji(optionMapping.asString)
-
-
-    override suspend fun resolveSuspend(
-        option: ComponentOption,
-        event: GenericComponentInteractionCreateEvent,
-        data: SerializedComponentData
-    ): Emoji? = getEmoji(data.asString())
-
-    override fun serialize(obj: Emoji) = SerializedComponentData.fromString(obj.formatted)
-
-
-    override suspend fun resolveSuspend(option: TimeoutOption, data: SerializedComponentData): Emoji? = getEmoji(data.asString())
 
 
     private fun getEmoji(arg: String): Emoji? {

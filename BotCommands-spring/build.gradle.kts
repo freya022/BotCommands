@@ -13,6 +13,9 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
 
+    // Module configs
+    compileOnly(projects.botCommandsComponents)
+
     // Logging
     implementation(libs.kotlin.logging)
 

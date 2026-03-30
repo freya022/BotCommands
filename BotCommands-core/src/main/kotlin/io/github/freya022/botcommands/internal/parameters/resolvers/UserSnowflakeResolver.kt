@@ -4,11 +4,8 @@ import io.github.freya022.botcommands.api.commands.application.context.user.opti
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
-import io.github.freya022.botcommands.api.components.options.ComponentOption
-import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
-import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
@@ -16,7 +13,6 @@ import io.github.freya022.botcommands.internal.parameters.resolvers.users.TextCo
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
@@ -28,7 +24,6 @@ internal object UserSnowflakeResolver :
         ClassParameterResolver<UserSnowflakeResolver, UserSnowflake>(UserSnowflake::class),
         TextParameterResolver<UserSnowflakeResolver, UserSnowflake>,
         SlashParameterResolver<UserSnowflakeResolver, UserSnowflake>,
-        ComponentParameterResolver<UserSnowflakeResolver, UserSnowflake>,
         UserContextParameterResolver<UserSnowflakeResolver, UserSnowflake> {
 
     override val optionType: OptionType = OptionType.USER
@@ -38,11 +33,6 @@ internal object UserSnowflakeResolver :
     override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
         return event.member.asMention
     }
-
-    override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): UserSnowflake =
-        UserSnowflake.fromId(data.asString())
-
-    override fun serialize(obj: UserSnowflake) = SerializedComponentData.fromString(obj.id)
 
     override suspend fun resolveSuspend(
         option: SlashCommandOption,

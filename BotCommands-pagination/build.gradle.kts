@@ -19,6 +19,7 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
     implementation(projects.botCommandsJdaKtx)
+    api(projects.botCommandsComponents)
 }
 
 publishedProjectEnvironment {

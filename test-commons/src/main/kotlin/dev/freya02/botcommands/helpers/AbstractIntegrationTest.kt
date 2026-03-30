@@ -19,7 +19,6 @@ abstract class AbstractIntegrationTest {
     fun createTest(
         textCommands: Boolean = false,
         appCommands: Boolean = false,
-        components: Boolean = false,
         modals: Boolean = false,
         appEmojis: Boolean = false,
         builder: BConfigBuilder.() -> Unit
@@ -39,10 +38,6 @@ abstract class AbstractIntegrationTest {
 
             applicationCommands {
                 enable = appCommands
-            }
-
-            components {
-                enable = components
             }
 
             modals {

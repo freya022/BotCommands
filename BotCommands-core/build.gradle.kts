@@ -108,6 +108,9 @@ dependencies {
     "examplesImplementation"(libs.h2)
     "examplesImplementation"(libs.flyway.core)
 
+    // Components
+    "examplesImplementation"(projects.botCommandsComponents)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     // JUnit + Mockk + Logback

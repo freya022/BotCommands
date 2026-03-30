@@ -72,8 +72,6 @@ interface BContext {
         get() = config.localizationConfig
     val applicationConfig: BApplicationConfig
         get() = config.applicationConfig
-    val componentsConfig: BComponentsConfig
-        get() = config.componentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
         get() = config.coroutineScopesConfig
     val serviceConfig: BServiceConfig

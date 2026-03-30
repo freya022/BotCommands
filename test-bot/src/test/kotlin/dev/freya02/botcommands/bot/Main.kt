@@ -8,6 +8,7 @@ import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
 import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
+import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import kotlin.io.path.absolutePathString
@@ -45,9 +46,7 @@ object Main {
                     responseBundles += "Test"
                 }
 
-                components {
-                    enable = true
-                }
+                registerComponents()
 
                 textCommands {
                     enable = true

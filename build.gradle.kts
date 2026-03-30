@@ -20,6 +20,7 @@ dependencies {
     // -------------------- DEFAULT SUBPROJECTS DEPENDENCIES --------------------
 
     api(projects.botCommandsCore)
+    api(projects.botCommandsComponents)
 
     // ---------------------------- TEST DEPENDENCIES ---------------------------
 
@@ -34,6 +35,7 @@ dependencies {
     // ---------------------- AGGREGATED DOCS DEPENDENCIES ----------------------
 
     dokka(projects.botCommandsCore)
+    dokka(projects.botCommandsComponents)
     dokka(projects.botCommandsPagination)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)

@@ -10,21 +10,16 @@ import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.builder.filter
-import io.github.freya022.botcommands.api.components.builder.IActionableComponent
-import io.github.freya022.botcommands.api.components.builder.filter
 import io.github.freya022.botcommands.api.core.Filter
 import kotlin.reflect.KClass
 
 /**
- * References an interaction filtering service.
+ * References a filtering service, usable for annotated application commands and text commands.
  *
  * ### Requirements
  * The filter must implement at least one of the corresponding interfaces:
  * - [@JDASlashCommand][JDASlashCommand], [@JDAUserCommand][JDAUserCommand], [@JDAMessageCommand][JDAMessageCommand] -> [ApplicationCommandFilter]
  * - [@JDATextCommandVariation][JDATextCommandVariation] -> [TextCommandFilter]
- *
- * **Note:** This **cannot** be used on component handlers,
- * use the appropriate methods on the builders instead like [IActionableComponent.filter] / [IActionableComponent.addFilter].
  *
  * ### Merging
  * This annotation can be merged if found with other meta-annotations.

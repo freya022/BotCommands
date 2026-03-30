@@ -1,14 +1,15 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.*
+import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
+import io.github.freya022.botcommands.api.commands.ratelimit.TextCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
-import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
@@ -21,7 +22,6 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
         when (context) {
             is TextCommandRateLimitingContext -> getKey(context.event, context.commandInfo)
             is ApplicationCommandRateLimitingContext -> getKey(context.event)
-            is ComponentRateLimitingContext -> getKey(context.event, context.rateLimitReference)
             else -> null
         }
     }
@@ -59,9 +59,6 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
 
     private fun getKey(event: GenericCommandInteractionEvent) =
         getRateLimitKey(event, event.uniqueCommandPath)
-
-    private fun getKey(event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference) =
-        getRateLimitKey(event, rateLimitReference.toBucketKey())
 
     fun getRateLimitKey(event: Interaction, identifier: String): BucketKeySupplier.Key {
         if (scope.isGuild && !event.isFromGuild) {

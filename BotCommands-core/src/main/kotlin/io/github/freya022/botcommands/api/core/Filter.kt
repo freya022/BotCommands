@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 
 /**
@@ -10,7 +9,6 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
  *
  * @see TextCommandFilter
  * @see ApplicationCommandFilter
- * @see ComponentInteractionFilter
  */
 interface Filter {
     /**

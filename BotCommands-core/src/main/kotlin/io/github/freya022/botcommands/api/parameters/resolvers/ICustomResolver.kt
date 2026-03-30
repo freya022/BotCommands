@@ -20,10 +20,7 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
     /**
      * Returns an object.
      *
-     * The behavior when this returns `null` is the same as the "input" resolvers,
-     * for example, [TextParameterResolver][TextParameterResolver.resolve],
-     * [SlashParameterResolver][SlashParameterResolver.resolve] or
-     * [ComponentParameterResolver][ComponentParameterResolver.resolve].
+     * The behavior when this returns `null` is the same as the "input" resolvers.
      *
      * @param option The option currently being resolved, may be from an application command, text command, etc...
      * @param event  The event triggering this resolver
@@ -34,10 +31,7 @@ interface ICustomResolver<T, R : Any> : IParameterResolver<T>, ResolverMarker
     /**
      * Returns an object.
      *
-     * The behavior when this returns `null` is the same as the "input" resolvers,
-     * for example, [TextParameterResolver][TextParameterResolver.resolveSuspend],
-     * [SlashParameterResolver][SlashParameterResolver.resolveSuspend] or
-     * [ComponentParameterResolver][ComponentParameterResolver.resolveSuspend].
+     * The behavior when this returns `null` is the same as the "input" resolvers.
      *
      * @param option The option currently being resolved, may be from an application command, text command, etc...
      * @param event  The event triggering this resolver

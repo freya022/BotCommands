@@ -4,8 +4,6 @@ import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
-import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -20,8 +18,9 @@ import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.logger { }
 private val handlerAnnotations = listOf(
-    JDAButtonListener::class.jvmName,
-    JDASelectMenuListener::class.jvmName,
+    // TODO test in respective modules that this is correct
+    "io.github.freya022.botcommands.api.components.annotations.JDAButtonListener",
+    "io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener",
     AutocompleteHandler::class.jvmName,
     ModalHandler::class.jvmName
 )

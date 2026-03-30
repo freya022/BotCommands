@@ -2,19 +2,10 @@ package io.github.freya022.botcommands.api.parameters
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
-import io.github.freya022.botcommands.api.parameters.resolvers.*
+import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 
 /**
- * Base class for parameter resolvers,
- * needs to be implemented alongside the interface of at least one interaction type:
- * - Text commands: [TextParameterResolver] or [QuotableTextParameterResolver]
- * - Slash commands: [SlashParameterResolver]
- * - Message context commands: [MessageContextParameterResolver]
- * - User context commands: [UserContextParameterResolver]
- * - Components: [ComponentParameterResolver]
- * - Component timeouts: [TimeoutParameterResolver]
- * - Modal handlers: [ModalParameterResolver]
- * - Custom parameter types: [ICustomResolver]
+ * Base class for parameter resolvers.
  *
  * Parameter resolvers for services exist by default, and follow the rules described in [@BService][BService].
  *

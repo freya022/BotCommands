@@ -33,7 +33,6 @@ interface BConfig : IConfig, BConfigProps {
     val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
     val modalsConfig: BModalsConfig
-    val componentsConfig: BComponentsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
     /**
@@ -214,7 +213,6 @@ class BConfigBuilder : BConfigProps {
     val textConfig = BTextConfigBuilder()
     val applicationConfig = BApplicationConfigBuilder()
     val modalsConfig = BModalsConfigBuilder()
-    val componentsConfig = BComponentsConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -341,10 +339,6 @@ class BConfigBuilder : BConfigProps {
         modalsConfig.apply(block)
     }
 
-    fun components(block: ReceiverConsumer<BComponentsConfigBuilder>) {
-        componentsConfig.apply(block)
-    }
-
     /**
      * Registers a configuration for the relevant module, enabling the features provided by the module.
      *
@@ -383,7 +377,6 @@ class BConfigBuilder : BConfigProps {
             override val textConfig = this@BConfigBuilder.textConfig.build()
             override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
             override val modalsConfig = this@BConfigBuilder.modalsConfig.build()
-            override val componentsConfig = this@BConfigBuilder.componentsConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
                 this.configType to this,
@@ -395,7 +388,6 @@ class BConfigBuilder : BConfigProps {
                 textConfig.configType to textConfig,
                 applicationConfig.configType to applicationConfig,
                 modalsConfig.configType to modalsConfig,
-                componentsConfig.configType to componentsConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()
             override val configs get() = _configs.values

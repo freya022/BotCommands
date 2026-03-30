@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
-import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
@@ -59,8 +58,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see ConnectionSupplier
  * @see ParametrizedQueryFactory
- *
- * @see ComponentInteractionFilter
  *
  * @see LocalizationMapProvider
  * @see LocalizationMapReader
