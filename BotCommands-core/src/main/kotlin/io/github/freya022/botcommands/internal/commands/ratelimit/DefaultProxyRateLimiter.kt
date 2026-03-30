@@ -3,10 +3,8 @@ package io.github.freya022.botcommands.internal.commands.ratelimit
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.ratelimit.*
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope.*
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.ProxyBucketAccessor
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.*
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier.*
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
@@ -22,7 +20,7 @@ import java.util.*
 
 private val logger = KotlinLogging.logger { }
 
-class DefaultBucketKeySupplier internal constructor(private val scope: RateLimitScope) : BucketKeySupplier<String> {
+class DefaultBucketKeySupplier internal constructor(private val scope: RateLimitScope) : BucketKeySupplier {
 
     private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context ->
         when (context) {
@@ -33,7 +31,7 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
         }
     }
 
-    override fun getKey(context: RateLimitingContext): String {
+    override fun getKey(context: RateLimitingContext): Key {
         for (handler in handlers) {
             val key = handler.handle(this, context)
             if (key != null) {
@@ -44,14 +42,15 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
         throwInternal("Unsupported context: ${context.javaClass.name}")
     }
 
-    private fun getKey(event: MessageReceivedEvent, commandInfo: TextCommandInfo): String {
+    private fun getKey(event: MessageReceivedEvent, commandInfo: TextCommandInfo): Key {
         if (!event.isFromGuild) throwInternal("Text commands can't run outside of a guild")
-        return commandInfo.path.fullPath + when (scope) {
-            USER -> event.author.id
-            USER_PER_GUILD -> "${event.guild.id} ${event.author.id}"
-            USER_PER_CHANNEL -> "${event.channel.id} ${event.author.id}"
-            GUILD -> event.guild.id
-            CHANNEL -> event.channel.id
+        val path = commandInfo.path
+        return when (scope) {
+            USER -> UserKey(path.fullPath, event.author.idLong)
+            USER_PER_GUILD -> UserAtPlaceKey(path.fullPath, event.guild.idLong, event.author.idLong)
+            USER_PER_CHANNEL -> UserAtPlaceKey(path.fullPath, event.channel.idLong, event.author.idLong)
+            GUILD -> PlaceKey(path.fullPath, event.guild.idLong)
+            CHANNEL -> PlaceKey(path.fullPath, event.channel.idLong)
         }
     }
 
@@ -61,29 +60,39 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
     private fun getKey(event: GenericComponentInteractionCreateEvent, rateLimitReference: ComponentRateLimitReference) =
         getRateLimitKey(event, rateLimitReference.toBucketKey())
 
-    fun getRateLimitKey(event: Interaction, identifier: String): String {
+    fun getRateLimitKey(event: Interaction, identifier: String): Key {
         if (scope.isGuild && !event.isFromGuild) {
             logger.warn { "Cannot get a bucket with the $scope scope outside of a guild, using the user ID instead." }
-            return "$identifier ${event.user.id}"
+            return UserKey(identifier, event.user.idLong)
         }
 
-        return "$identifier " + when (scope) {
-            USER -> event.user.id
+        return when (scope) {
+            USER -> UserKey(identifier, event.user.idLong)
             USER_PER_GUILD -> {
                 val guild = event.guild ?: throwInternal("Guild should be present")
-                "${guild.id} ${event.user.id}"
+                UserAtPlaceKey(identifier, guild.idLong, event.user.idLong)
             }
-            USER_PER_CHANNEL -> "${event.channelId} ${event.user.id}"
+            USER_PER_CHANNEL -> UserAtPlaceKey(identifier, event.channelIdLong, event.user.idLong)
             GUILD -> {
                 val guild = event.guild ?: throwInternal("Guild should be present")
-                guild.id
+                PlaceKey(identifier, guild.idLong)
             }
-            CHANNEL -> event.channelId
+            CHANNEL -> PlaceKey(identifier, event.channelIdLong)
         }
     }
 
     fun interface RequestHandler {
-        fun handle(instance: DefaultBucketKeySupplier, context: RateLimitingContext): String?
+        fun handle(instance: DefaultBucketKeySupplier, context: RateLimitingContext): Key?
+    }
+}
+
+private object StringBucketKeyTransformer : BucketKeyTransformer<String> {
+    override fun transform(key: Key): String {
+        return when (key) {
+            is PlaceKey -> "${key.identifier} ${key.id}"
+            is UserKey -> "${key.identifier} ${key.id}"
+            is UserAtPlaceKey -> "${key.identifier} ${key.placeId} ${key.userId}"
+        }
     }
 }
 
@@ -93,7 +102,7 @@ internal class DefaultProxyRateLimiter internal constructor(
     bucketConfigurationSupplier: BucketConfigurationSupplier,
     private val deleteOnRefill: Boolean,
 ) : RateLimiter,
-    BucketAccessor by ProxyBucketAccessor(proxyManager, DefaultBucketKeySupplier(scope), bucketConfigurationSupplier),
+    BucketAccessor by ProxyBucketAccessor(proxyManager, DefaultBucketKeySupplier(scope), StringBucketKeyTransformer, bucketConfigurationSupplier),
     RateLimitHandler by DefaultRateLimitHandler(scope, deleteOnRefill) {
 
     override fun toString(): String {

@@ -2,12 +2,20 @@ package io.github.freya022.botcommands.api.commands.ratelimit.bucket
 
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 
-// TODO remove generic, let ProxyBucketAccessor accept a finisher to convert the Key object into a the primary key's type
 /**
  * Retrieves the bucket key given the execution context.
  *
  * You can use the provided parameters to create the key.
  */
-interface BucketKeySupplier<K> {
-    fun getKey(context: RateLimitingContext): K
+interface BucketKeySupplier {
+    fun getKey(context: RateLimitingContext): Key
+
+    sealed interface Key {
+        override fun equals(other: Any?): Boolean
+        override fun hashCode(): Int
+    }
+
+    data class UserKey(val identifier: String, val id: Long): Key
+    data class PlaceKey(val identifier: String, val id: Long): Key
+    data class UserAtPlaceKey(val identifier: String, val placeId: Long, val userId: Long): Key
 }
