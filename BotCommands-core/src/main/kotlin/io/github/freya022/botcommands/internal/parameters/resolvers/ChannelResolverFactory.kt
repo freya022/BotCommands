@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.onErrorResponse
 import dev.freya02.botcommands.jda.ktx.retrieve.retrieveThreadChannelById
-import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
@@ -24,6 +23,7 @@ import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal

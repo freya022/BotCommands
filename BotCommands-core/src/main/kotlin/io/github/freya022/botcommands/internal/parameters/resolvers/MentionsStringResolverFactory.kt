@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.freya022.botcommands.api.commands.application.checkGuildOnly
+import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
