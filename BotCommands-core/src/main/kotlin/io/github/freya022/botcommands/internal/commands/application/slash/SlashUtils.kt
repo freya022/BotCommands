@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.commands.application.slash.options.SlashCommandOptionImpl
 import io.github.freya022.botcommands.internal.core.options.AbstractGeneratedOption
-import io.github.freya022.botcommands.internal.parameters.resolvers.IChannelResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.channels.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.requireAt
