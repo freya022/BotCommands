@@ -114,11 +114,6 @@ dependencies {
     testImplementation(projects.testCommons)
     byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 
-    // Database
-    testImplementation(libs.h2)
-    testImplementation(libs.flyway.core)
-    testRuntimeOnly(libs.flyway.database.postgresql)
-
     testImplementation(projects.botCommandsMethodAccessors.classfile)
 
     testImplementation(libs.kotlin.metadata)

@@ -14,4 +14,9 @@ dependencies {
 
     // Logging
     runtimeOnly(libs.logback.classic)
+
+    // Database
+    implementation(libs.h2)
+    implementation(libs.flyway.core)
+    runtimeOnly(libs.flyway.database.postgresql)
 }
