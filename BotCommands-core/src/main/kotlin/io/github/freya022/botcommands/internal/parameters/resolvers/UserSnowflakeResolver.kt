@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParamete
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.UserContextParameterResolver
+import io.github.freya022.botcommands.internal.parameters.resolvers.users.TextCommandInputUserResolver
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -31,7 +32,7 @@ internal object UserSnowflakeResolver :
         UserContextParameterResolver<UserSnowflakeResolver, UserSnowflake> {
 
     override val optionType: OptionType = OptionType.USER
-    override val pattern: Pattern get() = AbstractUserSnowflakeResolver.userMentionPattern
+    override val pattern: Pattern get() = TextCommandInputUserResolver.userMentionPattern
     override val testExample: String = "<@1234>"
 
     override fun getHelpExample(option: TextCommandOption, event: BaseCommandEvent): String {
