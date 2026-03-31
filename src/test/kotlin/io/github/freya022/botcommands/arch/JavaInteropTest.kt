@@ -209,7 +209,7 @@ class JavaInteropTest {
         Konsist.scopeFromProduction()
             .objects(includeNested = true)
             .filter { it.packagee!!.name.contains("api") }
-            .functions(includeNested = true)
+            .functions(includeNested = false, includeLocal = false)
             .withPublicOrDefaultModifier()
             .withoutAnnotationNamed(JvmSynthetic::class.java.simpleName)
             .assertTrue(strict = true) { it.hasAnnotationOf<JvmStatic>() }
@@ -220,7 +220,7 @@ class JavaInteropTest {
         Konsist.scopeFromProduction()
             .objects(includeNested = true)
             .filter { it.packagee!!.name.contains("api") }
-            .properties(includeNested = true)
+            .properties(includeNested = false)
             .withPublicOrDefaultModifier()
             .withoutAnnotationNamed(JvmSynthetic::class.java.simpleName)
             .assertTrue(strict = true) { it.hasAnnotationOf<JvmStatic>() }
