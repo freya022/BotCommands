@@ -110,9 +110,9 @@ object ModalInputResolverTests {
     @JvmStatic
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
-            arguments("TextInput String", 0, TEXT_INPUT, ModalMapping::getAsOptionalString, STRING, STRING),
-            arguments("TextInput null as null", 18, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
-            arguments("TextInput null with default value", 19, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
+            arguments("TextInput String", 0, TEXT_INPUT, ModalMapping::getAsString, STRING, STRING),
+            arguments("TextInput empty as null", 18, TEXT_INPUT, ModalMapping::getAsString, "", null),
+            arguments("TextInput empty as empty", 19, TEXT_INPUT, ModalMapping::getAsString, "", ""),
             arguments("Select menu string", 16, STRING_SELECT, ModalMapping::getAsStringList, strings, STRING),
             arguments("Select menu strings", 1, STRING_SELECT, ModalMapping::getAsStringList, strings, strings),
             arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, role),
@@ -163,7 +163,7 @@ object ModalInputResolverTests {
         @Suppress("unused") selectedString: String,
         @Suppress("unused") attachment: Message.Attachment,
         @Suppress("unused") emptyTextInputAsNull: String?,
-        @Suppress("unused") emptyTextInputAsOptional: String = "default value",
+        @Suppress("unused") emptyTextInputAsEmpty: String,
         @Suppress("unused") checkbox: Boolean,
         @Suppress("unused") checkboxGroupSingle: String,
         @Suppress("unused") checkboxGroupList: List<String>,
