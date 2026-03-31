@@ -19,10 +19,10 @@ interface ExecutableMixin : Executable {
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun ExecutableMixin.throwUser(message: String): Nothing = throwArgument(function, message)
+inline fun ExecutableMixin.throwUser(message: String): Nothing = throwArgument(function, message)
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun ExecutableMixin.requireUser(value: Boolean, lazyMessage: () -> String) {
+inline fun ExecutableMixin.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }

@@ -27,7 +27,7 @@ class ParameterWrapper private constructor(
     val annotations: List<Annotation> get() = parameter.getAllAnnotations()
     val isRequired get() = !parameter.isNullable && !parameter.isOptional
 
-    internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
+    constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 
     /**
      * @see hasAnnotationRecursive

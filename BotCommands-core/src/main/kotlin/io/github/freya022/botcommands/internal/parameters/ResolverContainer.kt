@@ -20,7 +20,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 private val logger = KotlinLogging.logger { }
 
 @BService
-class ResolverContainer internal constructor(
+class ResolverContainer(
     serviceContainer: ServiceContainer,
     resolverFactories: List<ParameterResolverFactory>,
     resolverProviders: List<ResolverProvider>,
@@ -123,7 +123,7 @@ class ResolverContainer internal constructor(
         return getResolver(request)
     }
 
-    internal fun <T : IParameterResolver<T>> getResolver(request: TypedResolverRequest<T>): T {
+    fun <T : IParameterResolver<T>> getResolver(request: TypedResolverRequest<T>): T {
         val resolverType = request.resolverType
         val factory = getResolverFactoryOrNull(request)
         if (factory == null) {

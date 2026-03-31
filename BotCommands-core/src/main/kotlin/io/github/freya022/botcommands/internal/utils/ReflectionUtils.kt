@@ -129,7 +129,7 @@ object ReflectionUtils {
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
 
-    internal val KType.collectionElementType: KType?
+    val KType.collectionElementType: KType?
         get() {
             //Type is a trusted collection, such as the Java collections
             if (jvmErasure in trustedCollections) {

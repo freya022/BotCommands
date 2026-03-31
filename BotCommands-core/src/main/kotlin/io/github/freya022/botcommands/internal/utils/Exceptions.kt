@@ -19,7 +19,7 @@ import kotlin.time.Instant
 fun throwInternal(message: String): Nothing =
     throw InternalException(message)
 
-internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
+fun throwInternal(function: KFunction<*>, message: String): Nothing =
     throw InternalException("$message\n    Function: ${function.shortSignature}")
 
 internal fun throwInternal(message: String, declarationSite: DeclarationSite? = null): Nothing =
