@@ -163,6 +163,7 @@ The base `BotCommands` artifact will include modules often used, while others ar
 ### Default modules
 - [`BotCommands-core`](./BotCommands-core): Contains most features
 - [`BotCommands-components`](./BotCommands-components): Support for components using annotated handlers and/or lambdas
+- [`BotCommands-modals`](./BotCommands-modals): Support for modals using annotated handlers and/or lambdas
 
 ### Optional modules
 - [`BotCommands-jda-ktx`](./BotCommands-jda-ktx): Provides a set of Kotlin extensions and top-level functions, similarly to [jda-ktx](https://github.com/MinnDevelopment/jda-ktx).

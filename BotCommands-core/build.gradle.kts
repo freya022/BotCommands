@@ -111,6 +111,9 @@ dependencies {
     // Components
     "examplesImplementation"(projects.botCommandsComponents)
 
+    // Modals
+    "examplesImplementation"(projects.botCommandsModals)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     // JUnit + Mockk + Logback

@@ -9,6 +9,7 @@ dependencies {
     testImplementation(libs.jda)
     testImplementation(projects.botCommandsCore)
     testImplementation(projects.botCommandsComponents)
+    testImplementation(projects.botCommandsModals)
     testImplementation(projects.botCommandsPagination)
     testImplementation(libs.kotlin.logging)
     testImplementation(projects.botCommandsJdaKtx)

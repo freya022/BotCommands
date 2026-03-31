@@ -17,7 +17,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
         textConfiguration: BotCommandsTextConfiguration, textConfigurers: List<BTextConfigConfigurer>,
         localizationConfiguration: BotCommandsLocalizationConfiguration, localizationConfigurers: List<BLocalizationConfigConfigurer>,
         applicationConfiguration: BotCommandsApplicationConfiguration, applicationConfigurers: List<BApplicationConfigConfigurer>,
-        modalsConfiguration: BotCommandsModalsConfiguration, modalsConfigurers: List<BModalsConfigConfigurer>,
         coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>,
     ): BConfig =
         BConfigBuilder()
@@ -29,7 +28,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
                 textConfig.applyConfig(textConfiguration).configure(textConfigurers)
                 localizationConfig.applyConfig(localizationConfiguration).configure(localizationConfigurers)
                 applicationConfig.applyConfig(applicationConfiguration).configure(applicationConfigurers)
-                modalsConfig.applyConfig(modalsConfiguration).configure(modalsConfigurers)
                 coroutineScopesConfig.configure(coroutineConfigurers)
             }
             .configure(coreConfigurers)

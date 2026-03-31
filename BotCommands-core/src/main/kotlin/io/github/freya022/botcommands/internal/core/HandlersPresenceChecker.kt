@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
-import io.github.freya022.botcommands.api.modals.annotations.ModalHandler
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
@@ -22,7 +21,7 @@ private val handlerAnnotations = listOf(
     "io.github.freya022.botcommands.api.components.annotations.JDAButtonListener",
     "io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener",
     AutocompleteHandler::class.jvmName,
-    ModalHandler::class.jvmName
+    "io.github.freya022.botcommands.api.modals.annotations.ModalHandler",
 )
 
 internal class HandlersPresenceChecker : ClassGraphProcessor {

@@ -21,6 +21,7 @@ dependencies {
 
     api(projects.botCommandsCore)
     api(projects.botCommandsComponents)
+    api(projects.botCommandsModals)
 
     // ---------------------------- TEST DEPENDENCIES ---------------------------
 
@@ -36,6 +37,7 @@ dependencies {
 
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsComponents)
+    dokka(projects.botCommandsModals)
     dokka(projects.botCommandsPagination)
     dokka(projects.botCommandsSpring)
     dokka(projects.botCommandsJdaKtx)

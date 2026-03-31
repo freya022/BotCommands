@@ -211,14 +211,3 @@ private fun BApplicationConfigBuilder.configureCache(configuration: BotCommandsA
         BotCommandsApplicationConfiguration.Cache.Type.NULL -> disableCache()
     }
 }
-
-@ConfigurationProperties(prefix = "botcommands.modals", ignoreUnknownFields = true)
-internal class BotCommandsModalsConfiguration(
-    override val enable: Boolean = true,
-) : AbstractBotCommandsConfiguration(), BModalsConfigProps {
-
-}
-
-internal fun BModalsConfigBuilder.applyConfig(configuration: BotCommandsModalsConfiguration) = apply {
-    enable = configuration.enable
-}

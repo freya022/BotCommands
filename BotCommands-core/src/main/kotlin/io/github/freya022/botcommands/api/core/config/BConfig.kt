@@ -32,7 +32,6 @@ interface BConfig : IConfig, BConfigProps {
     val appEmojisConfig: BAppEmojisConfig
     val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
-    val modalsConfig: BModalsConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
     /**
@@ -212,7 +211,6 @@ class BConfigBuilder : BConfigProps {
     val appEmojisConfig = BAppEmojisConfigBuilder()
     val textConfig = BTextConfigBuilder()
     val applicationConfig = BApplicationConfigBuilder()
-    val modalsConfig = BModalsConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -335,10 +333,6 @@ class BConfigBuilder : BConfigProps {
         applicationConfig.apply(block)
     }
 
-    fun modals(block: ReceiverConsumer<BModalsConfigBuilder>) {
-        modalsConfig.apply(block)
-    }
-
     /**
      * Registers a configuration for the relevant module, enabling the features provided by the module.
      *
@@ -376,7 +370,6 @@ class BConfigBuilder : BConfigProps {
             override val appEmojisConfig = this@BConfigBuilder.appEmojisConfig.build()
             override val textConfig = this@BConfigBuilder.textConfig.build()
             override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
-            override val modalsConfig = this@BConfigBuilder.modalsConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
                 this.configType to this,
@@ -387,7 +380,6 @@ class BConfigBuilder : BConfigProps {
                 appEmojisConfig.configType to appEmojisConfig,
                 textConfig.configType to textConfig,
                 applicationConfig.configType to applicationConfig,
-                modalsConfig.configType to modalsConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()
             override val configs get() = _configs.values

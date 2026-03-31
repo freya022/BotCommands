@@ -6,6 +6,7 @@ import io.github.freya022.bot.config.Environment
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.config.registerComponents
+import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import kotlin.io.path.absolutePathString
@@ -63,6 +64,9 @@ object Main {
                 // This can be removed if you don't have a database,
                 // but you'll need to use raw JDA components
                 registerComponents()
+
+                // Enables modals, this has no dependency
+                registerModals()
             }
 
             // There is no JDABuilder going on here, it's taken care of in Bot
