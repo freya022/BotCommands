@@ -22,6 +22,7 @@ import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -32,6 +33,12 @@ internal class UserCommandInfoImpl internal constructor(
 ) : ApplicationCommandInfoImpl(builder),
     UserCommandInfo,
     TopLevelApplicationCommandInfoMixin {
+
+    init {
+        requireAt(function.nonEventParameters.size == builder.optionAggregateBuilders.size, function) {
+            "Function must have the same number of options declared as on the method"
+        }
+    }
 
     override val eventFunction = builder.toMemberParamFunction<GlobalUserEvent, _>(context)
 

@@ -27,6 +27,7 @@ import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMix
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption
 import io.github.freya022.botcommands.internal.utils.*
+import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -45,6 +46,12 @@ internal sealed class SlashCommandInfoImpl(
     builder: SlashCommandBuilderImpl
 ) : ApplicationCommandInfoImpl(builder),
     SlashCommandInfo {
+
+    init {
+        requireAt(function.nonEventParameters.size == builder.optionAggregateBuilders.size, function) {
+            "Function must have the same number of options declared as on the method"
+        }
+    }
 
     override val topLevelInstance: TopLevelSlashCommandInfoImpl
         get() = _topLevelInstance ?: throwInternal("This should have been overridden or not been null")
