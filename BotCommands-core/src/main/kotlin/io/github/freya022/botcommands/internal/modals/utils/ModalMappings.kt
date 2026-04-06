@@ -10,7 +10,8 @@ internal val ModalInteractionEvent.allValuesAsString: String
 internal val ModalMapping.valueAsString: String
     get() = when (type) {
         STRING_SELECT, CHECKBOX_GROUP -> asStringList.map { "'${it}'" }.toString()
-        TEXT_INPUT, RADIO_GROUP -> if (asOptionalString == null) "<null>" else "'${asString}'"
+        TEXT_INPUT -> if (asOptionalString == null) "<empty>" else "'${asString}'"
+        RADIO_GROUP -> if (asOptionalString == null) "<none>" else "'${asString}'"
         CHANNEL_SELECT, ROLE_SELECT, USER_SELECT, MENTIONABLE_SELECT -> asLongList.toString()
         FILE_UPLOAD -> asAttachmentList.map { "${it.fileName} (${it.contentType}, ${it.size} B)" }.toString()
         CHECKBOX -> "<$asBoolean>"
