@@ -13,7 +13,6 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.*
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
-import io.github.freya022.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashCommandBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
 import io.github.freya022.botcommands.internal.commands.application.slash.options.*
@@ -138,7 +137,7 @@ private suspend fun <T> tryInsertOption(
         OptionType.GENERATED -> {
             option as ApplicationGeneratedOption
 
-            option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
+            option.getCheckedDefaultValue(event)
         }
         OptionType.SERVICE -> (option as ServiceMethodOption).getService()
     }

@@ -30,25 +30,6 @@ internal object SlashUtils {
 
     internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
-    internal inline fun <T : AbstractGeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
-        return supplier(this).also { defaultValue ->
-            checkDefaultValue(option, defaultValue)
-        }
-    }
-
-    private fun checkDefaultValue(option: AbstractGeneratedOption, defaultValue: Any?) {
-        if (defaultValue != null) {
-            val expectedType: KClass<*> = option.type.jvmErasure
-            requireAt(expectedType.isInstance(defaultValue), (option.executable as IDeclarationSiteHolder).declarationSite) {
-                "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
-            }
-        } else {
-            requireAt(option.isOptionalOrNullable, (option.executable as IDeclarationSiteHolder).declarationSite) {
-                "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
-            }
-        }
-    }
-
     internal fun SlashCommandInfo.getDiscordOptions(guild: Guild?) = parameters
         .flatMap { it.allOptions }
         .filterIsInstance<SlashCommandOptionImpl>()
