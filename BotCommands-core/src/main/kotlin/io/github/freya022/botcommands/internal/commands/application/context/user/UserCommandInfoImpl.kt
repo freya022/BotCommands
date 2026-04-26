@@ -34,7 +34,7 @@ internal class UserCommandInfoImpl internal constructor(
     TopLevelApplicationCommandInfoMixin {
 
     init {
-        requireAt(function.nonEventParameters.size == builder.optionAggregateBuilders.size, function) {
+        requireAt(builder.function.nonEventParameters.size == builder.optionAggregateBuilders.size, builder.function) {
             "Function must have the same number of options declared as on the method"
         }
     }
