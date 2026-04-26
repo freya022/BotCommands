@@ -39,6 +39,7 @@ internal abstract class AbstractClassFileMethodAccessorGenerator<R>(
         val className = buildString {
             append("ClassFileMethodAccessor")
             append('$')
+            append(instanceClass.packageName.split(".").fold(StringBuilder(16)) { builder, str -> builder.append(str.first()) })
             append(instanceClass.name.substring(instanceClass.packageName.length + 1).replace('.', '$'))
             append('$')
             val executableName = when (executable) {
