@@ -266,7 +266,7 @@ internal class ApplicationCommandListener internal constructor(
         if (usability.isNotUsable) {
             val errorMessage = fromMessages(event) {
                 when (usability.bestReason) {
-                    UnusableReason.OWNER_ONLY -> ownerOnly(event)
+                    UnusableReason.OWNER_ONLY -> throwInternal("Application commands can't be owner-only")
                     UnusableReason.USER_PERMISSIONS -> {
                         val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
                         val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
