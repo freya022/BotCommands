@@ -90,7 +90,8 @@ abstract class PublishedProjectEnvironmentConfig(
             // Publish empty JAR
             // if the project has no API, and thus no docs,
             // or, we are publishing a snapshot (wasted disk space and CI time imo)
-            if (dokkaExtension == null || canPublishSnapshot) {
+            // or, we can't publish anywhere (local build, dont waste time, docs generation should be tested using :dokkaGenerate)
+            if (dokkaExtension == null || canPublishSnapshot || (!canPublishSnapshot && !canPublish)) {
                 configure(KotlinJvm(javadocJar = JavadocJar.Empty()))
             }
 
