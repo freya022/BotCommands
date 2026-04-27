@@ -1,25 +1,21 @@
 package io.github.freya022.botcommands.messages
 
-import dev.freya02.botcommands.helpers.AbstractIntegrationTest
+import dev.freya02.botcommands.helpers.AbstractMessagesTests
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.messages.exceptions.MissingMessageTemplateException
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
-import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 import java.util.*
-import kotlin.reflect.KFunction
 import kotlin.test.Test
-import kotlin.test.fail
 
-class BotCommandsMessagesTests : AbstractIntegrationTest() {
+class BotCommandsMessagesTests : AbstractMessagesTests() {
 
     @Test
     fun `All messages have defaults`() {
@@ -27,9 +23,7 @@ class BotCommandsMessagesTests : AbstractIntegrationTest() {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
                 registerServiceSupplier<DefaultBotCommandsMessagesFactory>(
-                    additionalTypes = setOf(
-                        BotCommandsMessagesFactory::class,
-                    )
+                    additionalTypes = setOf(BotCommandsMessagesFactory::class),
                 ) { context ->
                     DefaultBotCommandsMessagesFactory(
                         context.getService(),
@@ -58,40 +52,18 @@ class BotCommandsMessagesTests : AbstractIntegrationTest() {
             methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
             methodCall(messages::resolverUserNotFound) { this(mockk(), 0) },
             methodCall(messages::slashCommandUnresolvableOption) {
-                this(mockk(), mockk {
+                val option = mockk<SlashCommandOption> {
                     every { discordName } returns "discord_name"
-                })
+                }
+                this(mockk(), option)
             },
             methodCall(messages::componentNotAllowed) { this(mockk()) },
             methodCall(messages::componentExpired) { this(mockk()) },
             methodCall(messages::modalExpired) { this(mockk()) },
         )
 
-        val missingTests =
-            BotCommandsMessages::class.java.declaredMethods.mapTo(hashSetOf()) { it.name } - methodCalls.keys
-        if (missingTests.isNotEmpty()) {
-            fail("The following methods are missing tests:\n" + missingTests.joinAsList())
-        }
+        checkMissingTests(BotCommandsMessages::class.java, methodCalls)
 
-        val methodsMissingTemplate: MutableList<String> = arrayListOf()
-        methodCalls.values.forEach { methodCall ->
-            templatePathSlot.clear()
-            try {
-                methodCall()
-            } catch (_: MissingMessageTemplateException) {
-                methodsMissingTemplate += templatePathSlot.captured
-            }
-        }
-
-        if (methodsMissingTemplate.isNotEmpty()) {
-            fail("The following template keys are missing default translations:\n" + methodsMissingTemplate.joinAsList())
-        }
-    }
-
-    private fun <F : KFunction<MessageCreateData>> methodCall(
-        callableRef: F,
-        executor: F.() -> Unit,
-    ): Pair<String, () -> Unit> {
-        return callableRef.name to { executor(callableRef) }
+        checkMissingTemplates(methodCalls, templatePathSlot)
     }
 }
