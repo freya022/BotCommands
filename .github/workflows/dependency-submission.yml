@@ -1,6 +1,7 @@
 name: Dependency Submission
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 3.X
@@ -20,3 +21,6 @@ jobs:
 
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v5
+        with:
+          dependency-graph-exclude-projects: '(:buildSrc|:spring-configuration-metadata-generator|:)'
+          dependency-graph-include-configurations: '(compileClasspath|runtimeClasspath)'
