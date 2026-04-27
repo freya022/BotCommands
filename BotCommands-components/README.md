@@ -5,7 +5,7 @@
 Support for components using annotated handlers and/or lambdas.
 
 ## Installation
-[![BotCommands-pagination on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
+[![BotCommands-components on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]
 ### Maven
 ```xml
 <dependencies>
@@ -34,4 +34,4 @@ To use the latest, unreleased changes, see [SNAPSHOTS.md](../SNAPSHOTS.md).
 
 ## Usage
 
-See the ["Using components"](https://bc.freya02.dev/3.X/using-components/) on the wiki.
+See ["Using components"](https://bc.freya02.dev/3.X/using-components/) on the wiki.

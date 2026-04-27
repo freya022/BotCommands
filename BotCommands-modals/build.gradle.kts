@@ -40,7 +40,7 @@ dependencies {
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
 
-    // Components
+    // Modals
     "javaDocExamplesImplementation"(projects.botCommandsModals)
     "kotlinDocExamplesImplementation"(projects.botCommandsModals)
 
