@@ -1,14 +1,11 @@
 package io.github.freya022.botcommands.api.commands.ratelimit.handler
 
 import dev.freya02.botcommands.jda.ktx.coroutines.await
-import dev.freya02.botcommands.jda.ktx.getChannel
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
-import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
-import io.github.freya022.botcommands.api.commands.ratelimit.TextCommandRateLimitingContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -17,19 +14,14 @@ import io.github.freya022.botcommands.api.core.utils.namedDefaultScope
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
-
-private val deleteScope = namedDefaultScope("Rate limit message delete", 1, isDaemon = true)
 
 /**
  * Default [RateLimitHandler] implementation based on [rate limit scopes][RateLimitScope].
@@ -49,16 +41,12 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1, isDa
  * @see RateLimitScope
  */
 class DefaultRateLimitHandler(
-    private val scope: RateLimitScope,
-    private val deleteOnRefill: Boolean = true
+    val scope: RateLimitScope,
+    val deleteOnRefill: Boolean = true
 ) : RateLimitHandler {
 
     private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context, probe ->
         when (context) {
-            is TextCommandRateLimitingContext -> {
-                onRateLimit(context, probe)
-                true
-            }
             is ApplicationCommandRateLimitingContext -> {
                 onInteractionRateLimit(context.context, context.event, probe)
                 true
@@ -75,33 +63,6 @@ class DefaultRateLimitHandler(
         }
 
         throwInternal("Unsupported context: ${context.javaClass.name}")
-    }
-
-    private suspend fun onRateLimit(
-        rateLimitingContext: TextCommandRateLimitingContext,
-        probe: ConsumptionProbe
-    ) {
-        val event = rateLimitingContext.event
-        val channel = when {
-            event.guildChannel.canTalk() -> event.channel
-            else -> event.author.openPrivateChannel().await()
-        }
-        val messages = rateLimitingContext.context.getService<BotCommandsMessagesFactory>().get(event)
-        val content = getRateLimitMessage(event, messages, probe)
-
-        runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
-            val messageId = channel.sendMessage(content).await().idLong
-            if (deleteOnRefill && channel is GuildChannel) {
-                val jda = channel.jda
-                val channelId = channel.idLong
-                deleteScope.launch {
-                    delay(probe.nanosToWaitForRefill.nanoseconds)
-                    jda.getChannel<GuildMessageChannel>(channelId)
-                        ?.deleteMessageById(messageId)
-                        ?.awaitCatching()
-                }
-            }
-        }
     }
 
     suspend fun <T> onInteractionRateLimit(
@@ -140,5 +101,10 @@ class DefaultRateLimitHandler(
 
     fun interface RequestHandler {
         suspend fun handle(instance: DefaultRateLimitHandler, context: RateLimitingContext, probe: ConsumptionProbe): Boolean
+    }
+
+    companion object {
+        @JvmSynthetic
+        val deleteScope = namedDefaultScope("Rate limit message delete", 1, isDaemon = true)
     }
 }

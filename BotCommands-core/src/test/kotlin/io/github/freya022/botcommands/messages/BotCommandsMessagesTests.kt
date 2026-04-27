@@ -50,12 +50,10 @@ class BotCommandsMessagesTests : AbstractIntegrationTest() {
             methodCall(messages::uncaughtException) { this(mockk()) },
             methodCall(messages::missingUserPermissions) { this(mockk(), emptySet()) },
             methodCall(messages::missingBotPermissions) { this(mockk(), emptySet()) },
-            methodCall(messages::ownerOnly) { this(mockk()) },
             methodCall(messages::userRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::channelRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::guildRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::applicationCommandsNotAvailable) { this(mockk()) },
-            methodCall(messages::commandNotFound) { this(mockk(), emptySet()) },
             methodCall(messages::resolverChannelNotFound) { this(mockk(), 0) },
             methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
             methodCall(messages::resolverUserNotFound) { this(mockk(), 0) },
@@ -64,8 +62,6 @@ class BotCommandsMessagesTests : AbstractIntegrationTest() {
                     every { discordName } returns "discord_name"
                 })
             },
-            methodCall(messages::closedDirectMessages) { this(mockk()) },
-            methodCall(messages::nsfwOnly) { this(mockk()) },
             methodCall(messages::componentNotAllowed) { this(mockk()) },
             methodCall(messages::componentExpired) { this(mockk()) },
             methodCall(messages::modalExpired) { this(mockk()) },

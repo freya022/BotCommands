@@ -91,6 +91,10 @@ dependencies {
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
 
+    // Text commands (rare examples that are about core features but use a different module to demonstrate)
+    "javaDocExamplesImplementation"(projects.botCommandsCommands.text)
+    "kotlinDocExamplesImplementation"(projects.botCommandsCommands.text)
+
     // YAML (de)serialization
     "javaDocExamplesImplementation"(libs.jackson.dataformat.yaml)
     "kotlinDocExamplesImplementation"(libs.jackson.dataformat.yaml)
@@ -107,6 +111,9 @@ dependencies {
     // Database
     "examplesImplementation"(libs.h2)
     "examplesImplementation"(libs.flyway.core)
+
+    // Text commands
+    "examplesImplementation"(projects.botCommandsCommands.text)
 
     // Components
     "examplesImplementation"(projects.botCommandsComponents)

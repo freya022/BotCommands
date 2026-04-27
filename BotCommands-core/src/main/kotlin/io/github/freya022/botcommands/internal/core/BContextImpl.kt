@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
-import io.github.freya022.botcommands.api.commands.text.TextCommandsContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BContext.Status
 import io.github.freya022.botcommands.api.core.BotOwners
@@ -17,8 +16,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
-import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandsContextImpl
-import io.github.freya022.botcommands.internal.commands.text.TextCommandsContextImpl
 import io.github.freya022.botcommands.internal.utils.takeIfFinite
 import io.github.freya022.botcommands.internal.utils.unwrap
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -62,8 +59,6 @@ class BContextImpl internal constructor(
     private var forceShutdown = false
 
     override val globalExceptionHandler: GlobalExceptionHandler? by lazy { serviceContainer.getServiceOrNull() }
-
-    override val textCommandsContext: TextCommandsContext by serviceContainer.lazy()
 
     override val applicationCommandsContext: ApplicationCommandsContext by serviceContainer.lazy()
 

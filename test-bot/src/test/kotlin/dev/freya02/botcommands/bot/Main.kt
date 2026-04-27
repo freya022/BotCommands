@@ -10,6 +10,7 @@ import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.freya022.botcommands.api.core.config.registerModals
+import io.github.freya022.botcommands.api.core.config.registerTextCommands
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import kotlin.io.path.absolutePathString
@@ -49,9 +50,7 @@ object Main {
 
                 registerComponents()
 
-                textCommands {
-                    enable = true
-
+                registerTextCommands {
                     usePingAsPrefix = true
                 }
 

@@ -17,7 +17,6 @@ abstract class AbstractIntegrationTest {
     }
 
     fun createTest(
-        textCommands: Boolean = false,
         appCommands: Boolean = false,
         appEmojis: Boolean = false,
         builder: BConfigBuilder.() -> Unit
@@ -30,10 +29,6 @@ abstract class AbstractIntegrationTest {
             disableExceptionsInDMs = true
 
             addClass<FakeBot>()
-
-            textCommands {
-                enable = textCommands
-            }
 
             applicationCommands {
                 enable = appCommands

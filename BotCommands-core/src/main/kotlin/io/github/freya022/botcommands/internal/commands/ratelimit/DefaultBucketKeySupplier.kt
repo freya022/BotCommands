@@ -3,24 +3,20 @@ package io.github.freya022.botcommands.internal.commands.ratelimit
 import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
-import io.github.freya022.botcommands.api.commands.ratelimit.TextCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
-import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
 private val logger = KotlinLogging.logger { }
 
-class DefaultBucketKeySupplier internal constructor(private val scope: RateLimitScope) : BucketKeySupplier {
+class DefaultBucketKeySupplier internal constructor(val scope: RateLimitScope) : BucketKeySupplier {
 
     private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context ->
         when (context) {
-            is TextCommandRateLimitingContext -> getKey(context.event, context.commandInfo)
             is ApplicationCommandRateLimitingContext -> getKey(context.event)
             else -> null
         }
@@ -35,26 +31,6 @@ class DefaultBucketKeySupplier internal constructor(private val scope: RateLimit
         }
 
         throwInternal("Unsupported context: ${context.javaClass.name}")
-    }
-
-    private fun getKey(event: MessageReceivedEvent, commandInfo: TextCommandInfo): BucketKeySupplier.Key {
-        if (!event.isFromGuild) throwInternal("Text commands can't run outside of a guild")
-        val path = commandInfo.path
-        return when (scope) {
-            RateLimitScope.USER -> BucketKeySupplier.UserKey(path.fullPath, event.author.idLong)
-            RateLimitScope.USER_PER_GUILD -> BucketKeySupplier.UserAtPlaceKey(
-                path.fullPath,
-                event.guild.idLong,
-                event.author.idLong
-            )
-            RateLimitScope.USER_PER_CHANNEL -> BucketKeySupplier.UserAtPlaceKey(
-                path.fullPath,
-                event.channel.idLong,
-                event.author.idLong
-            )
-            RateLimitScope.GUILD -> BucketKeySupplier.PlaceKey(path.fullPath, event.guild.idLong)
-            RateLimitScope.CHANNEL -> BucketKeySupplier.PlaceKey(path.fullPath, event.channel.idLong)
-        }
     }
 
     private fun getKey(event: GenericCommandInteractionEvent) =

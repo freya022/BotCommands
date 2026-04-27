@@ -3,24 +3,18 @@
 
     "missing.permissions.user": "You are not allowed to do this",
     "missing.permissions.bot": "I am missing these permissions: {permissions}",
-    "owner_only": "Only the owner can use this",
 
     "ratelimited.user": "You will be able to use this {timestamp}",
     "ratelimited.channel": "You will be able to use this, in this channel, {timestamp}",
     "ratelimited.guild": "You will be able to use this, in this guild, {timestamp}",
 
     "commands.application.not_available": "Application commands are not available yet, please try again later",
-    "commands.text.not_found": "Unknown command, maybe you meant: {suggestions}",
 
     "resolver.channel.not_found": "The target channel does not exist anymore",
     "resolver.channel.missing_access": "The bot cannot access {channel_id}",
     "resolver.user.not_found": "The target user does not exist anymore",
 
     "commands.slash.option.unresolvable": "The option '{option_name}' could not be resolved.",
-
-    "direct_messages.closed": "Unable to send you a DM, please open your DMs from this server",
-
-    "nsfw_only": "This command can only be used in NSFW channels",
 
     "components.not_allowed": "You are not allowed to use this",
     "components.expired": "This component is not usable anymore",

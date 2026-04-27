@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
-import io.github.freya022.botcommands.api.utils.EmojiUtils
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -80,28 +79,6 @@ internal class BotCommandsAppEmojisConfiguration(
 internal fun BAppEmojisConfigBuilder.applyConfig(configuration: BotCommandsAppEmojisConfiguration) = apply {
     enable = configuration.enable
     deleteOnOutOfSlots = configuration.deleteOnOutOfSlots
-}
-
-@ConfigurationProperties(prefix = "botcommands.text", ignoreUnknownFields = false)
-internal class BotCommandsTextConfiguration(
-    override val enable: Boolean = true,
-    override val usePingAsPrefix: Boolean = false,
-    override val prefixes: List<String> = emptyList(),
-    override val isHelpDisabled: Boolean = false,
-    override val showSuggestions: Boolean = true,
-    @param:Name("dmClosedEmoji")
-    internal val dmClosedEmojiString: String? = null
-) : AbstractBotCommandsConfiguration(), BTextConfigProps {
-    override val dmClosedEmoji: Nothing get() = unusable()
-}
-
-internal fun BTextConfigBuilder.applyConfig(configuration: BotCommandsTextConfiguration) = apply {
-    enable = configuration.enable
-    usePingAsPrefix = configuration.usePingAsPrefix
-    prefixes += configuration.prefixes
-    isHelpDisabled = configuration.isHelpDisabled
-    showSuggestions = configuration.showSuggestions
-    configuration.dmClosedEmojiString?.let { dmClosedEmojiSupplier = { EmojiUtils.resolveJDAEmoji(it) } }
 }
 
 @ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)

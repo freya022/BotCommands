@@ -8,8 +8,6 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation
-import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -20,15 +18,16 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
+// TODO add tests so those names stay up to date
 private val logger = KotlinLogging.logger { }
 private val commandAnnotations = listOf(
     JDASlashCommand::class.jvmName,
     JDAUserCommand::class.jvmName,
     JDAMessageCommand::class.jvmName,
-    JDATextCommandVariation::class.jvmName
+    "io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation"
 )
 private val commandProviderInterfaces = listOf(
-    TextCommandProvider::class.jvmName,
+    "io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider",
     GuildApplicationCommandProvider::class.jvmName,
     GlobalApplicationCommandProvider::class.jvmName,
 )

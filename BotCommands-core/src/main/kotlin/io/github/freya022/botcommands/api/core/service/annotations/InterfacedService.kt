@@ -5,13 +5,6 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
-import io.github.freya022.botcommands.api.commands.text.HelpBuilderConsumer
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextSuggestionSupplier
-import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
-import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
-import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
@@ -41,14 +34,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see BotCommandsMessagesFactory
  *
  * @see GlobalExceptionHandler
- *
- * @see TextCommandProvider
- * @see TextCommandFilter
- * @see DefaultEmbedSupplier
- * @see DefaultEmbedFooterIconSupplier
- * @see IHelpCommand
- * @see HelpBuilderConsumer
- * @see TextSuggestionSupplier
  *
  * @see GlobalApplicationCommandProvider
  * @see GuildApplicationCommandProvider

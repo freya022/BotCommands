@@ -8,6 +8,7 @@ plugins {
 dependencies {
     testImplementation(libs.jda)
     testImplementation(projects.botCommandsCore)
+    testImplementation(projects.botCommandsCommands.text)
     testImplementation(projects.botCommandsComponents)
     testImplementation(projects.botCommandsModals)
     testImplementation(projects.botCommandsPagination)

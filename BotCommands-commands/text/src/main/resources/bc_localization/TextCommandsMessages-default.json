@@ -1,0 +1,9 @@
+{
+    "owner_only": "Only the owner can use this",
+
+    "commands.text.not_found": "Unknown command, maybe you meant: {suggestions}",
+
+    "direct_messages.closed": "Unable to send you a DM, please open your DMs from this server",
+
+    "nsfw_only": "This command can only be used in NSFW channels"
+}

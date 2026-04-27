@@ -1,13 +1,11 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 
 /**
  * Base filter interface.
  *
- * @see TextCommandFilter
  * @see ApplicationCommandFilter
  */
 interface Filter {

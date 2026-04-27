@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
-import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
@@ -30,7 +29,6 @@ interface BConfig : IConfig, BConfigProps {
     val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
     val appEmojisConfig: BAppEmojisConfig
-    val textConfig: BTextConfig
     val applicationConfig: BApplicationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
@@ -51,7 +49,7 @@ interface BConfigProps {
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
-     * and having [hidden commands][Hidden] shown.
+     * and having hidden text commands shown.
      *
      * If not set, the application owners will be used, with roles "Developer" and above.
      *
@@ -209,13 +207,12 @@ class BConfigBuilder : BConfigProps {
     val databaseConfig = BDatabaseConfigBuilder()
     val localizationConfig = BLocalizationConfigBuilder()
     val appEmojisConfig = BAppEmojisConfigBuilder()
-    val textConfig = BTextConfigBuilder()
     val applicationConfig = BApplicationConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
-     * and having [hidden commands][Hidden] shown.
+     * and having hidden text commands shown.
      *
      * If not set, the application owners will be used, with roles "Developer" and above.
      *
@@ -227,7 +224,7 @@ class BConfigBuilder : BConfigProps {
 
     /**
      * Predefined user IDs of the bot owners, allowing bypassing cooldowns, user permission checks,
-     * and having [hidden commands][Hidden] shown.
+     * and having hidden text commands shown.
      *
      * If not set, the application owners will be used, with roles "Developer" and above.
      *
@@ -325,10 +322,6 @@ class BConfigBuilder : BConfigProps {
         appEmojisConfig.apply(block)
     }
 
-    fun textCommands(block: ReceiverConsumer<BTextConfigBuilder>) {
-        textConfig.apply(block)
-    }
-
     fun applicationCommands(block: ReceiverConsumer<BApplicationConfigBuilder>) {
         applicationConfig.apply(block)
     }
@@ -368,7 +361,6 @@ class BConfigBuilder : BConfigProps {
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
             override val appEmojisConfig = this@BConfigBuilder.appEmojisConfig.build()
-            override val textConfig = this@BConfigBuilder.textConfig.build()
             override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
@@ -378,7 +370,6 @@ class BConfigBuilder : BConfigProps {
                 databaseConfig.configType to databaseConfig,
                 localizationConfig.configType to localizationConfig,
                 appEmojisConfig.configType to appEmojisConfig,
-                textConfig.configType to textConfig,
                 applicationConfig.configType to applicationConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()

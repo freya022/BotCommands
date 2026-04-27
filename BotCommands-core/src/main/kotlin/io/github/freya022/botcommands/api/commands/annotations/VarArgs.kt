@@ -1,16 +1,10 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
-import io.github.freya022.botcommands.api.commands.text.annotations.TextOption
-import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
-import io.github.freya022.botcommands.api.commands.text.options.builder.inlineClassOptionVararg
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 /**
- * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].
+ * Generates N command options from the specified command **input** option.
  *
  * The target parameter must be of type [List].
  *
@@ -18,14 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
  *
  * See [@MentionsString][MentionsString] for a way to get a list of mentionable (user/member/role/channel...)
  * without a vararg, using a single string.
- *
- * **Note:** You are limited to one vararg parameter in text commands.
- *
- * @see TextCommandVariationBuilder.optionVararg
- * @see TextCommandVariationBuilder.inlineClassOptionVararg
- *
- * @see SlashCommandBuilder.optionVararg
- * @see SlashCommandBuilder.inlineClassOptionVararg
  *
  * @see MentionsString @MentionsString
  */

@@ -1,14 +1,11 @@
 package io.github.freya022.botcommands.api.core.messages
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
-import io.github.freya022.botcommands.api.commands.text.TopLevelTextCommandInfo
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
@@ -36,11 +33,6 @@ interface BotCommandsMessages {
     fun missingBotPermissions(event: GenericEvent, permissions: Set<Permission>): MessageCreateData
 
     /**
-     * @return Message to display when a text command is [only usable by the owner][io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner]
-     */
-    fun ownerOnly(event: GenericEvent): MessageCreateData
-
-    /**
      * @return Message to display when a user has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
      */
     fun userRateLimited(event: GenericEvent, deadline: Instant): MessageCreateData
@@ -61,11 +53,6 @@ interface BotCommandsMessages {
     fun applicationCommandsNotAvailable(event: GenericCommandInteractionEvent): MessageCreateData
 
     /**
-     * @return Message to display when a text command cannot be found
-     */
-    fun commandNotFound(event: MessageReceivedEvent, suggestions: Collection<TopLevelTextCommandInfo>): MessageCreateData
-
-    /**
      * @return Message to display when a channel parameter could not be resolved
      */
     fun resolverChannelNotFound(event: GenericEvent, channelId: Long): MessageCreateData
@@ -84,16 +71,6 @@ interface BotCommandsMessages {
      * @return Message to display when a slash command option is unresolvable (only in slash command interactions)
      */
     fun slashCommandUnresolvableOption(event: CommandInteractionPayload, option: SlashCommandOption): MessageCreateData
-
-    /**
-     * @return Message to display when a User's DMs are closed (when sending help content for example)
-     */
-    fun closedDirectMessages(event: GenericEvent): MessageCreateData
-
-    /**
-     * @return Message to display when a command is used in a NSFW [IAgeRestrictedChannel] (see [@NSFW][io.github.freya022.botcommands.api.commands.text.annotations.NSFW])
-     */
-    fun nsfwOnly(event: GenericEvent): MessageCreateData
 
     /**
      * @return Message to display when a user tries to use a component it isn't allowed to interact with

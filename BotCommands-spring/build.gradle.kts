@@ -16,6 +16,7 @@ dependencies {
     // Module configs
     compileOnly(projects.botCommandsComponents)
     compileOnly(projects.botCommandsModals)
+    compileOnly(projects.botCommandsCommands.text)
 
     // Logging
     implementation(libs.kotlin.logging)
