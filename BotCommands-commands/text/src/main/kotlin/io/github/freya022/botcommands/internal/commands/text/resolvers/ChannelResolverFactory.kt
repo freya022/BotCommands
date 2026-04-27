@@ -5,7 +5,9 @@ import io.github.freya022.botcommands.api.commands.text.options.TextCommandOptio
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.channels.AbstractChannelResolverFactory
@@ -52,8 +54,10 @@ internal class ChannelResolverFactory(override val context: BContext) : Abstract
             event: MessageReceivedEvent,
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
-            if (event.channel.canTalk())
-                event.message.reply(messagesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
+            if (event.channel.canTalk()) {
+                val localeProvider = context.getService<TextCommandLocaleProvider>()
+                event.message.reply(messagesFactory.get(localeProvider.getLocale(event)).resolverChannelMissingAccess(event, channelId)).queue()
+            }
         })
 
         private companion object {

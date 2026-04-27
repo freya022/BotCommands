@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 // Don't require enabled feature, could be used by user's own impl
 @BService
-class LocalizableTextCommandFactory internal constructor(
+internal class LocalizableTextCommandFactory internal constructor(
     private val localizationService: LocalizationService,
     private val localizationConfig: BLocalizationConfig,
     private val localeProvider: TextCommandLocaleProvider,

@@ -4,8 +4,17 @@ import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.PairEntry
 import io.github.freya022.botcommands.api.localization.context.localize
+import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+
+/**
+ * Sets the guild locale to be provided by the passed [TextCommandLocaleProvider].
+ */
+fun LocalizationContext.Builder.setGuildLocaleProvider(provider: TextCommandLocaleProvider, event: MessageReceivedEvent): LocalizationContext.Builder {
+    return setGuildLocaleProvider(provider::getLocale, event)
+}
 
 /**
  * Sends a localized message to the event's channel.

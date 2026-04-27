@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.util.*
 
-internal class LocalizationContextImpl(
+class LocalizationContextImpl(
     private val localizationService: LocalizationService,
     override val localizationBundle: String,
     override val localizationPrefix: String?,
@@ -62,7 +62,7 @@ internal class LocalizationContextImpl(
         return LocalizationContextImpl(localizationService, localizationBundle, null, _guildLocaleProvider, _userLocaleProvider)
     }
 
-    internal fun withLocales(guildLocale: Locale, userLocale: Locale): LocalizationContextImpl {
+    fun withLocales(guildLocale: Locale, userLocale: Locale): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, lazyOf(guildLocale), lazyOf(userLocale))
     }
 

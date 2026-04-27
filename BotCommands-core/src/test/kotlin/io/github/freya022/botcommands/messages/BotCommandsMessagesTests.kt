@@ -26,10 +26,9 @@ class BotCommandsMessagesTests : AbstractMessagesTests() {
                     additionalTypes = setOf(BotCommandsMessagesFactory::class),
                 ) { context ->
                     DefaultBotCommandsMessagesFactory(
-                        context.getService(),
-                        context.getService(),
-                        context.getService(),
-                        context.getService(),
+                        permissionLocalization = context.getService(),
+                        localizationService = context.getService(),
+                        userLocaleProvider = context.getService(),
                     )
                 }
             }

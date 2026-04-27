@@ -95,7 +95,7 @@ abstract class AbstractChannelResolverFactory : ParameterResolverFactory() {
     }
 
     abstract class AbstractChannelResolver<T : AbstractChannelResolver<T>>(
-        context: BContext
+        protected val context: BContext
     ) : ClassParameterResolver<T, GuildChannel>(GuildChannel::class) {
         protected val logger = objectLogger()
 

@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.localization.annotations.LocalizationB
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext.Companion.builder
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -25,6 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import java.util.*
+import java.util.function.Function
 import javax.annotation.CheckReturnValue
 
 typealias PairEntry = Pair<String, Any>
@@ -173,10 +173,17 @@ interface LocalizationContext {
         }
 
         /**
-         * Sets the guild locale to be provided by the passed [TextCommandLocaleProvider].
+         * Sets the guild locale to the provider function.
+         *
+         * This is supposed to be used as such:
+         * ```java
+         * TextCommandLocaleProvider localeProvider; // Assuming you have one
+         *
+         * setGuildLocaleProvider(localeProvider::getLocale, event)
+         * ```
          */
-        fun setGuildLocaleProvider(provider: TextCommandLocaleProvider, event: MessageReceivedEvent): Builder {
-            return setGuildLocaleProvider(lazy { provider.getLocale(event) })
+        fun setGuildLocaleProvider(provider: Function<MessageReceivedEvent, Locale>, event: MessageReceivedEvent): Builder {
+            return setGuildLocaleProvider(lazy { provider.apply(event) })
         }
 
         /**
@@ -241,7 +248,10 @@ interface LocalizationContext {
     }
 }
 
-internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
+// TODO shared internal
+/** **INTERNAL** */
+@JvmSynthetic
+fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
     Localization.Entry(this[it].first, this[it].second)
 }
 

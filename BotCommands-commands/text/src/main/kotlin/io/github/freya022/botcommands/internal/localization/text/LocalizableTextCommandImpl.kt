@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.localization.text
 
+import io.github.freya022.botcommands.api.commands.text.localization.context.setGuildLocaleProvider
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
