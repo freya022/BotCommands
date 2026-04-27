@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.*
 
-internal abstract class AbstractCommandInfoImpl internal constructor(
+abstract class AbstractCommandInfoImpl(
     builder: CommandBuilderImpl
 ) : CommandInfo {
 
@@ -18,7 +18,7 @@ internal abstract class AbstractCommandInfoImpl internal constructor(
 
     final override val declarationSite: DeclarationSite = builder.declarationSite
 
-    internal val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
+    protected open val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
     final override fun hasRateLimiter(): Boolean = rateLimitInfo != null
 
     final override val userPermissions: EnumSet<Permission> = builder.userPermissions

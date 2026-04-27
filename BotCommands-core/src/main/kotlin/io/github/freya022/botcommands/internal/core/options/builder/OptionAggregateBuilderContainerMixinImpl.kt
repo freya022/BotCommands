@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.internal.core.options.builder.InternalAggr
 import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
-internal class OptionAggregateBuilderContainerMixinImpl<T : OptionAggregateBuilder<T>> internal constructor(
+class OptionAggregateBuilderContainerMixinImpl<T : OptionAggregateBuilder<T>>(
     private val targetFunction: KFunction<*>,
     private val aggregateConstructor: (aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) -> T
 ) : OptionAggregateBuilderContainerMixin<T> {

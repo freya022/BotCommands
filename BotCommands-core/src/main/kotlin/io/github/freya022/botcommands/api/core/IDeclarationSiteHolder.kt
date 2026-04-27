@@ -20,8 +20,10 @@ interface IDeclarationSiteHolderBuilder : IDeclarationSiteHolder {
     override var declarationSite: DeclarationSite
 }
 
+// TODO shared internal
+/** **INTERNAL** */
 @OptIn(StackSensitive::class)
-internal fun <T : IDeclarationSiteHolderBuilder> T.setCallerAsDeclarationSite(): T {
+fun <T : IDeclarationSiteHolderBuilder> T.setCallerAsDeclarationSite(): T {
     declarationSite = DeclarationSite.fromRaw(findCaller(1).toSignature())
 
     return this

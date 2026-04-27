@@ -12,19 +12,19 @@ import kotlin.reflect.KParameter
  * Helps to get values from the right place,
  * reduces surface of error when processing inline classes.
  */
-internal class ParameterAdapter internal constructor(
-    internal val originalParameter: KParameter,
-    internal val valueParameter: KParameter
+class ParameterAdapter(
+    val originalParameter: KParameter,
+    val valueParameter: KParameter
 ) {
-    internal val declaredName get() = valueParameter.findDeclarationName()
-    internal val discordName get() = originalParameter.findDeclarationName().toDiscordString()
-    internal val actualType get() = ParameterType.ofType(valueParameter.type)
+    val declaredName get() = valueParameter.findDeclarationName()
+    val discordName get() = originalParameter.findDeclarationName().toDiscordString()
+    val actualType get() = ParameterType.ofType(valueParameter.type)
     internal val isOptionalOrNullable get() = originalParameter.isNullable || originalParameter.isOptional
             || valueParameter.isNullable || valueParameter.isOptional
 
-    internal inline fun <reified A : Annotation> hasAnnotation() =
+    inline fun <reified A : Annotation> hasAnnotation() =
         originalParameter.hasAnnotationRecursive<A>()
 
-    internal inline fun <reified A : Annotation> findAnnotation() =
+    inline fun <reified A : Annotation> findAnnotation() =
         originalParameter.findAnnotationRecursive<A>()
 }

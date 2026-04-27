@@ -22,7 +22,7 @@ object ReflectionUtils {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
+    fun <R> KFunction<R>.reflectReference(): KFunction<R> {
         reflectedMap[this]?.let { return it as KFunction<R> }
 
         //Still allow internal modifiers as they should be reflectively accessible
@@ -52,7 +52,7 @@ object ReflectionUtils {
      * - If the callable reference is not bound,
      * the [LHS][CallableReference.getOwner] is used to find back the function.
      */
-    internal fun <R> KFunction<R>.resolveBestReference(): KFunction<R> {
+    fun <R> KFunction<R>.resolveBestReference(): KFunction<R> {
         if (this !is CallableReference)
             throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
 
@@ -121,7 +121,7 @@ object ReflectionUtils {
 //    internal val KFunction<*>.isJava
 //        get() = !declaringClass.hasAnnotation<Metadata>()
 
-    internal val KCallable<*>.nonInstanceParameters
+    val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
     val KCallable<*>.nonEventParameters

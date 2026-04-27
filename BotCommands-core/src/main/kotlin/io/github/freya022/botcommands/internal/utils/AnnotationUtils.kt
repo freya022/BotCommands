@@ -15,7 +15,7 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
-internal object AnnotationUtils {
+object AnnotationUtils {
     internal fun getEffectiveTestGuildIds(context: BContext, func: KFunction<*>): TLongSet {
         val set = TLongHashSet(context.applicationConfig.testGuildIds)
         func.findAllAnnotations<Test>().forEach { set.addAll(it.guildIds) }
@@ -31,7 +31,7 @@ internal object AnnotationUtils {
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
+    fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
         return func.findAllAnnotations<FilterAnnotation>()
             .flatMap { it.classes }
             .onEach {

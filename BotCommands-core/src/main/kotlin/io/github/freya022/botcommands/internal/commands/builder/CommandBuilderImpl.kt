@@ -16,11 +16,11 @@ import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.*
 
-internal abstract class CommandBuilderImpl internal constructor(
+abstract class CommandBuilderImpl(
     override val context: BContext,
     override val name: String
 ) : CommandBuilder {
-    internal abstract val type: CommandType
+    abstract val type: CommandType
     final override lateinit var declarationSite: DeclarationSite
 
     final override var userPermissions: EnumSet<Permission> = enumSetOf()

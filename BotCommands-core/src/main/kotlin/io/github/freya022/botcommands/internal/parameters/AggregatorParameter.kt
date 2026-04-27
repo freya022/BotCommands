@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.options.Option
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
-internal interface AggregatorParameter {
+interface AggregatorParameter {
     /**
      * **Note:** Can either be the user-defined aggregator or the command function
      *

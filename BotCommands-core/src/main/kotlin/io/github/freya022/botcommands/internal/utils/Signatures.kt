@@ -3,7 +3,7 @@ package io.github.freya022.botcommands.internal.utils
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import kotlin.reflect.KFunction
 
-internal val KFunction<*>.shortSignatureNoSrc: String
+val KFunction<*>.shortSignatureNoSrc: String
     get() = getSignature(returnType = true, source = false)
 
 val KFunction<*>.shortSignature: String

@@ -4,17 +4,18 @@ import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.LocalizationService
+import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 // Don't require enabled feature, could be used by user's own impl
 @BService
-internal class LocalizableTextCommandFactory internal constructor(
+class LocalizableTextCommandFactory internal constructor(
     private val localizationService: LocalizationService,
     private val localizationConfig: BLocalizationConfig,
     private val localeProvider: TextCommandLocaleProvider,
     private val messagesFactory: BotCommandsMessagesFactory,
 ) {
-    internal fun create(event: MessageReceivedEvent) =
+    fun create(event: MessageReceivedEvent): LocalizableTextCommand =
         LocalizableTextCommandImpl(event, localizationService, localizationConfig, localeProvider, messagesFactory)
 }

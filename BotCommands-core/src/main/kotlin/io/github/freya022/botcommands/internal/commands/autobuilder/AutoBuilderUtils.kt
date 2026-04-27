@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.internal.utils.unwrap
 import kotlin.reflect.KFunction
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
-internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
+inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
     var ex: Throwable? = null
     forEach { metadata ->
         runCatching {
@@ -30,17 +30,17 @@ internal inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedE
 }
 
 context(_: CommandBuilder)
-internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresentAnnotationOfVariants(): Boolean {
+inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresentAnnotationOfVariants(): Boolean {
     return singleAnnotationOfVariants<A>() != null
 }
 
 context(_: CommandBuilder)
-internal inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
+inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
     return singleValueOfVariants(annotationRef<A>()) { it.findAnnotationRecursive<A>() }
 }
 
 context(builder: CommandBuilder)
-internal fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String, associationBlock: (KFunction<*>) -> V?): V? {
+fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String, associationBlock: (KFunction<*>) -> V?): V? {
     val allValues = this.associateWith(associationBlock)
 
     val nonNullMap = allValues.filterValues { it != null }
@@ -52,4 +52,4 @@ internal fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String
 }
 
 @Suppress("UNCHECKED_CAST")
-internal fun KFunction<*>.castFunction() = this as KFunction<Any>
+fun KFunction<*>.castFunction() = this as KFunction<Any>

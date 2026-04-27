@@ -110,11 +110,11 @@ class ResolverContainer(
         return factory
     }
 
-    internal inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
+    inline fun <reified T : IParameterResolver<T>> hasResolverOfType(parameter: ParameterWrapper): Boolean {
         return hasResolver(TypedResolverRequest(T::class.java, parameter))
     }
 
-    internal fun hasResolver(request: ResolverRequest): Boolean {
+    fun hasResolver(request: ResolverRequest): Boolean {
         return getResolverFactoryOrNull(request) != null
     }
 

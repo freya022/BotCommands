@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMix
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KClass
 
-internal abstract class CommandParameterImpl internal constructor(
+abstract class CommandParameterImpl(
     context: BContext,
     optionAggregateBuilder: OptionAggregateBuilderImpl<*>,
     eventType: KClass<out Event>

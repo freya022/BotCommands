@@ -101,5 +101,7 @@ internal inline fun ParameterWrapper.requireUser(value: Boolean, lazyMessage: ()
 @JvmSynthetic
 internal fun ParameterWrapper.throwUser(message: String): Nothing = utilsThrowUser(parameter.function, message)
 
+// TODO shared internal
+/** **INTERNAL** */
 @JvmSynthetic
-internal fun KParameter.wrap() = ParameterWrapper(this)
+fun KParameter.wrap() = ParameterWrapper(this)

@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import java.util.*
 
-internal class UsabilityImpl internal constructor(override val unusableReasons: Set<UnusableReason>) : Usability {
+class UsabilityImpl @PublishedApi internal constructor(override val unusableReasons: Set<UnusableReason>) : Usability {
     override val isUsable: Boolean
         get() = unusableReasons.isEmpty()
 
@@ -21,8 +21,8 @@ internal class UsabilityImpl internal constructor(override val unusableReasons: 
     override val bestReason: UnusableReason
         get() = unusableReasons.maxBy { it.priority }
 
-    internal companion object {
-        internal inline fun build(crossinline block: EnumSet<UnusableReason>.() -> Unit) =
+    companion object {
+        inline fun build(crossinline block: EnumSet<UnusableReason>.() -> Unit) =
             enumSetOf<UnusableReason>()
                 .apply(block)
                 .unmodifiableView()

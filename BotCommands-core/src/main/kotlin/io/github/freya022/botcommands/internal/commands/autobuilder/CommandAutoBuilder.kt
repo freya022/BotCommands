@@ -15,7 +15,7 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
-internal abstract class CommandAutoBuilder {
+abstract class CommandAutoBuilder {
     protected abstract val serviceContainer: ServiceContainer
     protected abstract val optionAnnotation: KClass<out Annotation>
 

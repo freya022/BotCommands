@@ -5,12 +5,12 @@ import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
 import java.util.*
 
-internal class NamedCommandMap<T> internal constructor() where T : INamedCommand, T : IDeclarationSiteHolder {
+class NamedCommandMap<T> where T : INamedCommand, T : IDeclarationSiteHolder {
     private val mutableMap: MutableMap<String, T> = hashMapOf()
     internal val map: Map<String, T> = Collections.unmodifiableMap(mutableMap)
-    internal val values: Collection<T> = Collections.unmodifiableCollection(mutableMap.values)
+    val values: Collection<T> = Collections.unmodifiableCollection(mutableMap.values)
 
-    internal fun putNewCommand(newCommand: T) {
+    fun putNewCommand(newCommand: T) {
         mutableMap.putIfAbsentOrThrow(newCommand.name, newCommand) { oldCommand ->
             """
             Command '${newCommand.path.fullPath}' is already defined

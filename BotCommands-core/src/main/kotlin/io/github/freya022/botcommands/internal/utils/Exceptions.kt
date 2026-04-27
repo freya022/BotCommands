@@ -31,7 +31,7 @@ internal fun throwInternal(message: String, declarationSite: DeclarationSite? = 
 fun throwArgument(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("$message\n    Function: ${function.shortSignature}")
 
-internal fun Throwable.rethrow(message: String): Nothing =
+fun Throwable.rethrow(message: String): Nothing =
     throw RuntimeException(message, unwrap())
 
 fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothing =
@@ -55,10 +55,10 @@ internal fun throwState(message: String, declarationSite: DeclarationSite? = nul
         else -> throw IllegalStateException("$message\n    Declared at: $declarationSite")
     }
 
-internal fun throwState(message: String, function: KFunction<*>): Nothing =
+fun throwState(message: String, function: KFunction<*>): Nothing =
     throw IllegalStateException("$message\n    Function: ${function.shortSignature}")
 
-internal fun throwState(message: String): Nothing =
+fun throwState(message: String): Nothing =
     throw IllegalStateException(message)
 
 @OptIn(ExperimentalContracts::class)
@@ -97,7 +97,7 @@ inline fun requireAt(value: Boolean, function: KFunction<*>? = null, lazyMessage
 }
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun requireAt(value: Boolean, declarationSite: DeclarationSite? = null, lazyMessage: () -> String) {
+inline fun requireAt(value: Boolean, declarationSite: DeclarationSite? = null, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
@@ -119,7 +119,7 @@ internal inline fun checkAt(value: Boolean, declarationSite: DeclarationSite? = 
 }
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun checkAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
+inline fun checkAt(value: Boolean, function: KFunction<*>? = null, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
@@ -133,7 +133,7 @@ internal inline fun checkAt(value: Boolean, function: KFunction<*>? = null, lazy
     }
 }
 
-internal fun Throwable.unwrap(): Throwable {
+fun Throwable.unwrap(): Throwable {
     if (this is InvocationTargetException) return targetException
     return this
 }

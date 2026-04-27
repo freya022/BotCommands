@@ -13,7 +13,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Instant
 
-internal fun String.toDiscordString(): String {
+fun String.toDiscordString(): String {
     val sb: StringBuilder = StringBuilder()
 
     for (c in this) {
@@ -47,7 +47,7 @@ internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V
     this[key] = value
 }
 
-internal inline fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V, messageSupplier: (value: V) -> String) {
+inline fun <K, V> MutableMap<K, V>.putIfAbsentOrThrow(key: K, value: V, messageSupplier: (value: V) -> String) {
     val existingValue = this[key]
     if(existingValue != null) throw IllegalStateException(messageSupplier(existingValue))
     this[key] = value
@@ -59,7 +59,7 @@ internal fun Duration.toTimestampIfFinite(): Instant? =
 fun Duration.takeIfFinite(): Duration? =
     takeIf { it.isFinite() && it.isPositive() }
 
-internal inline fun <reified T : Any> T?.ifNullThrowInternal(message: () -> String): T {
+inline fun <reified T : Any> T?.ifNullThrowInternal(message: () -> String): T {
     if (this == null)
         throwInternal(message())
     return this

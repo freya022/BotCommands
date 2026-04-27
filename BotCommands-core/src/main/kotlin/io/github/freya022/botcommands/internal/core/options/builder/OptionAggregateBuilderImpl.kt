@@ -9,8 +9,8 @@ import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KFunction
 
 @CommandDSL
-abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>> internal constructor(
-    internal val aggregatorParameter: AggregatorParameter,
+abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>>(
+    val aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>,
 ) : OptionAggregateBuilderContainerMixin<T>,
     OptionAggregateBuilder<T> {
@@ -54,9 +54,9 @@ abstract class OptionAggregateBuilderImpl<T : OptionAggregateBuilder<T>> interna
     final override fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) =
         aggregateContainer.aggregate(declaredName, aggregator, block)
 
-    internal abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
+    protected abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 
-    internal operator fun plusAssign(optionBuilder: OptionBuilderImpl) {
+    operator fun plusAssign(optionBuilder: OptionBuilderImpl) {
         _optionBuilders.computeIfAbsent(optionBuilder.optionParameter.typeCheckingParameterName) { arrayListOf() }.add(optionBuilder)
     }
 }
