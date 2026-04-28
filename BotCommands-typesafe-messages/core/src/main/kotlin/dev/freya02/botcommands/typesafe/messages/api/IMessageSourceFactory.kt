@@ -43,6 +43,8 @@ interface IMessageSourceFactory<out T : IMessageSource> {
      * Creates a new message source using the provided [message event][MessageReceivedEvent].
      *
      * The default locale will be retrieved from [TextCommandLocaleProvider].
+     *
+     * @throws IllegalStateException If the text commands module is absent
      */
     fun create(event: MessageReceivedEvent): T
 

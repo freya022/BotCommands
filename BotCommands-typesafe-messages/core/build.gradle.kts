@@ -13,12 +13,13 @@ dependencies {
 
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
+    compileOnly(projects.botCommandsCommands.text)
 
     // Logging
     implementation(libs.kotlin.logging)
 
     // Spring annotations
-    compileOnly(libs.spring.context)
+    compileOnly(libs.spring.boot.autoconfigure)
 
     // -------------------- TEST DEPENDENCIES --------------------
 

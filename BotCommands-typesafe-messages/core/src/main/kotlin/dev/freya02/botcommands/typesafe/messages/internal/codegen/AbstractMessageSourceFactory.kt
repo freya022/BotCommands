@@ -3,11 +3,11 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
+import dev.freya02.botcommands.typesafe.messages.internal.TextCommandLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.annotations.DynamicCall
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.invoke.MethodHandle
@@ -36,6 +36,10 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
     override fun create(event: MessageReceivedEvent): T {
         val (localizationService, bundle, _, textCommandLocaleProvider, _, _, sourceHandle) = params
 
+        checkNotNull(textCommandLocaleProvider) {
+            "The text commands module must be present to use this"
+        }
+
         val messageSourceContext = MessageSourceContext(
             localizationService = localizationService,
             localizationBundle = bundle,
@@ -63,7 +67,7 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
         internal val localizationService: LocalizationService,
         internal val bundle: String,
         internal val locales: Set<Locale>,
-        internal val textCommandLocaleProvider: TextCommandLocaleProvider,
+        internal val textCommandLocaleProvider: TextCommandLocaleProviderAdapter?,
         internal val guildLocaleProvider: GuildLocaleProvider,
         internal val userLocaleProvider: UserLocaleProvider,
         internal val sourceHandle: MethodHandle,

@@ -5,6 +5,7 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceFactoryException
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceFactoryProvider
+import dev.freya02.botcommands.typesafe.messages.internal.TextCommandLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.createSignature
@@ -13,13 +14,13 @@ import dev.freya02.botcommands.typesafe.messages.internal.utils.require
 import dev.freya02.botcommands.typesafe.messages.internal.utils.simpleNestedBinaryName
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import io.github.freya022.botcommands.internal.utils.superErasureAt
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -159,7 +160,7 @@ object MessageSourceFactoryGenerator {
                 context.getService<LocalizationService>(),
                 bundleName,
                 effectiveLocales,
-                context.getService<TextCommandLocaleProvider>(),
+                context.getServiceOrNull<TextCommandLocaleProviderAdapter>(),
                 context.getService<GuildLocaleProvider>(),
                 context.getService<UserLocaleProvider>(),
                 sourceHandle,
