@@ -75,8 +75,6 @@ interface BContext {
         get() = config.coroutineScopesConfig
     val serviceConfig: BServiceConfig
         get() = config.serviceConfig
-    val appEmojisConfig: BAppEmojisConfig
-        get() = config.appEmojisConfig
     //endregion
 
     //region Services

@@ -5,8 +5,6 @@ import io.github.freya022.botcommands.api.commands.INamedCommand
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.time.Clock
@@ -41,7 +39,7 @@ internal fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
 
 internal fun Guild?.asScopeString() = if (this == null) "global scope" else "guild '${this.name}' (${this.id})"
 
-internal fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V) {
+fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V) {
     if (key in this)
         throwInternal("Key '$key' is already present in the map")
     this[key] = value

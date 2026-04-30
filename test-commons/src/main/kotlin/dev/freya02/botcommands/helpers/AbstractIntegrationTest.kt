@@ -18,7 +18,6 @@ abstract class AbstractIntegrationTest {
 
     fun createTest(
         appCommands: Boolean = false,
-        appEmojis: Boolean = false,
         builder: BConfigBuilder.() -> Unit
     ): BContext {
         check(!::context.isInitialized) {
@@ -32,10 +31,6 @@ abstract class AbstractIntegrationTest {
 
             applicationCommands {
                 enable = appCommands
-            }
-
-            appEmojis {
-                enable = appEmojis
             }
 
             builder()

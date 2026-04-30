@@ -4,6 +4,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":test-commons")
 include(":BotCommands-core")
+include(":BotCommands-app-emojis")
 include(":BotCommands-commands:text")
 include(":BotCommands-components")
 include(":BotCommands-modals")

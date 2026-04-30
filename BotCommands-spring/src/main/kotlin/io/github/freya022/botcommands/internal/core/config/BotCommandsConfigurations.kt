@@ -67,19 +67,6 @@ internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDataba
     queryLogThreshold = configuration.queryLogThreshold
 }
 
-@ConfigurationProperties(prefix = "botcommands.app.emojis", ignoreUnknownFields = false)
-internal class BotCommandsAppEmojisConfiguration(
-    override val enable: Boolean = false,
-    override val deleteOnOutOfSlots: Boolean = false,
-) : AbstractBotCommandsConfiguration(), BAppEmojisConfigProps {
-
-}
-
-internal fun BAppEmojisConfigBuilder.applyConfig(configuration: BotCommandsAppEmojisConfiguration) = apply {
-    enable = configuration.enable
-    deleteOnOutOfSlots = configuration.deleteOnOutOfSlots
-}
-
 @ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)
 internal class BotCommandsLocalizationConfiguration(
     override val responseBundles: Set<String> = emptySet(),

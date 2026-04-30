@@ -6,8 +6,10 @@ import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
-import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.internal.core.ClassPathProcessor
+import io.github.freya022.botcommands.api.core.utils.enumSetOf
+import io.github.freya022.botcommands.api.core.utils.loggerOf
+import io.github.freya022.botcommands.api.core.utils.toImmutableSet
+import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
@@ -28,7 +30,6 @@ interface BConfig : IConfig, BConfigProps {
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
-    val appEmojisConfig: BAppEmojisConfig
     val applicationConfig: BApplicationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
@@ -202,7 +203,6 @@ class BConfigBuilder : BConfigProps {
     val serviceConfig = BServiceConfigBuilder()
     val databaseConfig = BDatabaseConfigBuilder()
     val localizationConfig = BLocalizationConfigBuilder()
-    val appEmojisConfig = BAppEmojisConfigBuilder()
     val applicationConfig = BApplicationConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
@@ -314,10 +314,6 @@ class BConfigBuilder : BConfigProps {
         localizationConfig.apply(block)
     }
 
-    fun appEmojis(block: ReceiverConsumer<BAppEmojisConfigBuilder>) {
-        appEmojisConfig.apply(block)
-    }
-
     fun applicationCommands(block: ReceiverConsumer<BApplicationConfigBuilder>) {
         applicationConfig.apply(block)
     }
@@ -355,7 +351,6 @@ class BConfigBuilder : BConfigProps {
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
-            override val appEmojisConfig = this@BConfigBuilder.appEmojisConfig.build()
             override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
@@ -364,7 +359,6 @@ class BConfigBuilder : BConfigProps {
                 serviceConfig.configType to serviceConfig,
                 databaseConfig.configType to databaseConfig,
                 localizationConfig.configType to localizationConfig,
-                appEmojisConfig.configType to appEmojisConfig,
                 applicationConfig.configType to applicationConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()

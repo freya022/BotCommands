@@ -16,7 +16,6 @@ import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.core.ClassPathProcessorProvider
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
 import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
-import io.github.freya022.botcommands.internal.emojis.AppEmojiContainerProcessor
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.ClassMetadata
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.MethodMetadata
@@ -94,9 +93,6 @@ private class ReflectionMetadataScanner private constructor(
         add(CommandsPresenceChecker())
         add(ResolverSupertypeChecker())
         add(HandlersPresenceChecker())
-        if (config.appEmojisConfig.enable) {
-            add(AppEmojiContainerProcessor)
-        }
 
         ServiceLoader.load(ClassPathProcessorProvider::class.java).forEach {
             addAll(it.getProcessors(config))

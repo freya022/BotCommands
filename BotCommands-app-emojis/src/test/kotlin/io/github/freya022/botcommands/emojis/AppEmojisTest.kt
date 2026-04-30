@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.emojis
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.Resource
 import io.github.classgraph.ResourceList
+import io.github.freya022.botcommands.api.core.config.BAppEmojisConfig
 import io.github.freya022.botcommands.api.core.config.BAppEmojisConfigBuilder
 import io.github.freya022.botcommands.api.emojis.AppEmojisRegistry
 import io.github.freya022.botcommands.api.emojis.annotations.AppEmojiContainer
@@ -69,7 +70,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     fun `Mixing eager and lazy app emojis throws IAE`() {
         AppEmojiContainerProcessor.emojiClasses += AppEmojiContainerData(EagerLazyMix::class, EagerLazyMix::class.java.getDeclaredAnnotation(AppEmojiContainer::class.java)!!)
         val exception = assertThrows<IllegalArgumentException> {
-            AppEmojisLoader(BAppEmojisConfigBuilder().build())
+            AppEmojisLoader(BAppEmojisConfig.builder().build())
         }
         assertTrue(exception.message!!.startsWith("Cannot mix lazy and eager properties"))
     }
@@ -192,7 +193,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis`() {
-        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfigBuilder().apply { deleteOnOutOfSlots = true })
+        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfig.builder().apply { deleteOnOutOfSlots = true })
 
         val existingEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji"
@@ -218,7 +219,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
     @Test
     fun `Must delete old, unmanaged app emojis, oldest first`() {
-        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfigBuilder().apply { deleteOnOutOfSlots = true })
+        val loader = createAppEmojisLoader(SingleAnnotatedCandidate::class, BAppEmojisConfig.builder().apply { deleteOnOutOfSlots = true })
 
         val oldestEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji-2"
@@ -284,7 +285,7 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         verify(exactly = 0) { existingEmoji.delete() }
     }
 
-    private fun createAppEmojisLoader(emojiContainer: KClass<*>, configBuilder: BAppEmojisConfigBuilder = BAppEmojisConfigBuilder()): AppEmojisLoader {
+    private fun createAppEmojisLoader(emojiContainer: KClass<*>, configBuilder: BAppEmojisConfigBuilder = BAppEmojisConfig.builder()): AppEmojisLoader {
         AppEmojiContainerProcessor.emojiClasses += AppEmojiContainerData(emojiContainer, emojiContainer.java.getDeclaredAnnotation(AppEmojiContainer::class.java)!!)
         return AppEmojisLoader(configBuilder.build())
     }

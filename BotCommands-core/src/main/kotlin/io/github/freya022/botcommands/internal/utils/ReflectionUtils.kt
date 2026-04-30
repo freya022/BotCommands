@@ -109,7 +109,7 @@ object ReflectionUtils {
                 ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
         }
 
-    internal val KProperty<*>.declaringClass: KClass<*>
+    val KProperty<*>.declaringClass: KClass<*>
         get() = (ReflectionMetadataAccessor.getDeclaringClass(this) as? KClass<*>)
             ?: javaGetter?.declaringClass?.kotlin
             ?: javaField?.declaringClass?.kotlin

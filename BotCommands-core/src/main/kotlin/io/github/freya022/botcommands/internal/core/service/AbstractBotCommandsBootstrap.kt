@@ -10,9 +10,9 @@ import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.BContextImpl
 import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
-import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata
 import kotlinx.coroutines.runBlocking
+import java.util.*
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
@@ -21,7 +21,9 @@ abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : Bot
 
     protected fun init() {
         MethodAccessorFactoryProvider.clearCache()
-        AppEmojisLoader.clear()
+        for (listener in listeners) {
+            listener.onInit()
+        }
 
         measure("Scanned reflection metadata") {
             ReflectionMetadata.runScan(config, this)
@@ -54,5 +56,13 @@ abstract class AbstractBotCommandsBootstrap(protected val config: BConfig) : Bot
         measureTime(block).also {
             logger.trace { "$desc in ${it.toString(DurationUnit.MILLISECONDS, 2)}" }
         }
+    }
+
+    interface Listener {
+        fun onInit()
+    }
+
+    private companion object {
+        private val listeners: List<Listener> = ServiceLoader.load(Listener::class.java).toList()
     }
 }

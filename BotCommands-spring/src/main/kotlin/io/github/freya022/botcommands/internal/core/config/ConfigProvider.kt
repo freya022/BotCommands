@@ -13,7 +13,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
         coreConfiguration: BotCommandsCoreConfiguration, coreConfigurers: List<BConfigConfigurer>,
         eventManagerConfiguration: BotCommandsEventManagerConfiguration, eventManagerConfigurers: List<BEventManagerConfigConfigurer>,
         databaseConfiguration: BotCommandsDatabaseConfiguration, databaseConfigurers: List<BDatabaseConfigConfigurer>,
-        appEmojisConfiguration: BotCommandsAppEmojisConfiguration, appEmojisConfigurers: List<BAppEmojisConfigConfigurer>,
         localizationConfiguration: BotCommandsLocalizationConfiguration, localizationConfigurers: List<BLocalizationConfigConfigurer>,
         applicationConfiguration: BotCommandsApplicationConfiguration, applicationConfigurers: List<BApplicationConfigConfigurer>,
         coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>,
@@ -23,7 +22,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
             .apply {
                 eventManagerConfig.applyConfig(eventManagerConfiguration).configure(eventManagerConfigurers)
                 databaseConfig.applyConfig(databaseConfiguration).configure(databaseConfigurers)
-                appEmojisConfig.applyConfig(appEmojisConfiguration).configure(appEmojisConfigurers)
                 localizationConfig.applyConfig(localizationConfiguration).configure(localizationConfigurers)
                 applicationConfig.applyConfig(applicationConfiguration).configure(applicationConfigurers)
                 coroutineScopesConfig.configure(coroutineConfigurers)
@@ -38,10 +36,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
     @Bean
     @Primary
     internal open fun bDatabaseConfig(config: BConfig): BDatabaseConfig = config.databaseConfig
-
-    @Bean
-    @Primary
-    internal open fun bAppEmojisConfig(config: BConfig): BAppEmojisConfig = config.appEmojisConfig
 
     @Bean
     @Primary

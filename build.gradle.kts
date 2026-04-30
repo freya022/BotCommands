@@ -36,6 +36,7 @@ dependencies {
     // ---------------------- AGGREGATED DOCS DEPENDENCIES ----------------------
 
     dokka(projects.botCommandsCore)
+    dokka(projects.botCommandsAppEmojis)
     dokka(projects.botCommandsCommands.text)
     dokka(projects.botCommandsComponents)
     dokka(projects.botCommandsModals)
