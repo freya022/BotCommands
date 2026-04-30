@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BServiceConfig
 import io.github.freya022.botcommands.api.core.service.BCServiceContainer
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.putServiceWithTypeAlias
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.core.Version
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProviders
 import net.dv8tion.jda.api.JDAInfo
@@ -22,7 +22,7 @@ internal class BCBotCommandsBootstrap internal constructor(
 
     internal val serviceProviders = ServiceProviders()
     override val serviceContainer = BCServiceContainerImpl(this)
-    override val classGraphProcessors: Set<ClassGraphProcessor> =
+    override val classPathProcessors: Set<ClassPathProcessor> =
         setOf(ConditionalObjectChecker(), serviceProviders)
 
     init {

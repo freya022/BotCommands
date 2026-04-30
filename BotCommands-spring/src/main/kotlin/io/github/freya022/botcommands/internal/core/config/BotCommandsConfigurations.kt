@@ -24,7 +24,6 @@ internal class BotCommandsCoreConfiguration(
     override val ignoreRestRateLimiter: Boolean = false,
     override val enableShutdownHook: Boolean = true,
 ) : AbstractBotCommandsConfiguration(), BConfigProps {
-    override val classGraphProcessors: Nothing get() = unusable()
 }
 
 internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfiguration) = apply {

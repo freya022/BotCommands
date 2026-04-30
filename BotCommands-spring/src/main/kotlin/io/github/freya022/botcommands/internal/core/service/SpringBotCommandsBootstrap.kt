@@ -4,7 +4,7 @@ import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.BCInfo
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.core.Version
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
@@ -31,7 +31,7 @@ internal class SpringBotCommandsBootstrap internal constructor(
     config: BConfig,
     override val serviceContainer: SpringServiceContainer
 ) : AbstractBotCommandsBootstrap(config) {
-    override val classGraphProcessors: Set<ClassGraphProcessor> = emptySet()
+    override val classPathProcessors: Set<ClassPathProcessor> = emptySet()
 
     init {
         init()

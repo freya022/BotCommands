@@ -3,20 +3,21 @@ package dev.freya02.botcommands.typesafe.messages.internal.processor
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
-import io.github.classgraph.ClassInfo
 import io.github.freya022.botcommands.api.core.service.BCServiceContainer
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import kotlin.reflect.KClass
 
-internal object MessageSourceFactoryClassGraphProcessor : ClassGraphProcessor {
+internal object MessageSourceFactoryClassPathProcessor : ClassPathProcessor {
 
     @Suppress("UNCHECKED_CAST")
-    override fun processClass(serviceContainer: ServiceContainer, classInfo: ClassInfo, kClass: KClass<*>, isService: Boolean) {
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        val serviceContainer = data.serviceContainer
         if (serviceContainer !is BCServiceContainer) return
 
+        val classInfo = data.classInfo
+        val kClass = data.kClass
         val annotation = classInfo.getAnnotationInfo(MessageSourceFactory::class.java)?.loadClassAndInstantiate() as MessageSourceFactory? ?: return
 
         require(classInfo.implementsInterface(IMessageSourceFactory::class.java)) {

@@ -1,18 +1,14 @@
 package io.github.freya022.botcommands.internal.core
 
-import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.core.annotations.Handler
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.logger { }
@@ -24,16 +20,12 @@ private val handlerAnnotations = listOf(
     "io.github.freya022.botcommands.api.modals.annotations.ModalHandler",
 )
 
-internal class HandlersPresenceChecker : ClassGraphProcessor {
+internal class HandlersPresenceChecker : ClassPathProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(
-        serviceContainer: ServiceContainer,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isService: Boolean
-    ) {
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        val classInfo = data.classInfo
         if (classInfo.isAbstract) return
 
         val isCommand = classInfo.hasAnnotation(Command::class.java)
@@ -54,7 +46,7 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess(serviceContainer: ServiceContainer) {
+    override fun postProcess(data: ClassPathProcessor.PostProcessData) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
                 val refs = noDeclarationClasses.joinAsList()

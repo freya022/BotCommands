@@ -5,15 +5,15 @@ import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.debugNull
-import io.github.freya022.botcommands.api.core.reflect.ClassGraphProcessorProvider
 import io.github.freya022.botcommands.api.core.reflect.annotations.ExperimentalReflectionApi
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
+import io.github.freya022.botcommands.internal.core.ClassPathProcessorProvider
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
 import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
 import io.github.freya022.botcommands.internal.emojis.AppEmojiContainerProcessor
@@ -88,10 +88,8 @@ private class ReflectionMetadataScanner private constructor(
 ) {
 
     @OptIn(ExperimentalReflectionApi::class)
-    private val classGraphProcessors: List<ClassGraphProcessor> = buildList {
-        addAll(config.classGraphProcessors)
-
-        addAll(bootstrap.classGraphProcessors)
+    private val classPathProcessors: List<ClassPathProcessor> = buildList {
+        addAll(bootstrap.classPathProcessors)
 
         add(CommandsPresenceChecker())
         add(ResolverSupertypeChecker())
@@ -100,7 +98,7 @@ private class ReflectionMetadataScanner private constructor(
             add(AppEmojiContainerProcessor)
         }
 
-        ServiceLoader.load(ClassGraphProcessorProvider::class.java).forEach {
+        ServiceLoader.load(ClassPathProcessorProvider::class.java).forEach {
             addAll(it.getProcessors(config))
         }
     }
@@ -155,7 +153,8 @@ private class ReflectionMetadataScanner private constructor(
                     }
                     .processClasses()
 
-                classGraphProcessors.forEach { it.postProcess(bootstrap.serviceContainer) }
+                val postProcessData = ClassPathProcessor.PostProcessData(bootstrap.serviceContainer)
+                classPathProcessors.forEach { it.postProcess(postProcessData) }
             }
     }
 
@@ -222,13 +221,14 @@ private class ReflectionMetadataScanner private constructor(
         return onEach { classInfo ->
             try {
                 val kClass = tryGetClass(classInfo) ?: return@onEach
+                val isService = bootstrap.isService(classInfo)
+                val classData = ClassPathProcessor.ClassData(bootstrap.serviceContainer, classInfo, kClass, isService)
 
-                processMethods(classInfo, kClass)
+                processMethods(classData)
 
                 classMetadataMap[kClass.java] = ClassMetadata(classInfo.sourceFile)
 
-                val isService = bootstrap.isService(classInfo)
-                classGraphProcessors.forEach { it.processClass(bootstrap.serviceContainer, classInfo, kClass, isService) }
+                classPathProcessors.forEach { it.processClass(classData) }
             } catch (e: Throwable) {
                 e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
             }
@@ -254,11 +254,8 @@ private class ReflectionMetadataScanner private constructor(
         }
     }
 
-    private fun processMethods(
-        classInfo: ClassInfo,
-        kClass: KClass<out Any>,
-    ) {
-        for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
+    private fun processMethods(classData: ClassPathProcessor.ClassData) {
+        for (methodInfo in classData.classInfo.declaredMethodAndConstructorInfo) {
             //Don't inspect methods with generics
             if (methodInfo.parameterInfo
                     .map { it.typeSignatureOrTypeDescriptor }
@@ -271,7 +268,8 @@ private class ReflectionMetadataScanner private constructor(
             methodMetadataMap[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
 
             val isServiceFactory = bootstrap.isServiceFactory(methodInfo)
-            classGraphProcessors.forEach { it.processMethod(bootstrap.serviceContainer, methodInfo, method, classInfo, kClass, isServiceFactory) }
+            val methodData = ClassPathProcessor.MethodData(classData, methodInfo, method, isServiceFactory)
+            classPathProcessors.forEach { it.processMethod(methodData) }
         }
     }
 

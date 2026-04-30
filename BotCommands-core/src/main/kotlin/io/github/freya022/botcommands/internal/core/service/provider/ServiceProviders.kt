@@ -1,12 +1,8 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
-import io.github.classgraph.ClassInfo
-import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
@@ -15,7 +11,7 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.kotlinFunction
 
-internal class ServiceProviders : ClassGraphProcessor {
+internal class ServiceProviders : ClassPathProcessor {
     private val nameMap: MutableMap<String, MutableSet<ServiceProvider>> = ConcurrentHashMap()
     private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
@@ -32,35 +28,23 @@ internal class ServiceProviders : ClassGraphProcessor {
     internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findAllForName(name: String): Set<ServiceProvider> = nameMap[name] ?: emptySet()
 
-    override fun processClass(
-        serviceContainer: ServiceContainer,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isService: Boolean
-    ) {
-        if (!isService) return
-        if (classInfo.isAnnotation) return
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        if (!data.isService) return
+        if (data.classInfo.isAnnotation) return
 
-        putServiceProvider(ClassServiceProvider(kClass))
+        putServiceProvider(ClassServiceProvider(data.kClass))
     }
 
-    override fun processMethod(
-        serviceContainer: ServiceContainer,
-        methodInfo: MethodInfo,
-        method: Executable,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isServiceFactory: Boolean
-    ) {
-        if (!isServiceFactory) return
+    override fun processMethod(data: ClassPathProcessor.MethodData) {
+        if (!data.isServiceFactory) return
 
-        if (methodInfo.isConstructor)
-            throwArgument("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
-        method as Method
+        if (data.methodInfo.isConstructor)
+            throwArgument("Constructor of ${data.classData.classInfo.simpleName} cannot be annotated with a service annotation")
+        val method = data.method as Method
 
         val function =
-            method.kotlinFunction
-                ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
+            data.method.kotlinFunction
+                ?: data.classData.kClass.memberProperties.find { it.javaGetter == method }?.getter
                 ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
         putServiceProvider(FunctionServiceProvider(function))
     }

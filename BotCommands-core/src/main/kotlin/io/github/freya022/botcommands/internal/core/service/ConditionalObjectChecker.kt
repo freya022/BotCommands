@@ -1,22 +1,17 @@
 package io.github.freya022.botcommands.internal.core.service
 
-import io.github.classgraph.ClassInfo
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.core.service.annotations.HardcodedCondition
 import io.github.freya022.botcommands.internal.utils.isObject
 import kotlin.reflect.KClass
 
-internal class ConditionalObjectChecker : ClassGraphProcessor {
-    override fun processClass(
-        serviceContainer: ServiceContainer,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isService: Boolean
-    ) {
-        if (!isService) return
+internal class ConditionalObjectChecker : ClassPathProcessor {
+
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        if (!data.isService) return
+        val kClass = data.kClass
         if (!kClass.isObject) return
 
         // Taking all (including inherited) annotations using ClassGraph would have been faster and cleaner,

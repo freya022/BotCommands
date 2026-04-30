@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands
 
-import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -8,14 +7,12 @@ import io.github.freya022.botcommands.api.commands.application.context.annotatio
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
 // TODO add tests so those names stay up to date
@@ -33,16 +30,12 @@ private val commandProviderInterfaces = listOf(
 )
 
 //This checker works on all classes from the user packages, but only on "services" of internal classes
-internal class CommandsPresenceChecker : ClassGraphProcessor {
+internal class CommandsPresenceChecker : ClassPathProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
-    override fun processClass(
-        serviceContainer: ServiceContainer,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isService: Boolean
-    ) {
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        val classInfo = data.classInfo
         if (classInfo.isAbstract) return
 
         val isCommand = classInfo.hasAnnotation(Command::class.java)
@@ -63,7 +56,7 @@ internal class CommandsPresenceChecker : ClassGraphProcessor {
         }
     }
 
-    override fun postProcess(serviceContainer: ServiceContainer) {
+    override fun postProcess(data: ClassPathProcessor.PostProcessData) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn {
                 val refs = noDeclarationClasses.joinAsList()

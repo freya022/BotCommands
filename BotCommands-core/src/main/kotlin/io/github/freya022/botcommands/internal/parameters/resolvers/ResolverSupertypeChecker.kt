@@ -1,27 +1,22 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers
 
-import io.github.classgraph.ClassInfo
-import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.core.service.ClassGraphProcessor
-import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
+import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverAnnotation
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactoryAnnotation
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverFactorySuperclass
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverSuperclass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
-import java.lang.reflect.Executable
 import java.lang.reflect.Method
-import kotlin.reflect.KClass
 
 // This checker works on all classes from the user packages, but only on "services" of internal classes
 // Symbol processing happens on the postProcess step (using a task list) as all exclusions need to be retrieved first
-internal class ResolverSupertypeChecker internal constructor(): ClassGraphProcessor {
+internal class ResolverSupertypeChecker internal constructor(): ClassPathProcessor {
     private val tasks: MutableList<() -> Unit> = arrayListOf()
 
     private val missingResolverAnnotationMessages: MutableList<String> = arrayListOf()
@@ -29,12 +24,10 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
     private val missingResolverFactoryAnnotationMessages: MutableList<String> = arrayListOf()
     private val missingResolverFactorySuperclassMessages: MutableList<String> = arrayListOf()
 
-    override fun processClass(
-        serviceContainer: ServiceContainer,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isService: Boolean
-    ) {
+    override fun processClass(data: ClassPathProcessor.ClassData) {
+        val classInfo = data.classInfo
+        val kClass = data.kClass
+        val isService = data.isService
         if (classInfo.isAbstract) return
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
@@ -64,15 +57,12 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         }
     }
 
-    override fun processMethod(
-        serviceContainer: ServiceContainer,
-        methodInfo: MethodInfo,
-        method: Executable,
-        classInfo: ClassInfo,
-        kClass: KClass<*>,
-        isServiceFactory: Boolean
-    ) {
+    override fun processMethod(data: ClassPathProcessor.MethodData) {
+        val method = data.method
         if (method !is Method) return
+
+        val methodInfo = data.methodInfo
+        val isServiceFactory = data.isServiceFactory
 
         val isResolverFactoryAnnotated = methodInfo.hasAnnotation(ResolverFactory::class.java)
         val isReturnTypeResolverFactory = ParameterResolverFactory::class.isAssignableFrom(method.returnType)
@@ -101,7 +91,7 @@ internal class ResolverSupertypeChecker internal constructor(): ClassGraphProces
         }
     }
 
-    override fun postProcess(serviceContainer: ServiceContainer) {
+    override fun postProcess(data: ClassPathProcessor.PostProcessData) {
         tasks.forEach { it.invoke() }
 
         if (missingResolverAnnotationMessages.isNotEmpty()) {
