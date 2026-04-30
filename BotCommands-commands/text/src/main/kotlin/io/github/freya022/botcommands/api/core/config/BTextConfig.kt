@@ -128,7 +128,7 @@ interface BTextConfigProps {
  * @see BTextConfig.builder
  */
 @ConfigDSL
-class BTextConfigBuilder internal constructor() : BTextConfigProps {
+class BTextConfigBuilder private constructor() : BTextConfigProps {
     @set:JvmName("usePingAsPrefix")
     override var usePingAsPrefix: Boolean = false
     override val prefixes: MutableList<String> = mutableListOf()
