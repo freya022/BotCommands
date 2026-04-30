@@ -6,11 +6,13 @@ import dev.freya02.botcommands.method.accessors.api.MethodAccessorsConfig
 import dev.freya02.botcommands.method.accessors.api.annotations.ExperimentalMethodAccessorsApi
 import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
 import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
+import dev.freya02.botcommands.restarter.internal.utils.AppClasspath
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.freya022.botcommands.api.core.config.registerTextCommands
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import kotlin.io.path.absolutePathString
@@ -24,6 +26,11 @@ object Main {
     fun main(args: Array<out String>) {
         System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
         logger.info { "Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}" }
+
+        val nonTestBotClasspathEntries = AppClasspath.paths.filterNot { it.toString().contains("test-bot") }
+        require(nonTestBotClasspathEntries.isEmpty()) {
+            "Some classpath entries were mistakenly included in the restarter classpath:\n${nonTestBotClasspathEntries.joinAsList()}"
+        }
 
         @OptIn(ExperimentalRestartApi::class)
         BotCommandsRestarter.initialize(args)
