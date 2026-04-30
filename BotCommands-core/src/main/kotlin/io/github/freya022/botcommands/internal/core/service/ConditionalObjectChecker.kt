@@ -16,11 +16,12 @@ internal class ConditionalObjectChecker : ClassPathProcessor {
 
         // Taking all (including inherited) annotations using ClassGraph would have been faster and cleaner,
         // but this allows for a much more precise error message, as to which annotation provoked this error
-        kClass.annotations.forEach { rootAnnotation ->
+        val clazz = data.clazz
+        clazz.annotations.forEach { rootAnnotation ->
             val set: MutableSet<KClass<out Annotation>> = hashSetOf()
             fun KClass<out Annotation>.checkHasCondition(rootAnnotation: KClass<out Annotation>) {
                 check(!hasAnnotationRecursive<HardcodedCondition>()) {
-                    "Singleton ${kClass.simpleNestedName} cannot use @${rootAnnotation.simpleNestedName} as the object always gets initialized"
+                    "Singleton ${clazz.simpleNestedName} cannot use @${rootAnnotation.simpleNestedName} as the object always gets initialized"
                 }
 
                 annotations.forEach {

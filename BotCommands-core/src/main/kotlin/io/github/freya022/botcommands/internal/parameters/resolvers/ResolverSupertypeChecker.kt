@@ -26,19 +26,19 @@ internal class ResolverSupertypeChecker internal constructor(): ClassPathProcess
 
     override fun processClass(data: ClassPathProcessor.ClassData) {
         val classInfo = data.classInfo
-        val kClass = data.kClass
+        val clazz = data.clazz
         val isService = data.isService
         if (classInfo.isAbstract) return
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
-        val isResolverFactorySubclass = kClass.isSubclassOf<ParameterResolverFactory>()
+        val isResolverFactorySubclass = clazz.isSubclassOf<ParameterResolverFactory>()
         val missingResolverFactoryAnnotation = !isResolverFactoryAnnotated && isResolverFactorySubclass
                 // Only check for annotation if the class is already a service
                 && isService
         val missingResolverFactorySuperClass = isResolverFactoryAnnotated && !isResolverFactorySubclass
 
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
-        val isResolverSubclass = kClass.isSubclassOf<ParameterResolver<*, *>>()
+        val isResolverSubclass = clazz.isSubclassOf<ParameterResolver<*, *>>()
         val missingResolverAnnotation = !isResolverAnnotated && isResolverSubclass
                 // Only check for annotation if the class is already a service
                 && isService

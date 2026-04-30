@@ -19,9 +19,12 @@ interface ClassPathProcessor {
     class ClassData internal constructor(
         val serviceContainer: ServiceContainer,
         val classInfo: ClassInfo,
-        val kClass: KClass<*>,
+        val clazz: Class<*>,
         val isService: Boolean,
-    )
+    ) {
+        // No need for a field here, the call is already cached
+        val kClass: KClass<*> get() = clazz.kotlin
+    }
 
     class MethodData internal constructor(
         val classData: ClassData,

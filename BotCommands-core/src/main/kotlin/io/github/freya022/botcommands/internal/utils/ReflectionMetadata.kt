@@ -220,13 +220,13 @@ private class ReflectionMetadataScanner private constructor(
     private fun List<ClassInfo>.processClasses(): List<ClassInfo> {
         return onEach { classInfo ->
             try {
-                val kClass = tryGetClass(classInfo) ?: return@onEach
+                val clazz = tryGetClass(classInfo) ?: return@onEach
                 val isService = bootstrap.isService(classInfo)
-                val classData = ClassPathProcessor.ClassData(bootstrap.serviceContainer, classInfo, kClass, isService)
+                val classData = ClassPathProcessor.ClassData(bootstrap.serviceContainer, classInfo, clazz, isService)
 
                 processMethods(classData)
 
-                classMetadataMap[kClass.java] = ClassMetadata(classInfo.sourceFile)
+                classMetadataMap[clazz] = ClassMetadata(classInfo.sourceFile)
 
                 classPathProcessors.forEach { it.processClass(classData) }
             } catch (e: Throwable) {
@@ -235,10 +235,10 @@ private class ReflectionMetadataScanner private constructor(
         }
     }
 
-    private fun tryGetClass(classInfo: ClassInfo): KClass<*>? {
+    private fun tryGetClass(classInfo: ClassInfo): Class<*>? {
         // Ignore unknown classes
         return try {
-            classInfo.loadClass().kotlin
+            classInfo.loadClass()
         } catch(e: IllegalArgumentException) {
             // ClassGraph wraps Class#forName exceptions in an IAE
             val cause = e.cause
