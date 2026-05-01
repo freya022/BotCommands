@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandsContext
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.events.*
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
@@ -217,11 +216,4 @@ interface BContext {
      */
     fun awaitShutdown(timeout: Long, unit: TimeUnit): Boolean =
         awaitShutdown(JavaDuration.of(timeout, unit.toChronoUnit()))
-
-    /**
-     * Returns the application commands context, this is for user/message/slash commands and related methods
-     *
-     * @return The [ApplicationCommandsContext] object
-     */
-    val applicationCommandsContext: ApplicationCommandsContext
 }
