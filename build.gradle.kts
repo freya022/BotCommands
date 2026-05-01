@@ -38,6 +38,7 @@ dependencies {
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsAppEmojis)
     dokka(projects.botCommandsCommands.text)
+    dokka(projects.botCommandsCommands.app)
     dokka(projects.botCommandsComponents)
     dokka(projects.botCommandsModals)
     dokka(projects.botCommandsPagination)
