@@ -8,6 +8,8 @@ import io.github.freya022.botcommands.api.commands.application.context.message.G
 import io.github.freya022.botcommands.api.commands.application.context.user.GlobalUserEvent
 import io.github.freya022.botcommands.api.commands.application.context.user.GuildUserEvent
 import io.github.freya022.botcommands.api.commands.application.getApplicationCommandById
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessages
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.TopLevelSlashCommandInfo
@@ -15,8 +17,6 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.checkFilters
 import io.github.freya022.botcommands.api.core.entities.inputUser
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
@@ -51,7 +51,7 @@ private val logger = KotlinLogging.logger {  }
 internal class ApplicationCommandListener internal constructor(
     private val context: BContext,
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
-    private val messagesFactory: BotCommandsMessagesFactory,
+    private val messagesFactory: ApplicationCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
     private val rateLimitHandler: ApplicationCommandRateLimitHandler,
     filters: List<ApplicationCommandFilter>,
@@ -308,7 +308,7 @@ internal class ApplicationCommandListener internal constructor(
             }
     }
 
-    private inline fun fromMessages(event: Interaction, crossinline block: BotCommandsMessages.() -> MessageCreateData): MessageCreateData {
+    private inline fun fromMessages(event: Interaction, crossinline block: ApplicationCommandsMessages.() -> MessageCreateData): MessageCreateData {
         return messagesFactory.get(event).run(block)
     }
 

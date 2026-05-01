@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.api.parameters.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessages
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.entities.InputUser
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverMarker
 import net.dv8tion.jda.api.entities.*
@@ -80,7 +80,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMa
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
      * If the interaction is not replied to,
-     * the handler sends an [unresolvable option error message][BotCommandsMessages.slashCommandUnresolvableOption].
+     * the handler sends an [unresolvable option error message][ApplicationCommandsMessages.slashCommandUnresolvableOption].
      *
      * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]
@@ -97,7 +97,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMa
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
      * If the interaction is not replied to,
-     * the handler sends an [unresolvable option error message][BotCommandsMessages.slashCommandUnresolvableOption].
+     * the handler sends an [unresolvable option error message][ApplicationCommandsMessages.slashCommandUnresolvableOption].
      *
      * @param option        The option currently being resolved
      * @param event         The corresponding event, could be a [SlashCommandInteractionEvent] or a [CommandAutoCompleteInteractionEvent]

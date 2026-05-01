@@ -2,11 +2,11 @@ package io.github.freya022.botcommands.internal.commands.application.slash
 
 import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.commands.INamedCommand
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.application.slash.GlobalSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.SlashCommandInfo
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -160,7 +160,7 @@ private fun onUnresolvableOption(
         else -> {
             //Only use the generic message if the user didn't handle this situation
             if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
-                val messages = option.context.getService<BotCommandsMessagesFactory>().get(event)
+                val messages = option.context.getService<ApplicationCommandsMessagesFactory>().get(event)
                 event.reply(messages.slashCommandUnresolvableOption(event, option))
                     .setEphemeral(true)
                     .queue()

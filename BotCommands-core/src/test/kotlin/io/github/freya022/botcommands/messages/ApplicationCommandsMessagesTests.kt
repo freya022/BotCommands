@@ -1,10 +1,11 @@
 package io.github.freya022.botcommands.messages
 
 import dev.freya02.botcommands.helpers.AbstractMessagesTests
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessages
+import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessagesFactory
+import io.github.freya022.botcommands.api.commands.application.messages.DefaultApplicationCommandsMessagesFactory
+import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
-import io.github.freya022.botcommands.api.core.messages.DefaultBotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
 import io.mockk.every
 import io.mockk.mockk
@@ -14,17 +15,17 @@ import java.time.Instant
 import java.util.*
 import kotlin.test.Test
 
-class BotCommandsMessagesTests : AbstractMessagesTests() {
+class ApplicationCommandsMessagesTests : AbstractMessagesTests() {
 
     @Test
     fun `All messages have defaults`() {
         val context = createTest {
             services {
                 // Override the autoconfiguration so we don't unexpectedly use a different implementation
-                registerServiceSupplier<DefaultBotCommandsMessagesFactory>(
-                    additionalTypes = setOf(BotCommandsMessagesFactory::class),
+                registerServiceSupplier<DefaultApplicationCommandsMessagesFactory>(
+                    additionalTypes = setOf(ApplicationCommandsMessagesFactory::class),
                 ) { context ->
-                    DefaultBotCommandsMessagesFactory(
+                    DefaultApplicationCommandsMessagesFactory(
                         permissionLocalization = context.getService(),
                         localizationService = context.getService(),
                         userLocaleProvider = context.getService(),
@@ -34,25 +35,27 @@ class BotCommandsMessagesTests : AbstractMessagesTests() {
         }
 
         val templatePathSlot = slot<String>()
-        val messages = spyk(context.getService<DefaultBotCommandsMessagesFactory>().get(Locale.ROOT)) {
+        val messages = spyk(context.getService<DefaultApplicationCommandsMessagesFactory>().get(Locale.ROOT)) {
             every { this@spyk["getLocalizationTemplate"](capture(templatePathSlot)) } answers { callOriginal() }
         }
 
         val methodCalls = mapOf(
             methodCall(messages::uncaughtException) { this(mockk()) },
+            methodCall(messages::missingUserPermissions) { this(mockk(), emptySet()) },
             methodCall(messages::missingBotPermissions) { this(mockk(), emptySet()) },
             methodCall(messages::userRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::channelRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::guildRateLimited) { this(mockk(), Instant.now()) },
-            methodCall(messages::resolverChannelNotFound) { this(mockk(), 0) },
-            methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
-            methodCall(messages::resolverUserNotFound) { this(mockk(), 0) },
-            methodCall(messages::componentNotAllowed) { this(mockk()) },
-            methodCall(messages::componentExpired) { this(mockk()) },
-            methodCall(messages::modalExpired) { this(mockk()) },
+            methodCall(messages::applicationCommandsNotAvailable) { this(mockk()) },
+            methodCall(messages::slashCommandUnresolvableOption) {
+                val option = mockk<SlashCommandOption> {
+                    every { discordName } returns "discord_name"
+                }
+                this(mockk(), option)
+            },
         )
 
-        checkMissingTests(BotCommandsMessages::class.java, methodCalls)
+        checkMissingTests(ApplicationCommandsMessages::class.java, methodCalls)
 
         checkMissingTemplates(methodCalls, templatePathSlot)
     }
