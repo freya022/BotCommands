@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.internal.commands.text.RequiresTextCommand
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 
 /**
- * Prevents usage of the annotated service if text commands are [not enabled][BTextConfig.enable].
+ * Prevents usage of the annotated service if the text commands feature is not registered.
  *
- * @see BTextConfig.enable
+ * @see BTextConfig
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Condition(RequiresTextCommandsChecker::class)
