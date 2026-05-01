@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.localization
 
+import io.github.freya022.botcommands.api.core.config.applicationConfig
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.enumMapOf
 import io.github.freya022.botcommands.api.localization.Localization

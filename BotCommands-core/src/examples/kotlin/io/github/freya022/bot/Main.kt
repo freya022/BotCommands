@@ -5,6 +5,7 @@ import io.github.freya022.bot.config.Config
 import io.github.freya022.bot.config.Environment
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
+import io.github.freya022.botcommands.api.core.config.registerApplicationCommands
 import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.freya022.botcommands.api.core.config.registerTextCommands
@@ -40,7 +41,7 @@ object Main {
                     prefixes += config.prefixes - "<ping>"
                 }
 
-                applicationCommands {
+                registerApplicationCommands {
                     @OptIn(DevConfig::class)
                     disableAutocompleteCache = Environment.isDev
 

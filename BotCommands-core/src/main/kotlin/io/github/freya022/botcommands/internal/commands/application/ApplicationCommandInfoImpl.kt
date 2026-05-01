@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.commands.application.ApplicationComman
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.core.Filter
 import io.github.freya022.botcommands.api.core.Logging
+import io.github.freya022.botcommands.api.core.config.applicationConfig
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.loggerOf

@@ -69,8 +69,6 @@ interface BContext {
         get() = config.eventManagerConfig
     val localizationConfig: BLocalizationConfig
         get() = config.localizationConfig
-    val applicationConfig: BApplicationConfig
-        get() = config.applicationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
         get() = config.coroutineScopesConfig
     val serviceConfig: BServiceConfig

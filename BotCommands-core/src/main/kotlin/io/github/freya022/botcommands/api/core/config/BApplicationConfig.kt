@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfigBuilder
@@ -28,30 +29,40 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import java.nio.file.Path
 import kotlin.io.path.Path
 
+/**
+ * Configuration for the application commands feature.
+ *
+ * A configuration of this feature must be registered for it to be active.
+ *
+ * Spring users can set the `botcommands.application.enable` property to `false` to disable this feature,
+ * as adding the dependency will enable it by default.
+ *
+ * [@RequiresApplicationCommands][RequiresApplicationCommands] can be used to disable services when this feature isn't registered.
+ *
+ * @see [BApplicationConfig.builder]
+ * @see [registerApplicationCommands]
+ */
 @InjectedService
 interface BApplicationConfig : IConfig, BApplicationConfigProps {
 
     override val configType get() = BApplicationConfig::class.java
+
+    companion object {
+        /**
+         * Creates a new [BApplicationConfigBuilder], you must [build][BApplicationConfigBuilder.build] it and [register][BConfigBuilder.registerModule] it.
+         */
+        @JvmStatic
+        fun builder(): BApplicationConfigBuilder {
+            return BApplicationConfigBuilder.create()
+        }
+    }
 }
 
-interface BApplicationConfigProps {
+internal val BContext.applicationConfig: BApplicationConfig
+    get() = config.getConfigOrNull<BApplicationConfig>()
+        ?: throwInternal("")
 
-    /**
-     * Whether the application commands feature should be enabled.
-     *
-     * You can use [@RequiresApplicationCommands][RequiresApplicationCommands]
-     * to disable services when this is set to `false`.
-     *
-     * Default: `true`
-     *
-     * Spring property: `botcommands.application.enable`
-     */
-    @get:ConfigurationValue(
-        path = "botcommands.application.enable",
-        description = "Whether the application commands feature should be enabled.",
-        defaultValue = "true",
-    )
-    val enable: Boolean
+interface BApplicationConfigProps {
 
     /**
      * If not empty, application commands will only be updated in these guilds.
@@ -174,11 +185,14 @@ interface BApplicationConfigProps {
     val logMissingLocalizationKeys: Boolean
 }
 
+/**
+ * Builder of [BApplicationConfig].
+ *
+ * @see BApplicationConfig.builder
+ */
 @ConfigDSL
-class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps {
+class BApplicationConfigBuilder private constructor() : BApplicationConfigProps {
 
-    @set:JvmName("enable")
-    override var enable: Boolean = true
     override val guildsToUpdate: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
 
@@ -368,8 +382,7 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps
         }
     }
 
-    @JvmSynthetic
-    internal fun build(): BApplicationConfig {
+    fun build(): BApplicationConfig {
         val logger = KotlinLogging.loggerOf<BApplicationConfig>()
         if (disableAutocompleteCache)
             logger.info { "Disabled autocomplete cache, except forced caches" }
@@ -377,7 +390,6 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps
             logger.info { "Disabled application commands caching, this could be expensive if you have a lot of guilds!" }
 
         return object : BApplicationConfig {
-            override val enable = this@BApplicationConfigBuilder.enable
             override val guildsToUpdate = this@BApplicationConfigBuilder.guildsToUpdate.toImmutableList()
             override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
             override val disableAutocompleteCache = this@BApplicationConfigBuilder.disableAutocompleteCache
@@ -389,4 +401,23 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfigProps
             override val logMissingLocalizationKeys = this@BApplicationConfigBuilder.logMissingLocalizationKeys
         }
     }
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(): BApplicationConfigBuilder = BApplicationConfigBuilder()
+    }
+}
+
+/**
+ * Registers the application commands feature.
+ *
+ * @param block A block for further configuration
+ *
+ * @see BApplicationConfig
+ */
+fun BConfigBuilder.registerApplicationCommands(block: BApplicationConfigBuilder.() -> Unit = { }) {
+    val config = BApplicationConfigBuilder.create()
+        .apply(block)
+        .build()
+    registerModule(config)
 }

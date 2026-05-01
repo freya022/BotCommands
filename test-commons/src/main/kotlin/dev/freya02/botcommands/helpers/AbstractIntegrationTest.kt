@@ -16,10 +16,7 @@ abstract class AbstractIntegrationTest {
         }
     }
 
-    fun createTest(
-        appCommands: Boolean = false,
-        builder: BConfigBuilder.() -> Unit
-    ): BContext {
+    fun createTest(builder: BConfigBuilder.() -> Unit): BContext {
         check(!::context.isInitialized) {
             "Can't make more than two instances in one test"
         }
@@ -28,10 +25,6 @@ abstract class AbstractIntegrationTest {
             disableExceptionsInDMs = true
 
             addClass<FakeBot>()
-
-            applicationCommands {
-                enable = appCommands
-            }
 
             builder()
         }

@@ -9,6 +9,7 @@ import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import dev.freya02.botcommands.restarter.internal.utils.AppClasspath
 import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
+import io.github.freya022.botcommands.api.core.config.registerApplicationCommands
 import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.freya022.botcommands.api.core.config.registerTextCommands
@@ -65,9 +66,7 @@ object Main {
                     debug = false
                 }
 
-                applicationCommands {
-                    enable = true
-
+                registerApplicationCommands {
                     databaseCache {
                         @OptIn(DevConfig::class)
                         checkOnline = true

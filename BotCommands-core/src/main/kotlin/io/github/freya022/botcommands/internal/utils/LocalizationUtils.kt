@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.config.applicationConfig
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl

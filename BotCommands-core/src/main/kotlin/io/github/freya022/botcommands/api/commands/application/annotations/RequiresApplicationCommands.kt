@@ -6,9 +6,9 @@ import io.github.freya022.botcommands.internal.commands.application.RequiresAppl
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 
 /**
- * Prevents usage of the annotated service if application commands are [not enabled][BApplicationConfig.enable].
+ * Prevents usage of the annotated service if the application commands feature is not registered.
  *
- * @see BApplicationConfig.enable
+ * @see BApplicationConfig
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Condition(RequiresApplicationCommandsChecker::class)

@@ -4,8 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Requi
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.utils.reference
+import io.github.freya022.botcommands.api.core.service.canCreateService
 
 internal object RequiresApplicationCommandsChecker : CustomConditionChecker<RequiresApplicationCommands> {
     override val annotationType: Class<RequiresApplicationCommands> = RequiresApplicationCommands::class.java
@@ -15,10 +14,10 @@ internal object RequiresApplicationCommandsChecker : CustomConditionChecker<Requ
         checkedClass: Class<*>,
         annotation: RequiresApplicationCommands
     ): String? {
-        if (serviceContainer.getService<BApplicationConfig>().enable) {
+        if (serviceContainer.canCreateService<BApplicationConfig>() == null) {
             return null
         }
 
-        return "Application commands needs to be enabled, see ${BApplicationConfig::enable.reference}"
+        return "The application commands module needs to be registered or enabled"
     }
 }
