@@ -72,6 +72,6 @@ publishedProjectEnvironment {
     configureJarArtifact(
         artifactId = "BotCommands-commands-text",
         description = "Support for text commands using annotated handlers and/or declarative functions.",
-        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-commands-text",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-commands/text",
     )
 }
