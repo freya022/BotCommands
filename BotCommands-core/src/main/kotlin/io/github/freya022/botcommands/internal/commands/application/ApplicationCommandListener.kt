@@ -23,9 +23,9 @@ import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.context.message.MessageCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.context.user.UserCommandInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.ratelimit.ApplicationCommandRateLimitHandler
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.exceptions.OptionNotFoundException
-import io.github.freya022.botcommands.internal.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import io.github.freya022.botcommands.internal.core.exceptions.getDiagnosticVersions
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionFactory
@@ -53,7 +53,7 @@ internal class ApplicationCommandListener internal constructor(
     private val applicationCommandsBuilder: ApplicationCommandsBuilder,
     private val messagesFactory: BotCommandsMessagesFactory,
     private val localizableInteractionFactory: LocalizableInteractionFactory,
-    private val rateLimitHandler: RateLimitHandler,
+    private val rateLimitHandler: ApplicationCommandRateLimitHandler,
     filters: List<ApplicationCommandFilter>,
 ) {
     private val scope = context.coroutineScopesConfig.applicationCommandsScope

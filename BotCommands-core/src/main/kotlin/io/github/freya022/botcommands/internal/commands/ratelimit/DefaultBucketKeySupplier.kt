@@ -1,13 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.freya022.botcommands.internal.utils.uniqueCommandPath
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import java.util.*
 
@@ -15,12 +12,7 @@ private val logger = KotlinLogging.logger { }
 
 class DefaultBucketKeySupplier internal constructor(val scope: RateLimitScope) : BucketKeySupplier {
 
-    private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context ->
-        when (context) {
-            is ApplicationCommandRateLimitingContext -> getKey(context.event)
-            else -> null
-        }
-    }
+    private val handlers = ServiceLoader.load(RequestHandler::class.java)
 
     override fun getKey(context: RateLimitingContext): BucketKeySupplier.Key {
         for (handler in handlers) {
@@ -32,9 +24,6 @@ class DefaultBucketKeySupplier internal constructor(val scope: RateLimitScope) :
 
         throwInternal("Unsupported context: ${context.javaClass.name}")
     }
-
-    private fun getKey(event: GenericCommandInteractionEvent) =
-        getRateLimitKey(event, event.uniqueCommandPath)
 
     fun getRateLimitKey(event: Interaction, identifier: String): BucketKeySupplier.Key {
         if (scope.isGuild && !event.isFromGuild) {

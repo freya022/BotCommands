@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.ratelimit.handler
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import io.github.bucket4j.ConsumptionProbe
-import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.core.BContext
@@ -45,15 +44,7 @@ class DefaultRateLimitHandler(
     val deleteOnRefill: Boolean = true
 ) : RateLimitHandler {
 
-    private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context, probe ->
-        when (context) {
-            is ApplicationCommandRateLimitingContext -> {
-                onInteractionRateLimit(context.context, context.event, probe)
-                true
-            }
-            else -> false
-        }
-    }
+    private val handlers = ServiceLoader.load(RequestHandler::class.java)
 
     override suspend fun onRateLimit(context: RateLimitingContext, probe: ConsumptionProbe) {
         for (handler in handlers) {
