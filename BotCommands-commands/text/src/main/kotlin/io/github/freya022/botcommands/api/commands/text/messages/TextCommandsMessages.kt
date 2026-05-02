@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 
 /**
- * Returns the messages used by the framework, instances are produced by [TextCommandsMessagesFactory].
+ * Returns the messages used by the text commands module, instances are produced by [TextCommandsMessagesFactory].
  *
  * @see TextCommandsMessagesFactory
  */
