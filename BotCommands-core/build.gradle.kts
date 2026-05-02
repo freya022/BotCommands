@@ -69,14 +69,6 @@ dependencies {
         exclude(module = "JDA")
     }
 
-    // -------------------- AUTOCOMPLETE DEPENDENCIES --------------------
-
-    // Fuzzy matching
-    implementation(libs.java.string.similarity) // todo remove
-
-    // Caching
-    implementation(libs.caffeine) // todo remove
-
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
