@@ -18,12 +18,8 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 abstract class AbstractChannelResolverFactory : ParameterResolverFactory() {
     final override val supportedTypesStr: List<String> = listOf("<out GuildChannel>")
 
-    abstract class AbstractChannelResolver<T : AbstractChannelResolver<T>>(
-        protected val context: BContext
-    ) : ClassParameterResolver<T, GuildChannel>(GuildChannel::class) {
+    abstract class AbstractChannelResolver<T : AbstractChannelResolver<T>> : ClassParameterResolver<T, GuildChannel>(GuildChannel::class) {
         protected val logger = objectLogger()
-
-        protected val messagesFactory: BotCommandsMessagesFactory = context.getService()
 
         protected suspend fun retrieveThreadChannel(
             guild: Guild,

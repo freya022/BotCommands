@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application.resolvers
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
 import io.github.freya022.botcommands.api.core.reflect.function
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
@@ -21,13 +20,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.*
 
 @ResolverFactory
-internal class ChannelResolverFactory(private val context: BContext) : AbstractChannelResolverFactory() {
+internal class ChannelResolverFactory : AbstractChannelResolverFactory() {
 
     internal class ChannelResolver(
-        context: BContext,
         private val type: Class<out GuildChannel>,
         override val channelTypes: Set<ChannelType>
-    ) : AbstractChannelResolver<ChannelResolver>(context),
+    ) : AbstractChannelResolver<ChannelResolver>(),
         SlashParameterResolver<ChannelResolver, GuildChannel>,
         IChannelResolver {
 
@@ -90,7 +88,7 @@ internal class ChannelResolverFactory(private val context: BContext) : AbstractC
         val parameter = request.parameter
         val erasure = parameter.javaErasure as Class<out GuildChannel>
         val channelTypes = parameter.getChannelTypes(erasure)
-        return ChannelResolver(context, erasure, channelTypes)
+        return ChannelResolver(erasure, channelTypes)
     }
 
     private fun ParameterWrapper.getChannelTypes(erasure: Class<out GuildChannel>): EnumSet<ChannelType> {

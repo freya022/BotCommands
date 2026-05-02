@@ -1,14 +1,12 @@
 package io.github.freya022.botcommands.internal.commands.text.resolvers
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
@@ -21,11 +19,11 @@ import java.util.regex.Pattern
 
 @ResolverFactory
 @ServiceName("textCommandChannelResolverFactory")
-internal class ChannelResolverFactory(private val context: BContext) : AbstractChannelResolverFactory() {
+internal class ChannelResolverFactory(private val messagesFactory: TextCommandsMessagesFactory) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
-        context: BContext,
+        private val messagesFactory: TextCommandsMessagesFactory,
         private val type: Class<out GuildChannel>,
-    ) : AbstractChannelResolver<ChannelResolver>(context),
+    ) : AbstractChannelResolver<ChannelResolver>(),
         TextParameterResolver<ChannelResolver, GuildChannel> {
 
         override val pattern: Pattern = channelPattern
@@ -56,8 +54,7 @@ internal class ChannelResolverFactory(private val context: BContext) : AbstractC
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
             if (event.channel.canTalk()) {
-                val localeProvider = context.getService<TextCommandLocaleProvider>()
-                event.message.reply(messagesFactory.get(localeProvider.getLocale(event)).resolverChannelMissingAccess(event, channelId)).queue()
+                event.message.reply(messagesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
             }
         })
 
@@ -78,6 +75,6 @@ internal class ChannelResolverFactory(private val context: BContext) : AbstractC
     override fun get(request: ResolverRequest): IParameterResolver<*> {
         val parameter = request.parameter
         val erasure = parameter.javaErasure as Class<out GuildChannel>
-        return ChannelResolver(context, erasure)
+        return ChannelResolver(messagesFactory, erasure)
     }
 }

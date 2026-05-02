@@ -2,7 +2,7 @@ package io.github.freya022.botcommands.internal.components.resolvers
 
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
-import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
@@ -19,11 +19,11 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 
 @ResolverFactory
 @ServiceName("componentChannelResolverFactory")
-internal class ChannelResolverFactory(private val context: BContext) : AbstractChannelResolverFactory() {
+internal class ChannelResolverFactory(private val messagesFactory: BotCommandsMessagesFactory) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
-        context: BContext,
+        private val messagesFactory: BotCommandsMessagesFactory,
         private val type: Class<out GuildChannel>,
-    ) : AbstractChannelResolver<ChannelResolver>(context),
+    ) : AbstractChannelResolver<ChannelResolver>(),
         ComponentParameterResolver<ChannelResolver, GuildChannel> {
         // Cannot implement TimeoutParameterResolver
         // as retrieving a channel requires a JDA instance.
@@ -68,6 +68,6 @@ internal class ChannelResolverFactory(private val context: BContext) : AbstractC
     override fun get(request: ResolverRequest): IParameterResolver<*> {
         val parameter = request.parameter
         val erasure = parameter.javaErasure as Class<out GuildChannel>
-        return ChannelResolver(context, erasure)
+        return ChannelResolver(messagesFactory, erasure)
     }
 }
