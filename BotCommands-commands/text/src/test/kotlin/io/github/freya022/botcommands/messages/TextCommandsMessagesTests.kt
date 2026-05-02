@@ -47,6 +47,7 @@ class TextCommandsMessagesTests : AbstractMessagesTests() {
             methodCall(messages::userRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::channelRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::guildRateLimited) { this(mockk(), Instant.now()) },
+            methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
             methodCall(messages::commandNotFound) { this(mockk(), emptySet()) },
             methodCall(messages::closedDirectMessages) { this(mockk()) },
             methodCall(messages::nsfwOnly) { this(mockk()) },

@@ -1,6 +1,8 @@
 {
     "owner_only": "Only the owner can use this",
 
+    "resolver.channel.missing_access": "The bot cannot access {channel_id}",
+
     "commands.text.not_found": "Unknown command, maybe you meant: {suggestions}",
 
     "direct_messages.closed": "Unable to send you a DM, please open your DMs from this server",

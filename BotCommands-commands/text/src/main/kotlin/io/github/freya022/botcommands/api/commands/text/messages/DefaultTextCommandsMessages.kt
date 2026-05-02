@@ -69,6 +69,10 @@ open class DefaultTextCommandsMessages(
         return getLocalizationTemplate("ratelimited.guild").localize("timestamp" to timestamp).toMessage()
     }
 
+    override fun resolverChannelMissingAccess(event: MessageReceivedEvent, channelId: Long): MessageCreateData {
+        return getLocalizationTemplate("resolver.channel.missing_access").localize("channel_id" to channelId).toMessage()
+    }
+
     override fun commandNotFound(event: MessageReceivedEvent, suggestions: Collection<TopLevelTextCommandInfo>): MessageCreateData {
         val suggestionsStr = suggestions.joinToString(separator = "**, **", prefix = "**", postfix = "**") { it.name }
         return getLocalizationTemplate("commands.text.not_found").localize("suggestions" to suggestionsStr).toMessage()

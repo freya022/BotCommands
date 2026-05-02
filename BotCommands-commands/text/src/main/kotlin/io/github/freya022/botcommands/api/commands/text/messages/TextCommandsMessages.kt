@@ -50,6 +50,11 @@ interface TextCommandsMessages {
     fun guildRateLimited(event: MessageReceivedEvent, deadline: Instant): MessageCreateData
 
     /**
+     * @return Message to display when a channel parameter could be resolved but is not accessible (such as private threads)
+     */
+    fun resolverChannelMissingAccess(event: MessageReceivedEvent, channelId: Long): MessageCreateData
+
+    /**
      * @return Message to display when a text command cannot be found
      */
     fun commandNotFound(event: MessageReceivedEvent, suggestions: Collection<TopLevelTextCommandInfo>): MessageCreateData
