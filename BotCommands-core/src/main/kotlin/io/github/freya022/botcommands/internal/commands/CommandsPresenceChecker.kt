@@ -2,31 +2,25 @@ package io.github.freya022.botcommands.internal.commands
 
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.jvm.jvmName
 
 // TODO add tests so those names stay up to date
 private val logger = KotlinLogging.logger { }
 private val commandAnnotations = listOf(
-    JDASlashCommand::class.jvmName,
-    JDAUserCommand::class.jvmName,
-    JDAMessageCommand::class.jvmName,
+    "io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand",
+    "io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand",
+    "io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand",
     "io.github.freya022.botcommands.api.commands.text.annotations.JDATextCommandVariation"
 )
 private val commandProviderInterfaces = listOf(
     "io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider",
-    GuildApplicationCommandProvider::class.jvmName,
-    GlobalApplicationCommandProvider::class.jvmName,
+    "io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider",
+    "io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider",
 )
 
 //This checker works on all classes from the user packages, but only on "services" of internal classes

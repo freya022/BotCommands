@@ -1,10 +1,5 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAMessageCommand
-import io.github.freya022.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
@@ -17,12 +12,6 @@ import org.springframework.stereotype.Component
  * i.e., methods that declare commands with annotations, or methods that declare using the DSL.
  *
  * @see BService @BService
- *
- * @see GlobalApplicationCommandProvider Declaring global application commands using the DSL
- * @see GuildApplicationCommandProvider Declaring guild application commands using the DSL
- * @see JDASlashCommand @JDASlashCommand
- * @see JDAMessageCommand @JDAMessageCommand
- * @see JDAUserCommand @JDAUserCommand
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

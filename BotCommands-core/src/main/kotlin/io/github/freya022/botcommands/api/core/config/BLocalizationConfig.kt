@@ -16,7 +16,7 @@ interface BLocalizationConfig : IConfig, BLocalizationConfigProps {
 interface BLocalizationConfigProps {
     /**
      * Localization bundles available for localizing interaction responses, with [LocalizableInteraction],
-     * not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations].
+     * not to be confused with those used to localize commands, available in the application command module's configuration.
      *
      * As a reminder, the localization bundles are in `bc_localization` by default.
      *
@@ -26,8 +26,6 @@ interface BLocalizationConfigProps {
      * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * Spring property: `botcommands.localization.responseBundles`
-     *
-     * @see BApplicationConfigBuilder.addLocalizations
      */
     @get:ConfigurationValue(
         path = "botcommands.localization.responseBundles",
@@ -42,7 +40,7 @@ class BLocalizationConfigBuilder internal constructor() : BLocalizationConfigPro
 
     /**
      * Adds a localization bundle for localizing interaction responses, with [LocalizableInteraction],
-     * not to be confused with those used to [localize commands][BApplicationConfigBuilder.addLocalizations].
+     * not to be confused with those used to localize commands, available in the application command module's configuration.
      *
      * As a reminder, the localization bundles are in `bc_localization` by default.
      *
@@ -52,8 +50,6 @@ class BLocalizationConfigBuilder internal constructor() : BLocalizationConfigPro
      * See [DefaultLocalizationMapProvider] and [JacksonLocalizationMapReader] for default implementation details.
      *
      * Spring property: `botcommands.localization.responseBundles`
-     *
-     * @see BApplicationConfigBuilder.addLocalizations
      */
     fun addResponseBundle(responseBundle: String) {
         responseBundles += responseBundle

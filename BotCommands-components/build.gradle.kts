@@ -43,6 +43,10 @@ dependencies {
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
 
+    // Application commands
+    "javaDocExamplesImplementation"(projects.botCommandsCommands.app)
+    "kotlinDocExamplesImplementation"(projects.botCommandsCommands.app)
+
     // Components
     "javaDocExamplesImplementation"(projects.botCommandsComponents)
     "kotlinDocExamplesImplementation"(projects.botCommandsComponents)

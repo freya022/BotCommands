@@ -1,14 +1,10 @@
 package io.github.freya022.botcommands.internal.utils
 
-import gnu.trove.set.TLongSet
-import gnu.trove.set.hash.TLongHashSet
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
 import io.github.freya022.botcommands.api.commands.annotations.Filter as FilterAnnotation
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
-import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Filter
-import io.github.freya022.botcommands.api.core.config.applicationConfig
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.*
 import net.dv8tion.jda.api.Permission
@@ -17,11 +13,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 object AnnotationUtils {
-    internal fun getEffectiveTestGuildIds(context: BContext, func: KFunction<*>): TLongSet {
-        val set = TLongHashSet(context.applicationConfig.testGuildIds)
-        func.findAllAnnotations<Test>().forEach { set.addAll(it.guildIds) }
-        return set
-    }
 
     internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
         return func.findAllAnnotations<UserPermissions>().flatMapTo(enumSetOf()) { it.permissions }

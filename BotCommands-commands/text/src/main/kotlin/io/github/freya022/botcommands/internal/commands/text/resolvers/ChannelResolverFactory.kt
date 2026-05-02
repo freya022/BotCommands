@@ -6,13 +6,14 @@ import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.channels.AbstractChannelResolverFactory
 import io.github.freya022.botcommands.internal.utils.ifNullThrowInternal
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -20,7 +21,7 @@ import java.util.regex.Pattern
 
 @ResolverFactory
 @ServiceName("textCommandChannelResolverFactory")
-internal class ChannelResolverFactory(override val context: BContext) : AbstractChannelResolverFactory() {
+internal class ChannelResolverFactory(private val context: BContext) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
         context: BContext,
         private val type: Class<out GuildChannel>,
@@ -65,13 +66,18 @@ internal class ChannelResolverFactory(override val context: BContext) : Abstract
         }
     }
 
-    override fun getResolverType(): Class<out IParameterResolver<*>> = ChannelResolver::class.java
+    override val supportedResolvers: List<Class<out IParameterResolver<*>>> = listOf(TextParameterResolver::class.java)
 
-    override fun createResolver(
-        context: BContext,
-        erasure: Class<out GuildChannel>,
-        channelTypes: Set<ChannelType>,
-    ): IParameterResolver<*> {
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        val parameter = request.parameter
+        val erasure = parameter.javaErasure
+        return erasure.isSubclassOf<GuildChannel>()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun get(request: ResolverRequest): IParameterResolver<*> {
+        val parameter = request.parameter
+        val erasure = parameter.javaErasure as Class<out GuildChannel>
         return ChannelResolver(context, erasure)
     }
 }

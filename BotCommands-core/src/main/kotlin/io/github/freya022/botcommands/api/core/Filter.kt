@@ -1,12 +1,9 @@
 package io.github.freya022.botcommands.api.core
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 
 /**
- * Base filter interface.
- *
- * @see ApplicationCommandFilter
+ * Base filter interface, should not be implemented directly.
  */
 interface Filter {
     /**

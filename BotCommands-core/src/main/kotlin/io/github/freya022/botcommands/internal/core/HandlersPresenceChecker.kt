@@ -2,21 +2,19 @@ package io.github.freya022.botcommands.internal.core
 
 import io.github.classgraph.MethodInfo
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlin.reflect.jvm.jvmName
 
 private val logger = KotlinLogging.logger { }
 private val handlerAnnotations = listOf(
     // TODO test in respective modules that this is correct
     "io.github.freya022.botcommands.api.components.annotations.JDAButtonListener",
     "io.github.freya022.botcommands.api.components.annotations.JDASelectMenuListener",
-    AutocompleteHandler::class.jvmName,
+    "io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler",
     "io.github.freya022.botcommands.api.modals.annotations.ModalHandler",
 )
 
