@@ -57,21 +57,22 @@ import net.dv8tion.jda.internal.utils.Checks
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
- * ### Filtering
+ * ### Permissions
+ *
+ * Required user/bot permissions can be set with [@UserPermissions][UserPermissions]/[@BotPermissions][BotPermissions].
+ *
+ * ### Execution filtering
  *
  * You can arbitrarily prevent execution of commands by using [@Filter][Filter],
  * passing an implementation of [TextCommandFilter].
  *
- * @see Command @Command
- * @see TextCommandData @TextCommandData
+ * ### Rate limiting
+ *
+ * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown].
+ *
  * @see Category @Category
- * @see TextOption @TextOption
  * @see Hidden @Hidden
  * @see NSFW @NSFW
- * @see BotPermissions @BotPermissions
- * @see UserPermissions @UserPermissions
- * @see Cooldown @Cooldown
- * @see RateLimit @RateLimit
  *
  * @see TextCommandProvider Declaring text commands using the DSL
  *
