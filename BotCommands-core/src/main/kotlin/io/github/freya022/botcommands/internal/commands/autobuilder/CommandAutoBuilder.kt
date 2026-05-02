@@ -7,7 +7,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
+import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.ratelimit.readRateLimit
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.AnnotationUtils

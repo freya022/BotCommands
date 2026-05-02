@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.api.commands.ratelimit.handler
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import io.github.bucket4j.ConsumptionProbe
-import io.github.freya022.botcommands.api.commands.ratelimit.ApplicationCommandRateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.core.BContext
@@ -45,15 +44,7 @@ class DefaultRateLimitHandler(
     val deleteOnRefill: Boolean = true
 ) : RateLimitHandler {
 
-    private val handlers = ServiceLoader.load(RequestHandler::class.java) + RequestHandler { _, context, probe ->
-        when (context) {
-            is ApplicationCommandRateLimitingContext -> {
-                onInteractionRateLimit(context.context, context.event, probe)
-                true
-            }
-            else -> false
-        }
-    }
+    private val handlers = ServiceLoader.load(RequestHandler::class.java)
 
     override suspend fun onRateLimit(context: RateLimitingContext, probe: ConsumptionProbe) {
         for (handler in handlers) {
@@ -65,14 +56,12 @@ class DefaultRateLimitHandler(
         throwInternal("Unsupported context: ${context.javaClass.name}")
     }
 
-    suspend fun <T> onInteractionRateLimit(
-        context: BContext,
-        event: T,
-        probe: ConsumptionProbe
-    ) where T : GenericInteractionCreateEvent,
-            T : IReplyCallback {
-        val messages = context.getService<BotCommandsMessagesFactory>().get(event)
-        val content = getRateLimitMessage(event, messages, probe)
+    suspend fun onInteractionRateLimit(
+        event: IReplyCallback,
+        probe: ConsumptionProbe,
+        messageGetter: (ConsumptionProbe) -> MessageCreateData,
+    ) {
+        val content = messageGetter(probe)
         val hook = event.reply(content).setEphemeral(true).await()
         // Only schedule delete if the interaction hook doesn't expire before
         // Technically this is supposed to be 15 minutes but, just to be safe
@@ -81,21 +70,6 @@ class DefaultRateLimitHandler(
                 delay(probe.nanosToWaitForRefill.nanoseconds)
                 hook.deleteOriginal().awaitCatching()
             }
-        }
-    }
-
-    private fun getRateLimitMessage(
-        event: Event,
-        messages: BotCommandsMessages,
-        probe: ConsumptionProbe
-    ): MessageCreateData {
-        val deadline = Instant.now().plusNanos(probe.nanosToWaitForRefill)
-        return when (scope) {
-            RateLimitScope.USER -> messages.userRateLimited(event, deadline)
-            RateLimitScope.USER_PER_GUILD -> messages.userRateLimited(event, deadline)
-            RateLimitScope.USER_PER_CHANNEL -> messages.userRateLimited(event, deadline)
-            RateLimitScope.GUILD -> messages.guildRateLimited(event, deadline)
-            RateLimitScope.CHANNEL -> messages.channelRateLimited(event, deadline)
         }
     }
 

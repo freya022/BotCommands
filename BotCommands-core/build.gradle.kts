@@ -69,14 +69,6 @@ dependencies {
         exclude(module = "JDA")
     }
 
-    // -------------------- AUTOCOMPLETE DEPENDENCIES --------------------
-
-    // Fuzzy matching
-    implementation(libs.java.string.similarity)
-
-    // Caching
-    implementation(libs.caffeine)
-
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
@@ -94,6 +86,10 @@ dependencies {
     // Text commands (rare examples that are about core features but use a different module to demonstrate)
     "javaDocExamplesImplementation"(projects.botCommandsCommands.text)
     "kotlinDocExamplesImplementation"(projects.botCommandsCommands.text)
+
+    // Application commands (rare examples that are about core features but use a different module to demonstrate)
+    "javaDocExamplesImplementation"(projects.botCommandsCommands.app)
+    "kotlinDocExamplesImplementation"(projects.botCommandsCommands.app)
 
     // YAML (de)serialization
     "javaDocExamplesImplementation"(libs.jackson.dataformat.yaml)
@@ -114,6 +110,9 @@ dependencies {
 
     // Text commands
     "examplesImplementation"(projects.botCommandsCommands.text)
+
+    // Application commands
+    "examplesImplementation"(projects.botCommandsCommands.app)
 
     // Components
     "examplesImplementation"(projects.botCommandsComponents)

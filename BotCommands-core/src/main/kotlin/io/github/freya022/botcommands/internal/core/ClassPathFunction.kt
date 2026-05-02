@@ -61,7 +61,7 @@ internal class InstanceClassPathFunction internal constructor(
 
 internal fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }
 
-internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPathFunction {
+fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPathFunction {
     return InstanceClassPathFunction(instance, function)
 }
 

@@ -1,11 +1,11 @@
 package io.github.freya022.bot.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.resolvers.enumerations.withSlashCommands
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.to
 import io.github.freya022.botcommands.api.parameters.resolvers.ResolverManager
 import io.github.freya022.botcommands.api.parameters.resolvers.ResolverProvider
-import io.github.freya022.botcommands.api.parameters.resolvers.enumerations.withSlashCommands
 import io.github.freya022.botcommands.api.parameters.resolvers.registerEnum
 import java.util.concurrent.TimeUnit
 

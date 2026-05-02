@@ -1,10 +1,5 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
-import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.provider.GuildApplicationCommandProvider
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
 import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
@@ -34,12 +29,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see BotCommandsMessagesFactory
  *
  * @see GlobalExceptionHandler
- *
- * @see GlobalApplicationCommandProvider
- * @see GuildApplicationCommandProvider
- * @see AutocompleteHandlerProvider
- * @see AutocompleteTransformer
- * @see ApplicationCommandFilter
  *
  * @see ConnectionSupplier
  * @see ParametrizedQueryFactory

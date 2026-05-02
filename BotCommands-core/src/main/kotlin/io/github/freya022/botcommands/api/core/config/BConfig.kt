@@ -30,7 +30,6 @@ interface BConfig : IConfig, BConfigProps {
     val serviceConfig: BServiceConfig
     val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
-    val applicationConfig: BApplicationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
     /**
@@ -203,7 +202,6 @@ class BConfigBuilder : BConfigProps {
     val serviceConfig = BServiceConfigBuilder()
     val databaseConfig = BDatabaseConfigBuilder()
     val localizationConfig = BLocalizationConfigBuilder()
-    val applicationConfig = BApplicationConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -314,10 +312,6 @@ class BConfigBuilder : BConfigProps {
         localizationConfig.apply(block)
     }
 
-    fun applicationCommands(block: ReceiverConsumer<BApplicationConfigBuilder>) {
-        applicationConfig.apply(block)
-    }
-
     /**
      * Registers a configuration for the relevant module, enabling the features provided by the module.
      *
@@ -351,7 +345,6 @@ class BConfigBuilder : BConfigProps {
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
             override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
-            override val applicationConfig = this@BConfigBuilder.applicationConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
                 this.configType to this,
@@ -359,7 +352,6 @@ class BConfigBuilder : BConfigProps {
                 serviceConfig.configType to serviceConfig,
                 databaseConfig.configType to databaseConfig,
                 localizationConfig.configType to localizationConfig,
-                applicationConfig.configType to applicationConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()
             override val configs get() = _configs.values

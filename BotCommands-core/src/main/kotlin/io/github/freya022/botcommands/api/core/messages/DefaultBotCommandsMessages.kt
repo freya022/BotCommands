@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.messages
 
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.messages.exceptions.MissingMessageTemplateException
 import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
@@ -11,9 +10,7 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.utils.TimeFormat
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -41,11 +38,6 @@ open class DefaultBotCommandsMessages(
         return getLocalizationTemplate("uncaught_exception").localize().toMessage()
     }
 
-    override fun missingUserPermissions(event: GenericEvent, permissions: Set<Permission>): MessageCreateData {
-        val localizedPermissions = permissions.joinToString(separator = ", ") { permissionLocalization.localize(it, locale) }
-        return getLocalizationTemplate("missing.permissions.user").localize("permissions" to localizedPermissions).toMessage()
-    }
-
     override fun missingBotPermissions(event: GenericEvent, permissions: Set<Permission>): MessageCreateData {
         val localizedPermissions = permissions.joinToString(separator = ", ") { permissionLocalization.localize(it, locale) }
         return getLocalizationTemplate("missing.permissions.bot").localize("permissions" to localizedPermissions).toMessage()
@@ -66,10 +58,6 @@ open class DefaultBotCommandsMessages(
         return getLocalizationTemplate("ratelimited.guild").localize("timestamp" to timestamp).toMessage()
     }
 
-    override fun applicationCommandsNotAvailable(event: GenericCommandInteractionEvent): MessageCreateData {
-        return getLocalizationTemplate("commands.application.not_available").localize().toMessage()
-    }
-
     override fun resolverChannelNotFound(event: GenericEvent, channelId: Long): MessageCreateData {
         return getLocalizationTemplate("resolver.channel.not_found").localize("channel_id" to channelId).toMessage()
     }
@@ -80,10 +68,6 @@ open class DefaultBotCommandsMessages(
 
     override fun resolverUserNotFound(event: GenericEvent, userId: Long): MessageCreateData {
         return getLocalizationTemplate("resolver.user.not_found").localize("user_id" to userId).toMessage()
-    }
-
-    override fun slashCommandUnresolvableOption(event: CommandInteractionPayload, option: SlashCommandOption): MessageCreateData {
-        return getLocalizationTemplate("commands.slash.option.unresolvable").localize("option_name" to option.discordName).toMessage()
     }
 
     override fun componentNotAllowed(event: GenericComponentInteractionCreateEvent): MessageCreateData {

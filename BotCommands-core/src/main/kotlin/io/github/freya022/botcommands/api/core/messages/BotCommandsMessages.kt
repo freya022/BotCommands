@@ -1,12 +1,9 @@
 package io.github.freya022.botcommands.api.core.messages
 
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 
@@ -21,11 +18,6 @@ interface BotCommandsMessages {
      * @return Message to display when an uncaught exception occurs
      */
     fun uncaughtException(event: GenericEvent): MessageCreateData
-
-    /**
-     * @return Message to display when the user is missing [permissions][io.github.freya022.botcommands.api.commands.annotations.UserPermissions]
-     */
-    fun missingUserPermissions(event: GenericEvent, permissions: Set<Permission>): MessageCreateData
 
     /**
      * @return Message to display when the bot is missing [permissions][io.github.freya022.botcommands.api.commands.annotations.BotPermissions]
@@ -48,11 +40,6 @@ interface BotCommandsMessages {
     fun guildRateLimited(event: GenericEvent, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when application commands are not loaded on the guild yet
-     */
-    fun applicationCommandsNotAvailable(event: GenericCommandInteractionEvent): MessageCreateData
-
-    /**
      * @return Message to display when a channel parameter could not be resolved
      */
     fun resolverChannelNotFound(event: GenericEvent, channelId: Long): MessageCreateData
@@ -66,11 +53,6 @@ interface BotCommandsMessages {
      * @return Message to display when a user parameter could not be resolved
      */
     fun resolverUserNotFound(event: GenericEvent, userId: Long): MessageCreateData
-
-    /**
-     * @return Message to display when a slash command option is unresolvable (only in slash command interactions)
-     */
-    fun slashCommandUnresolvableOption(event: CommandInteractionPayload, option: SlashCommandOption): MessageCreateData
 
     /**
      * @return Message to display when a user tries to use a component it isn't allowed to interact with

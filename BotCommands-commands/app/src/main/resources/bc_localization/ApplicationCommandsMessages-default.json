@@ -1,0 +1,14 @@
+{
+    "uncaught_exception": "An uncaught exception occurred and has been reported to the bot developers, please try again later",
+
+    "missing.permissions.user": "You are not allowed to do this",
+    "missing.permissions.bot": "I am missing these permissions: {permissions}",
+
+    "ratelimited.user": "You will be able to use this {timestamp}",
+    "ratelimited.channel": "You will be able to use this, in this channel, {timestamp}",
+    "ratelimited.guild": "You will be able to use this, in this guild, {timestamp}",
+
+    "commands.application.not_available": "Application commands are not available yet, please try again later",
+
+    "commands.slash.option.unresolvable": "The option '{option_name}' could not be resolved."
+}

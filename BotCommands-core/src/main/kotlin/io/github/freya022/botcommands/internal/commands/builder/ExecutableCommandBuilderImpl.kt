@@ -9,7 +9,7 @@ import io.github.freya022.botcommands.internal.parameters.AggregatorParameter
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
-internal abstract class ExecutableCommandBuilderImpl<T : OptionAggregateBuilder<T>, R> internal constructor(
+abstract class ExecutableCommandBuilderImpl<T : OptionAggregateBuilder<T>, R>(
     context: BContext,
     name: String,
     function: KFunction<R>
@@ -48,5 +48,5 @@ internal abstract class ExecutableCommandBuilderImpl<T : OptionAggregateBuilder<
     final override fun varargAggregate(declaredName: String, block: T.() -> Unit) =
         aggregateContainer.varargAggregate(declaredName, block)
 
-    internal abstract fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
+    protected abstract fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 }

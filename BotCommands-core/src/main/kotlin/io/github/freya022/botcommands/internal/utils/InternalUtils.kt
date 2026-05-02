@@ -25,7 +25,7 @@ fun String.toDiscordString(): String {
     return sb.toString()
 }
 
-internal fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
+fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
     val components = mutableListOf<String>()
     var info = this
 
@@ -37,7 +37,7 @@ internal fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
     CommandPath.of(components)
 }
 
-internal fun Guild?.asScopeString() = if (this == null) "global scope" else "guild '${this.name}' (${this.id})"
+fun Guild?.asScopeString() = if (this == null) "global scope" else "guild '${this.name}' (${this.id})"
 
 fun <K, V> MutableMap<K, V>.putIfAbsentOrThrowInternal(key: K, value: V) {
     if (key in this)

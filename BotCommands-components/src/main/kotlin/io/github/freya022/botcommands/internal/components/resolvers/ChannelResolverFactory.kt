@@ -5,32 +5,30 @@ import io.github.freya022.botcommands.api.components.serialization.SerializedCom
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.parameters.ResolverRequest
 import io.github.freya022.botcommands.api.parameters.resolvers.ComponentParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.IParameterResolver
 import io.github.freya022.botcommands.internal.parameters.resolvers.channels.AbstractChannelResolverFactory
-import io.github.freya022.botcommands.internal.parameters.resolvers.channels.IChannelResolver
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 @ResolverFactory
 @ServiceName("componentChannelResolverFactory")
-internal class ChannelResolverFactory(override val context: BContext) : AbstractChannelResolverFactory() {
+internal class ChannelResolverFactory(private val context: BContext) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
         context: BContext,
         private val type: Class<out GuildChannel>,
-        override val channelTypes: Set<ChannelType>
     ) : AbstractChannelResolver<ChannelResolver>(context),
-        ComponentParameterResolver<ChannelResolver, GuildChannel>,
+        ComponentParameterResolver<ChannelResolver, GuildChannel> {
         // Cannot implement TimeoutParameterResolver
         // as retrieving a channel requires a JDA instance.
         // When a component expired while the bot was offline,
         // the required JDA instance isn't there yet.
-        IChannelResolver {
 
         override suspend fun resolveSuspend(option: ComponentOption, event: GenericComponentInteractionCreateEvent, data: SerializedComponentData): GuildChannel? {
             val guild = event.guild ?: throwArgument("Cannot resolve a channel outside of a guild")
@@ -58,13 +56,18 @@ internal class ChannelResolverFactory(override val context: BContext) : Abstract
         })
     }
 
-    override fun getResolverType(): Class<out IParameterResolver<*>> = ChannelResolver::class.java
+    override val supportedResolvers: List<Class<out IParameterResolver<*>>> = listOf(ComponentParameterResolver::class.java)
 
-    override fun createResolver(
-        context: BContext,
-        erasure: Class<out GuildChannel>,
-        channelTypes: Set<ChannelType>,
-    ): IParameterResolver<*> {
-        return ChannelResolver(context, erasure, channelTypes)
+    override fun isResolvable(request: ResolverRequest): Boolean {
+        val parameter = request.parameter
+        val erasure = parameter.javaErasure
+        return erasure.isSubclassOf<GuildChannel>()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun get(request: ResolverRequest): IParameterResolver<*> {
+        val parameter = request.parameter
+        val erasure = parameter.javaErasure as Class<out GuildChannel>
+        return ChannelResolver(context, erasure)
     }
 }

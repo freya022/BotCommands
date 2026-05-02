@@ -177,8 +177,7 @@ internal fun KClass<*>.superErasureAt(index: Int, targetType: KClass<*>): KType 
         ?: throwArgument("Star projections are not allowed on argument #$index of ${targetType.simpleNestedName}")
 }
 
-@PublishedApi
-internal inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType = findErasureOfAt(index, T::class)
+inline fun <reified T : Any> KType.findErasureOfAt(index: Int): KType = findErasureOfAt(index, T::class)
 
 @PublishedApi
 internal fun KType.findErasureOfAt(index: Int, targetType: KClass<*>): KType {
@@ -198,7 +197,7 @@ internal fun KType.typeOfAtOrNullOnStar(index: Int, targetType: KClass<*>): KTyp
     return this.jvmErasure.superErasureAt(index, targetType)
 }
 
-internal fun <T : Any> Class<T>.safeCast(instance: Any?): T? = when {
+fun <T : Any> Class<T>.safeCast(instance: Any?): T? = when {
     isInstance(instance) -> cast(instance)
     else -> null
 }

@@ -28,7 +28,7 @@ abstract class OptionImpl private constructor(
         commandOptionBuilder.isOptional
     )
 
-    internal val typeCheckingFunction: KFunction<*>
+    val typeCheckingFunction: KFunction<*>
         get() = optionParameter.typeCheckingFunction
 
     /**

@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.messages
 
 import dev.freya02.botcommands.helpers.AbstractMessagesTests
-import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.config.registerServiceSupplier
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -41,21 +40,13 @@ class BotCommandsMessagesTests : AbstractMessagesTests() {
 
         val methodCalls = mapOf(
             methodCall(messages::uncaughtException) { this(mockk()) },
-            methodCall(messages::missingUserPermissions) { this(mockk(), emptySet()) },
             methodCall(messages::missingBotPermissions) { this(mockk(), emptySet()) },
             methodCall(messages::userRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::channelRateLimited) { this(mockk(), Instant.now()) },
             methodCall(messages::guildRateLimited) { this(mockk(), Instant.now()) },
-            methodCall(messages::applicationCommandsNotAvailable) { this(mockk()) },
             methodCall(messages::resolverChannelNotFound) { this(mockk(), 0) },
             methodCall(messages::resolverChannelMissingAccess) { this(mockk(), 0) },
             methodCall(messages::resolverUserNotFound) { this(mockk(), 0) },
-            methodCall(messages::slashCommandUnresolvableOption) {
-                val option = mockk<SlashCommandOption> {
-                    every { discordName } returns "discord_name"
-                }
-                this(mockk(), option)
-            },
             methodCall(messages::componentNotAllowed) { this(mockk()) },
             methodCall(messages::componentExpired) { this(mockk()) },
             methodCall(messages::modalExpired) { this(mockk()) },

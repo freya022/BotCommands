@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.annotations
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 /**
@@ -9,11 +8,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
  * The target parameter must be of type [List].
  *
  * You can configure how many arguments are required with [numRequired].
- *
- * See [@MentionsString][MentionsString] for a way to get a list of mentionable (user/member/role/channel...)
- * without a vararg, using a single string.
- *
- * @see MentionsString @MentionsString
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

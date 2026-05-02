@@ -9,9 +9,8 @@ import io.github.freya022.botcommands.api.localization.providers.LocalizationMap
 import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProviders
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders
-import io.github.freya022.botcommands.internal.commands.application.localization.BCLocalizationFunction
-import io.github.freya022.botcommands.internal.core.SingleLogger
-import io.github.freya022.botcommands.internal.core.SingleLogger.Companion.toSingleLogger
+import io.github.freya022.botcommands.internal.core.LocalizationLogger
+import io.github.freya022.botcommands.internal.core.LocalizationLogger.Companion.toSingleLogger
 import io.github.freya022.botcommands.internal.utils.rethrow
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
@@ -76,15 +75,12 @@ internal class LocalizationServiceImpl internal constructor(
     }
 
     override fun invalidateLocalization(baseName: String) {
-        SingleLogger[BCLocalizationFunction::class].clear()
-        SingleLogger.current().clear()
+        LocalizationLogger.clearAll()
         localizationMap.remove(baseName)
     }
 
     override fun invalidateLocalization(baseName: String, locale: Locale) {
-        SingleLogger[BCLocalizationFunction::class].clear()
-        SingleLogger.current().clear()
-
+        LocalizationLogger.clearAll()
         localizationMap[baseName]?.remove(locale)
     }
 
