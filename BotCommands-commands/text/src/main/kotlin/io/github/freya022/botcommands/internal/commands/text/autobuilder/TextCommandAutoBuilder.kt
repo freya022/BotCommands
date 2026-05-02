@@ -25,7 +25,7 @@ import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.commands.application.autobuilder.utils.ParameterAdapter
+import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
 import io.github.freya022.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions

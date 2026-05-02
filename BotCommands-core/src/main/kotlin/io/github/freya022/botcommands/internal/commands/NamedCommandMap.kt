@@ -1,13 +1,13 @@
-package io.github.freya022.botcommands.internal.commands.application
+package io.github.freya022.botcommands.internal.commands
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.internal.utils.putIfAbsentOrThrow
-import java.util.*
+import java.util.Collections
 
 class NamedCommandMap<T> where T : INamedCommand, T : IDeclarationSiteHolder {
     private val mutableMap: MutableMap<String, T> = hashMapOf()
-    internal val map: Map<String, T> = Collections.unmodifiableMap(mutableMap)
+    val map: Map<String, T> = Collections.unmodifiableMap(mutableMap)
     val values: Collection<T> = Collections.unmodifiableCollection(mutableMap.values)
 
     fun putNewCommand(newCommand: T) {
@@ -20,5 +20,5 @@ class NamedCommandMap<T> where T : INamedCommand, T : IDeclarationSiteHolder {
         }
     }
 
-    internal fun isEmpty(): Boolean = mutableMap.isEmpty()
+    fun isEmpty(): Boolean = mutableMap.isEmpty()
 }

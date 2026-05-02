@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.commands.text.annotations.JDATextComma
 import io.github.freya022.botcommands.api.commands.text.builder.TopLevelTextCommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
-import io.github.freya022.botcommands.internal.commands.application.NamedCommandMap
+import io.github.freya022.botcommands.internal.commands.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.text.TopLevelTextCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.text.builder.TopLevelTextCommandBuilderImpl
 

@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.commands.application.autobuilder.utils
+package io.github.freya022.botcommands.internal.commands.autobuilder.utils
 
 import io.github.freya022.botcommands.api.core.reflect.ParameterType
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
