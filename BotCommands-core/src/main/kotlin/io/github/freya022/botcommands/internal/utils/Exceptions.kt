@@ -40,7 +40,7 @@ fun Throwable.rethrowAt(message: String, function: KFunction<*>): Nothing =
 internal fun Throwable.rethrowAt(message: String, declarationSite: DeclarationSite): Nothing =
     throw RuntimeException("$message\n    Declared at: $declarationSite", unwrap())
 
-internal fun Throwable.rethrowAt(exceptionSupplier: (String, Throwable) -> Throwable, message: String, declarationSite: DeclarationSite): Nothing =
+fun Throwable.rethrowAt(exceptionSupplier: (String, Throwable) -> Throwable, message: String, declarationSite: DeclarationSite): Nothing =
     throw exceptionSupplier("$message\n    Declared at: $declarationSite", unwrap())
 
 fun throwArgument(message: String, declarationSite: DeclarationSite? = null): Nothing =

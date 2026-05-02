@@ -8,6 +8,6 @@ internal class InternalException @JvmOverloads internal constructor(
     throwable: Throwable? = null,
 ) : RuntimeException(internalErrorMessage(message), throwable)
 
-internal fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
+fun getDiagnosticVersions() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
 fun internalErrorMessage(message: String) = "$message, please report this to the devs. ${getDiagnosticVersions()}"

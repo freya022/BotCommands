@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.entities.InputUser
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 
-internal class InputUserImpl internal constructor(
+class InputUserImpl internal constructor(
     private val user: User,
     override val member: Member?
 ) : InputUser, User by user {

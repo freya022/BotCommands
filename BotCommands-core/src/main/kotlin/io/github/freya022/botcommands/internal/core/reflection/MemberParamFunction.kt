@@ -32,7 +32,7 @@ class MemberParamFunction<T : Any, R>(
 inline fun <reified T : Any> ClassPathFunction.toMemberParamFunction() =
     MemberParamFunction(function, instanceSupplier = { instance }, T::class)
 
-internal inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext) =
+inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext) =
     MemberParamFunction(context, this, T::class)
 
 fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, paramType: KClass<T>) =

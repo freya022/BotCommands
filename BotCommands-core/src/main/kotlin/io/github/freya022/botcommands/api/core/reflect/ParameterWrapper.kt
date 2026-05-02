@@ -73,7 +73,7 @@ class ParameterWrapper private constructor(
     }
 }
 
-internal val ParameterWrapper.function get() = parameter.function
+val ParameterWrapper.function get() = parameter.function
 
 /**
  * @see hasAnnotationRecursive
@@ -87,7 +87,7 @@ inline fun <reified A : Annotation> ParameterWrapper.findAnnotation(): A? = getA
 
 @OptIn(ExperimentalContracts::class)
 @JvmSynthetic
-internal inline fun ParameterWrapper.requireUser(value: Boolean, lazyMessage: () -> Any?) {
+inline fun ParameterWrapper.requireUser(value: Boolean, lazyMessage: () -> Any?) {
     contract {
         returns() implies value
         callsInPlace(lazyMessage, InvocationKind.AT_MOST_ONCE)

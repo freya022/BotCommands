@@ -13,8 +13,10 @@ import kotlin.reflect.KFunction
  * to ignore a particular class (such as utility classes), pointing instead to the frame which called your ignored class.
  */
 class DeclarationSite private constructor(
+    // TODO shared internal
+    /** INTERNAL */
     @get:JvmSynthetic
-    internal val string: String
+    val string: String
 ) {
     override fun toString(): String = string
 
