@@ -4,6 +4,8 @@ import io.github.freya022.botcommands.api.commands.annotations.*
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
+import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
+import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
@@ -33,6 +35,15 @@ import net.dv8tion.jda.internal.utils.Checks
  * If no variation matches and there is no fallback,
  * then the [help content][IHelpCommand.onInvalidCommand] is invoked for the command.
  *
+ * #### Note on command complexity
+ *
+ * You might have errors if your command is considered too complex.
+ * Several factors can increase the chance of a command being unusable, such as
+ * - Too many optionals
+ * - Options with a dynamic number of spaces (such as strings)
+ *
+ * Attempts at fixing the issue can include moving the parameters around, like avoiding 2 strings next to each other.
+ *
  * ### Requirements
  * - The declaring class must be annotated with [@Command][Command]
  * - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption.
@@ -40,20 +51,28 @@ import net.dv8tion.jda.internal.utils.Checks
  * ### Option types
  * - Input options: Uses [@TextOption][TextOption].
  * - [TextLocalizationContext]: Uses [@LocalizationBundle][LocalizationBundle].
+ * - Generated options: Use [@GeneratedOption][GeneratedOption], implement [TextGeneratedValueSupplierProvider]
+ *   and return, on the correct command path/option name,
+ *   an appropriate supplier that will generate an object of the correct type.
  * - Custom options: No annotation, additional types can be added by implementing [ICustomResolver].
  * - Service options: No annotation, however, I recommend injecting the service in the class instead.
  *
- * @see Command @Command
- * @see TextCommandData @TextCommandData
+ * ### Permissions
+ *
+ * Required user/bot permissions can be set with [@UserPermissions][UserPermissions]/[@BotPermissions][BotPermissions].
+ *
+ * ### Execution filtering
+ *
+ * You can arbitrarily prevent execution of commands by using [@Filter][Filter],
+ * passing an implementation of [TextCommandFilter].
+ *
+ * ### Rate limiting
+ *
+ * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown].
+ *
  * @see Category @Category
- * @see TextOption @TextOption
  * @see Hidden @Hidden
  * @see NSFW @NSFW
- * @see BotPermissions @BotPermissions
- * @see UserPermissions @UserPermissions
- * @see Cooldown @Cooldown
- * @see RateLimit @RateLimit
- * @see Filter @Filter
  *
  * @see TextCommandProvider Declaring text commands using the DSL
  *
