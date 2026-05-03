@@ -18,6 +18,6 @@ internal object RequiresModalsChecker : CustomConditionChecker<RequiresModals> {
             return null
         }
 
-        return "Modals needs to be registered or enabled"
+        return "The modals module needs to be registered or enabled"
     }
 }

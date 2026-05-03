@@ -18,6 +18,6 @@ internal class RequiresComponentsChecker : CustomConditionChecker<RequiresCompon
             return null
         }
 
-        return "Components needs to be registered or enabled"
+        return "The components module needs to be registered or enabled"
     }
 }

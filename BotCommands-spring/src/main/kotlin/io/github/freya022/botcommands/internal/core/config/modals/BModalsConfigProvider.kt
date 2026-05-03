@@ -1,6 +1,9 @@
 package io.github.freya022.botcommands.internal.core.config.modals
 
-import io.github.freya022.botcommands.api.core.config.*
+import io.github.freya022.botcommands.api.core.config.BConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BConfigConfigurer
+import io.github.freya022.botcommands.api.core.config.BModalsConfig
+import io.github.freya022.botcommands.api.core.config.BModalsConfigConfigurer
 import io.github.freya022.botcommands.internal.core.config.AbstractConfigProvider
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -9,7 +12,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
 @Configuration
-@ConditionalOnClass(BModalsConfigBuilder::class)
+@ConditionalOnClass(BModalsConfig::class)
 @ConditionalOnProperty("botcommands.modals.enable", matchIfMissing = true)
 internal open class BModalsConfigProvider : AbstractConfigProvider() {
 
