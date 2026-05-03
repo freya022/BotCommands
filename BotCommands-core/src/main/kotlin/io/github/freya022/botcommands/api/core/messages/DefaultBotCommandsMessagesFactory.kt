@@ -22,9 +22,11 @@ import kotlin.concurrent.withLock
  *
  * ### Light customization / Supporting more locales
  *
- * With the default values, the localization templates would be loaded from `/bc_localization/BotCommandsMessages-default.json`,
- * you may change the values by creating a new `BotCommandsMessages.json`,
- * you can also support more locales following by appending an underscore and the [language tag][Locale.toLanguageTag],
+ * With the default values, the localization templates would be loaded from `/bc_localization/BotCommandsMessages-default.json`.
+ *
+ * You may change the values by creating a new `BotCommandsMessages.json`.
+ *
+ * You can also support more locales following by appending an underscore and the [language tag][Locale.toLanguageTag],
  * such as `BotCommandsMessages_fr.json`.
  *
  * The localization paths must be identical to those used by [DefaultBotCommandsMessages],
