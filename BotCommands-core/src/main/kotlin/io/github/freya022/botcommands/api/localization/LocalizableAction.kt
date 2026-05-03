@@ -44,6 +44,7 @@ interface LocalizableAction {
      *
      * @see BotCommandsMessagesFactory
      */
+    @Deprecated("Built-in messages are not longer in a single bundle, get an instance from a BotCommandsMessagesFactory")
     fun getBotCommandsMessages(): BotCommandsMessages
 
     /**
