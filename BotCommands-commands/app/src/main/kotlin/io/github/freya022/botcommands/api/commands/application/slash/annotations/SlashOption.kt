@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
-import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
@@ -13,7 +12,6 @@ import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
-import org.jspecify.annotations.Nullable
 
 /**
  * Sets a parameter as a slash command option from Discord.
@@ -31,23 +29,22 @@ import org.jspecify.annotations.Nullable
  *
  * If the options are unordered, they will be automatically ordered and logged.
  *
+ * ### Modifiers
+ * - [@LongRange][LongRange]/[@DoubleRange][DoubleRange]: Changes the allowed value range
+ * - [@Length][Length]: Changes the allowed string length
+ * - [@ChannelTypes][ChannelTypes]: Changes the allowed channel types, see the `GuildChannel` support on [SlashParameterResolver]
+ * - Any `@Nullable` annotation: Makes the parameter optional
+ *
  * ### Choices
  * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
  * or by the application command itself from implementing [SlashOptionChoiceProvider].
  *
- * @see Optional @Optional
- * @see Nullable @Nullable
+ * ### Varargs
+ * You can set this parameter to be a vararg using [@VarArgs][VarArgs], multiple varargs are allowed.
  *
  * @see Aggregate @Aggregate
  *
- * @see LongRange @LongRange
- * @see DoubleRange @DoubleRange
- * @see Length @Length
- *
- * @see ChannelTypes @ChannelTypes
- *
  * @see AutocompleteHandler @AutocompleteHandler
- * @see VarArgs @VarArgs
  *
  * @see SlashOptionRegistry.option DSL equivalent
  */
