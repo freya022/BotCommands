@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable
  *
  * I recommend using [@Nullable][Nullable] annotation instead, to benefit from nullability analysis.
  */
+@Deprecated("For removal, use any @Nullable annotation instead")
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Optional

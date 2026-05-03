@@ -74,7 +74,7 @@ public class SlashMyJavaCommand implements ApplicationGeneratedValueSupplierProv
 	                @SlashOption(name = "user_annotated", description = "An user") User userOption,
 	                @SlashOption(name = "channel_annotated") @ChannelTypes(ChannelType.TEXT) GuildChannel channelOption,
 	                @SlashOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = SlashMyCommand.autocompleteHandlerName) String autocompleteStr,
-	                @SlashOption(name = "double_annotated", description = "A double") @Optional double doubleOption,
+	                @SlashOption(name = "double_annotated", description = "A double") @Nullable Double doubleOption,
 	                BContext custom,
 	                @GeneratedOption String guildName) {
 		event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOption + autocompleteStr + guildName).queue();

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.core.service.annotations
 
-import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.LazyService
@@ -74,8 +73,7 @@ import org.springframework.stereotype.Component
  *
  * If you want to get a service only if it is available, you can use Kotlin's [nullable](https://kotlinlang.org/docs/null-safety.html) / [optional](https://kotlinlang.org/docs/functions.html#default-arguments) parameters,
  * but Java users will need a [runtime-retained][AnnotationRetention.RUNTIME]
- * [@Nullable] annotation (such as [javax.annotation.Nullable], or, in checker-framework or JSpecify)
- * or [@Optional][Optional].
+ * [@Nullable] annotation (such as [javax.annotation.Nullable], or, in checker-framework or JSpecify).
  *
  * Lazy services can also have their element type be marked as nullable, for example, `Lazy<@Nullable IHelpCommand>`.
  *

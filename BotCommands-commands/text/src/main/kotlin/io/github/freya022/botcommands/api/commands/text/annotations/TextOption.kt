@@ -1,9 +1,7 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
-import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.commands.annotations.VarArgs
 import io.github.freya022.botcommands.api.parameters.resolvers.TextParameterResolver
-import org.jspecify.annotations.Nullable
 
 /**
  * Sets a parameter as a text command option from the Discord message.
@@ -16,8 +14,6 @@ import org.jspecify.annotations.Nullable
  *
  * You can define a single vararg parameter per text command variation, using [@VarArgs][VarArgs].
  *
- * @see Optional @Optional
- * @see Nullable @Nullable
  * @see ID @ID
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
