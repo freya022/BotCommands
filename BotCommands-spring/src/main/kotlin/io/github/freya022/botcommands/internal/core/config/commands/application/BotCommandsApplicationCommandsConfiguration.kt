@@ -20,7 +20,7 @@ import kotlin.io.path.Path
 internal class BotCommandsApplicationCommandsConfiguration(
     @get:ConfigurationValue(
         path = "botcommands.application.enable",
-        description = "Whether the application commands feature should be enabled.",
+        description = "Whether the application commands feature should be enabled. @RequiresApplicationCommands can be used to disable services when this feature is disabled.",
         defaultValue = "true",
     )
     val enable: Boolean = true,

@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 internal class BotCommandsModalsConfiguration(
     @get:ConfigurationValue(
         path = "botcommands.modals.enable",
-        description = "Whether the modals feature should be enabled.",
+        description = "Whether the modals feature should be enabled. @RequiresModals can be used to disable services when this feature is disabled.",
         defaultValue = "true",
     )
     val enable: Boolean = true,

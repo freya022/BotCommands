@@ -13,8 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 internal class BotCommandsAppEmojisConfiguration(
     @get:ConfigurationValue(
         path = "botcommands.app.emojis.enable",
-        description = "Allows uploading application emojis at startup, and retrieving them from [AppEmojisRegistry].",
-        defaultValue = "false",
+        description = "Allows uploading application emojis at startup, and retrieving them from [AppEmojisRegistry]. @RequiresAppEmojis can be used to disable services when this feature is disabled.",
+        defaultValue = "true",
     )
     val enable: Boolean = true,
     override val deleteOnOutOfSlots: Boolean = false,

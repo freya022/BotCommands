@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 internal class BotCommandsComponentsConfiguration(
     @get:ConfigurationValue(
         path = "botcommands.components.enable",
-        description = "Whether the components feature should be enabled. Enabling this requires a [ConnectionSupplier] service.",
+        description = "Whether the components feature should be enabled. Enabling this requires a [ConnectionSupplier] service. @RequiresComponents can be used to disable services when this feature is disabled.",
         defaultValue = "true",
     )
     val enable: Boolean = true

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 
 /**
@@ -10,6 +11,8 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
  *
  * Spring users can set the `botcommands.modals.enable` property to `false` to disable this feature,
  * as adding the dependency will enable it by default.
+ *
+ * [@RequiresModals][RequiresModals] can be used to disable services when this feature isn't registered.
  *
  * @see [BModalsConfig.builder]
  * @see [registerModals]
