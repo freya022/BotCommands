@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.components
 import dev.freya02.botcommands.helpers.AbstractIntegrationTest
 import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.config.registerComponents
+import io.github.freya022.botcommands.api.core.config.registerDatabase
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.helpers.db.TestH2Source
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
@@ -20,6 +21,7 @@ object ComponentTests : AbstractIntegrationTest() {
         createTest {
             addClass<TestH2Source>()
 
+            registerDatabase()
             registerComponents()
         }
 
@@ -37,6 +39,7 @@ object ComponentTests : AbstractIntegrationTest() {
         createTest {
             addClass<TestH2Source>()
 
+            registerDatabase()
             registerComponents()
         }
 

@@ -1,6 +1,8 @@
 package io.github.freya022.botcommands.api.core.config
 
 import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
+import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
@@ -10,10 +12,34 @@ import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 
+/**
+ * Configuration for the database feature.
+ *
+ * A configuration of this feature must be registered for it to be active.
+ * When active, a service implementing [ConnectionSupplier] or [HikariSourceSupplier] must be present.
+ *
+ * Spring users can set the `botcommands.database.enable` property to `false` to disable this feature,
+ * as adding the dependency will enable it by default.
+ *
+ * [@RequiresDatabase][RequiresDatabase] can be used to disable services when this feature isn't registered.
+ *
+ * @see [BDatabaseConfig.builder]
+ * @see [registerDatabase]
+ */
 @InjectedService
 interface BDatabaseConfig : IConfig, BDatabaseConfigProps {
 
     override val configType get() = BDatabaseConfig::class.java
+
+    companion object {
+        /**
+         * Creates a new [BDatabaseConfigBuilder], you must [build][BDatabaseConfigBuilder.build] it and [register][BConfigBuilder.registerModule] it.
+         */
+        @JvmStatic
+        fun builder(): BDatabaseConfigBuilder {
+            return BDatabaseConfigBuilder.create()
+        }
+    }
 }
 
 interface BDatabaseConfigProps {
@@ -91,8 +117,13 @@ interface BDatabaseConfigProps {
     fun getQueryLogThreshold(): JavaDuration = queryLogThreshold.toJavaDuration()
 }
 
+/**
+ * Builder of [BDatabaseConfig].
+ *
+ * @see BDatabaseConfig.builder
+ */
 @ConfigDSL
-class BDatabaseConfigBuilder internal constructor() : BDatabaseConfigProps {
+class BDatabaseConfigBuilder private constructor() : BDatabaseConfigProps {
 
     @set:DevConfig
     @set:JvmName("dumpLongTransactions")
@@ -116,11 +147,29 @@ class BDatabaseConfigBuilder internal constructor() : BDatabaseConfigProps {
         this.queryLogThreshold = duration.toKotlinDuration()
     }
 
-    @JvmSynthetic
-    internal fun build() = object : BDatabaseConfig {
+    fun build() = object : BDatabaseConfig {
         override val dumpLongTransactions = this@BDatabaseConfigBuilder.dumpLongTransactions
         override val logQueries = this@BDatabaseConfigBuilder.logQueries
         override val logQueryParameters = this@BDatabaseConfigBuilder.logQueryParameters
         override val queryLogThreshold = this@BDatabaseConfigBuilder.queryLogThreshold
     }
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(): BDatabaseConfigBuilder = BDatabaseConfigBuilder()
+    }
+}
+
+/**
+ * Registers the database feature.
+ *
+ * @param block A block for further configuration
+ *
+ * @see BDatabaseConfig
+ */
+fun BConfigBuilder.registerDatabase(block: BDatabaseConfigBuilder.() -> Unit = { }) {
+    val config = BDatabaseConfigBuilder.create()
+        .apply(block)
+        .build()
+    registerModule(config)
 }

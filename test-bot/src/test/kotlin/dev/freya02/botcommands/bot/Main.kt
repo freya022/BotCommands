@@ -11,6 +11,7 @@ import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.config.registerApplicationCommands
 import io.github.freya022.botcommands.api.core.config.registerComponents
+import io.github.freya022.botcommands.api.core.config.registerDatabase
 import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.freya022.botcommands.api.core.config.registerTextCommands
 import io.github.freya022.botcommands.api.core.utils.joinAsList
@@ -45,7 +46,7 @@ object Main {
 
                 addSearchPath("dev.freya02.botcommands.bot")
 
-                database {
+                registerDatabase {
                     queryLogThreshold = 250.milliseconds
 
                     @OptIn(DevConfig::class)

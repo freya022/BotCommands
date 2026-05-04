@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api(libs.jda)
     api(projects.botCommandsCore)
+    compileOnly(projects.botCommandsDatabase)
 
     api(libs.bundles.test)
 

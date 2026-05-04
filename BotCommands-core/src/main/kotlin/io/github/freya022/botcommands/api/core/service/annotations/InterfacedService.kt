@@ -2,8 +2,6 @@ package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
 import io.github.freya022.botcommands.api.core.JDAService
-import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
-import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
@@ -29,9 +27,6 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  * @see BotCommandsMessagesFactory
  *
  * @see GlobalExceptionHandler
- *
- * @see ConnectionSupplier
- * @see ParametrizedQueryFactory
  *
  * @see LocalizationMapProvider
  * @see LocalizationMapReader

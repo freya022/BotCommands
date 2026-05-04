@@ -7,6 +7,7 @@ import io.github.freya022.botcommands.api.core.BotCommands
 import io.github.freya022.botcommands.api.core.config.DevConfig
 import io.github.freya022.botcommands.api.core.config.registerApplicationCommands
 import io.github.freya022.botcommands.api.core.config.registerComponents
+import io.github.freya022.botcommands.api.core.config.registerDatabase
 import io.github.freya022.botcommands.api.core.config.registerModals
 import io.github.freya022.botcommands.api.core.config.registerTextCommands
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -61,6 +62,9 @@ object Main {
                     // Add french (and root, for default descriptions) localization for application commands
                     addLocalizations("Commands", DiscordLocale.FRENCH)
                 }
+
+                // Required by components
+                registerDatabase()
 
                 // Enables usage of components
                 // This can be removed if you don't have a database,

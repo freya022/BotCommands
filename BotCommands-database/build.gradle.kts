@@ -16,26 +16,20 @@ dependencies {
     // Kotlin
     api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines.core)
+    compileOnly(libs.kotlinx.coroutines.debug) // Optional
 
     // Logging
     api(libs.slf4j.api)
     implementation(libs.kotlin.logging)
 
-    // JDA
-    compileOnly(libs.jda)
+    // BC Core
     api(projects.botCommandsCore)
-    implementation(projects.botCommandsJdaKtx)
 
-    // Database (for commands caching)
-    implementation(projects.botCommandsDatabase)
+    // Efficient data structures
+    implementation(libs.trove4j.core)
 
-    // -------------------- GLOBAL DEPENDENCIES --------------------
-
-    // Fuzzy matching
-    implementation(libs.java.string.similarity)
-
-    // Caching
-    implementation(libs.caffeine)
+    // SQL connection pooling
+    compileOnly(libs.hikaricp) // Optional
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
@@ -55,18 +49,10 @@ tasks.withType<Test> {
     jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-    }
-}
-
 publishedProjectEnvironment {
     configureJarArtifact(
-        artifactId = "BotCommands-commands-app",
-        description = "Support for application commands using annotated and declarative handlers, with smart registration.",
-        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-commands/app",
+        artifactId = "BotCommands-database",
+        description = "Small abstraction over JDBC with easier parameter binding, query logging, and leak detection.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-database",
     )
 }
