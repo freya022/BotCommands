@@ -40,7 +40,7 @@ object Logging {
     }
 
     @JvmSynthetic
-    internal fun Class<*>.toUnwrappedLogger(): KLogger {
+    fun Class<*>.toUnwrappedLogger(): KLogger {
         return KotlinLogging.logger(unwrapKotlinClassName())
     }
 }

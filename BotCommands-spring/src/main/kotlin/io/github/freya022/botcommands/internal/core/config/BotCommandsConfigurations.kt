@@ -4,7 +4,6 @@ import io.github.freya022.botcommands.api.core.config.*
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration as JavaDuration
-import kotlin.time.Duration
 import kotlin.time.toKotlinDuration
 
 @ConfigurationProperties(prefix = "botcommands.core", ignoreUnknownFields = false)
@@ -41,24 +40,6 @@ internal class BotCommandsEventManagerConfiguration(
 @OptIn(DevConfig::class)
 internal fun BEventManagerConfigBuilder.applyConfig(configuration: BotCommandsEventManagerConfiguration) = apply {
     defaultTimeout = configuration.defaultTimeout
-}
-
-@ConfigurationProperties(prefix = "botcommands.database", ignoreUnknownFields = false)
-internal class BotCommandsDatabaseConfiguration(
-    override val dumpLongTransactions: Boolean = false,
-    override val logQueries: Boolean = false,
-    override val logQueryParameters: Boolean = true,
-    queryLogThreshold: JavaDuration? = null
-) : AbstractBotCommandsConfiguration(), BDatabaseConfigProps {
-    override val queryLogThreshold: Duration = queryLogThreshold?.toKotlinDuration() ?: Duration.INFINITE
-}
-
-@OptIn(DevConfig::class)
-internal fun BDatabaseConfigBuilder.applyConfig(configuration: BotCommandsDatabaseConfiguration) = apply {
-    dumpLongTransactions = configuration.dumpLongTransactions
-    logQueries = configuration.logQueries
-    logQueryParameters = configuration.logQueryParameters
-    queryLogThreshold = configuration.queryLogThreshold
 }
 
 @ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)

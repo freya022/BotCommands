@@ -16,6 +16,7 @@ dependencies {
     // Module configs
     compileOnly(projects.botCommandsAppEmojis)
     compileOnly(projects.botCommandsComponents)
+    compileOnly(projects.botCommandsDatabase)
     compileOnly(projects.botCommandsModals)
     compileOnly(projects.botCommandsCommands.text)
     compileOnly(projects.botCommandsCommands.app)

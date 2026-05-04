@@ -31,6 +31,9 @@ dependencies {
     api(projects.botCommandsCore)
     implementation(projects.botCommandsJdaKtx)
 
+    // Database module
+    implementation(projects.botCommandsDatabase)
+
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
     // Rate limiting

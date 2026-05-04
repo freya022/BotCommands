@@ -12,7 +12,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
     internal open fun bConfig(
         coreConfiguration: BotCommandsCoreConfiguration, coreConfigurers: List<BConfigConfigurer>,
         eventManagerConfiguration: BotCommandsEventManagerConfiguration, eventManagerConfigurers: List<BEventManagerConfigConfigurer>,
-        databaseConfiguration: BotCommandsDatabaseConfiguration, databaseConfigurers: List<BDatabaseConfigConfigurer>,
         localizationConfiguration: BotCommandsLocalizationConfiguration, localizationConfigurers: List<BLocalizationConfigConfigurer>,
         coroutineConfigurers: List<BCoroutineScopesConfigConfigurer>,
     ): BConfig =
@@ -20,7 +19,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
             .applyConfig(coreConfiguration)
             .apply {
                 eventManagerConfig.applyConfig(eventManagerConfiguration).configure(eventManagerConfigurers)
-                databaseConfig.applyConfig(databaseConfiguration).configure(databaseConfigurers)
                 localizationConfig.applyConfig(localizationConfiguration).configure(localizationConfigurers)
                 coroutineScopesConfig.configure(coroutineConfigurers)
             }
@@ -30,10 +28,6 @@ internal open class ConfigProvider : AbstractConfigProvider() {
     @Bean
     @Primary
     internal open fun bEventManagerConfig(config: BConfig): BEventManagerConfig = config.eventManagerConfig
-
-    @Bean
-    @Primary
-    internal open fun bDatabaseConfig(config: BConfig): BDatabaseConfig = config.databaseConfig
 
     @Bean
     @Primary

@@ -27,7 +27,6 @@ dependencies {
     // Kotlin
     api(libs.kotlin.reflect)
     api(libs.kotlinx.coroutines.core)
-    compileOnly(libs.kotlinx.coroutines.debug) // Optional
 
     // Logging
     api(libs.slf4j.api)
@@ -54,11 +53,6 @@ dependencies {
 
     // Rate limiting
     api(libs.bucket4j.jdk17.core)
-
-    // -------------------- DATABASE DEPENDENCIES --------------------
-
-    // SQL connection pooling
-    compileOnly(libs.hikaricp) // Optional
 
     // -------------------- EMOJI DEPENDENCIES --------------------
 
@@ -91,6 +85,12 @@ dependencies {
     "javaDocExamplesImplementation"(projects.botCommandsCommands.app)
     "kotlinDocExamplesImplementation"(projects.botCommandsCommands.app)
 
+    // Database
+    "javaDocExamplesImplementation"(libs.hikaricp)
+    "kotlinDocExamplesImplementation"(libs.hikaricp)
+    "javaDocExamplesImplementation"(projects.botCommandsDatabase)
+    "kotlinDocExamplesImplementation"(projects.botCommandsDatabase)
+
     // YAML (de)serialization
     "javaDocExamplesImplementation"(libs.jackson.dataformat.yaml)
     "kotlinDocExamplesImplementation"(libs.jackson.dataformat.yaml)
@@ -105,6 +105,8 @@ dependencies {
     "examplesImplementation"(libs.logback.classic)
 
     // Database
+    "examplesImplementation"(libs.hikaricp)
+    "examplesImplementation"(projects.botCommandsDatabase)
     "examplesImplementation"(libs.h2)
     "examplesImplementation"(libs.flyway.core)
 

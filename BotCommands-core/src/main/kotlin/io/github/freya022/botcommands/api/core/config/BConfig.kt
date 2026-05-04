@@ -28,7 +28,6 @@ interface BConfig : IConfig, BConfigProps {
 
     val eventManagerConfig: BEventManagerConfig
     val serviceConfig: BServiceConfig
-    val databaseConfig: BDatabaseConfig
     val localizationConfig: BLocalizationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
@@ -200,7 +199,6 @@ class BConfigBuilder : BConfigProps {
 
     val eventManagerConfig = BEventManagerConfigBuilder()
     val serviceConfig = BServiceConfigBuilder()
-    val databaseConfig = BDatabaseConfigBuilder()
     val localizationConfig = BLocalizationConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
@@ -304,10 +302,6 @@ class BConfigBuilder : BConfigProps {
         coroutineScopesConfig.apply(block)
     }
 
-    fun database(block: ReceiverConsumer<BDatabaseConfigBuilder>) {
-        databaseConfig.apply(block)
-    }
-
     fun localization(block: ReceiverConsumer<BLocalizationConfigBuilder>) {
         localizationConfig.apply(block)
     }
@@ -343,14 +337,12 @@ class BConfigBuilder : BConfigProps {
             override val enableShutdownHook = this@BConfigBuilder.enableShutdownHook
             override val eventManagerConfig = this@BConfigBuilder.eventManagerConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
-            override val databaseConfig = this@BConfigBuilder.databaseConfig.build()
             override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
                 this.configType to this,
                 eventManagerConfig.configType to eventManagerConfig,
                 serviceConfig.configType to serviceConfig,
-                databaseConfig.configType to databaseConfig,
                 localizationConfig.configType to localizationConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()
