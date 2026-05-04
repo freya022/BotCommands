@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import java.lang.StackWalker.StackFrame
 
 @RequiresOptIn("Make sure internal classes are ignored", level = RequiresOptIn.Level.WARNING)
-internal annotation class StackSensitive
+annotation class StackSensitive
 
 val stackWalker: StackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
 
@@ -33,7 +33,7 @@ internal fun currentFrame(): StackFrame {
  * - 1 to find the caller of the caller
  */
 @StackSensitive
-internal fun findCaller(skip: Long = 0): StackFrame {
+fun findCaller(skip: Long = 0): StackFrame {
     return stackWalker.walk { stream ->
         stream
             // Filter out the synthetic method responsible for creating default parameters
