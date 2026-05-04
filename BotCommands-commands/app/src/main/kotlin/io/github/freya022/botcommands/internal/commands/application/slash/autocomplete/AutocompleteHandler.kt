@@ -1,23 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.BContext
-import io.github.freya022.botcommands.api.core.service.getInterfacedServices
 import io.github.freya022.botcommands.api.core.utils.arrayOfSize
 import io.github.freya022.botcommands.api.core.utils.getSignature
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.ExecutableMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.options.AutocompleteCommandParameterImpl
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import io.github.freya022.botcommands.internal.commands.application.slash.getSlashOptions
-import io.github.freya022.botcommands.internal.throwUser
-import io.github.freya022.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonEventParameters
-import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.findDeclarationName
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwArgument
@@ -25,7 +16,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Autocomplete handlers are per-option,
@@ -44,10 +34,6 @@ internal class AutocompleteHandler(
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameterImpl>
 
-    //accommodate for user input
-    private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
-    private val choiceSupplier: ChoiceSupplier
-
     init {
         val autocompleteParameters = function.nonEventParameters
         val unmappedParameters = autocompleteParameters.map { it.findDeclarationName() } - slashCommandInfo.parameters.mapTo(hashSetOf()) { it.name }
@@ -64,23 +50,6 @@ internal class AutocompleteHandler(
             val rootSlashParameter = slashCommandInfo.parameters.single { it.name == autocompleteParameter.name }
             AutocompleteCommandParameterImpl(rootSlashParameter, function)
         }
-
-        val collectionElementType = function.returnType.collectionElementType?.jvmErasure
-            ?: throwUser("Unable to determine return type, it should inherit Collection")
-
-        choiceSupplier = when {
-            collectionElementType in listOf(String::class, Long::class, Double::class) ->
-                generateSupplierFromStrings(autocompleteInfo.mode)
-            collectionElementType.isSubclassOf<Command.Choice>() -> ChoiceSupplierChoices(maxChoices)
-            else -> {
-                val transformer = context.serviceContainer
-                    .getInterfacedServices<AutocompleteTransformer<Any>>()
-                    .firstOrNull { it.elementType == collectionElementType.java }
-                    ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
-                            "you may also check the docs for ${classRef<AutocompleteHandler>()} and ${classRef<AutocompleteTransformer<*>>()}")
-                ChoiceSupplierTransformer(transformer, maxChoices)
-            }
-        }
     }
 
     internal fun invalidate() {
@@ -96,7 +65,7 @@ internal class AutocompleteHandler(
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
-        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.methodAccessor.callSuspend(objects))
+        val suppliedChoices = autocompleteInfo.choiceSupplier.apply(event, autocompleteInfo.methodAccessor.callSuspend(objects))
         val autoCompleteQuery = event.focusedOption
 
         //If something is typed but there are no choices, don't display user input
@@ -112,14 +81,6 @@ internal class AutocompleteHandler(
         actualChoices.addAll(suppliedChoices.take(OptionData.MAX_CHOICES - actualChoices.size))
 
         return actualChoices
-    }
-
-    private fun generateSupplierFromStrings(autocompleteMode: AutocompleteMode): ChoiceSupplier {
-        return if (autocompleteMode == AutocompleteMode.FUZZY) {
-            ChoiceSupplierStringFuzzy(maxChoices)
-        } else {
-            ChoiceSupplierStringContinuity(maxChoices)
-        }
     }
 
     internal fun validateParameters() {

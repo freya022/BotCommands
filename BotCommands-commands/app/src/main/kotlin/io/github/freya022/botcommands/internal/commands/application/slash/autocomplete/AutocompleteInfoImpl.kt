@@ -4,9 +4,11 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.config.applicationConfig
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.suppliers.ChoiceSupplierFactory
 import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
@@ -22,6 +24,8 @@ internal class AutocompleteInfoImpl internal constructor(
     internal val methodAccessor get() = eventFunction.methodAccessor
     override val mode: AutocompleteMode = builder.mode
     override val showUserInput: Boolean = builder.showUserInput
+
+    internal val choiceSupplier = context.getService<ChoiceSupplierFactory>().create(function, mode, showUserInput)
 
     override val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
 
