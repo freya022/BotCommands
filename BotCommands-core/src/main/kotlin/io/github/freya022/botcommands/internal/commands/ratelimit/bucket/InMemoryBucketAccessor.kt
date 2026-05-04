@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
-import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultBucketKeySupplier
 import java.util.concurrent.ConcurrentHashMap
 
 internal class InMemoryBucketAccessor internal constructor(
@@ -16,7 +15,7 @@ internal class InMemoryBucketAccessor internal constructor(
     private val configurationSupplier: BucketConfigurationSupplier
 ) : BucketAccessor {
 
-    private val keySupplier = DefaultBucketKeySupplier(scope)
+    private val keySupplier = BucketKeySupplier.createDefault(scope)
     private val map: MutableMap<BucketKeySupplier.Key, Bucket> = ConcurrentHashMap()
 
     override suspend fun getBucket(context: RateLimitingContext): Bucket {
