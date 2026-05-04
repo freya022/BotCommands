@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core.config.components
 
 import io.github.freya022.botcommands.api.core.config.BComponentsConfig
-import io.github.freya022.botcommands.api.core.config.BComponentsConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BComponentsConfigConfigurer
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BConfigConfigurer
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 
 @Configuration
-@ConditionalOnClass(BComponentsConfigBuilder::class)
+@ConditionalOnClass(BComponentsConfig::class)
 @ConditionalOnProperty("botcommands.components.enable", matchIfMissing = true)
 internal open class BComponentsConfigProvider : AbstractConfigProvider() {
 
