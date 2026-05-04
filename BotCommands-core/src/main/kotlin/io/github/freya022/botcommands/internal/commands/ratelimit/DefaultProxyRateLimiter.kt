@@ -8,7 +8,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfig
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier.*
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeyTransformer
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.ProxyBucketAccessor
-import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 
 private object StringBucketKeyTransformer : BucketKeyTransformer<String> {
@@ -28,7 +27,7 @@ internal class DefaultProxyRateLimiter internal constructor(
     private val deleteOnRefill: Boolean,
 ) : RateLimiter,
     BucketAccessor by ProxyBucketAccessor(proxyManager, DefaultBucketKeySupplier(scope), StringBucketKeyTransformer, bucketConfigurationSupplier),
-    RateLimitHandler by DefaultRateLimitHandler(scope, deleteOnRefill) {
+    RateLimitHandler by RateLimitHandler.createDefault(scope, deleteOnRefill) {
 
     override fun toString(): String {
         return "DefaultProxyRateLimiter(scope=$scope, deleteOnRefill=$deleteOnRefill)"

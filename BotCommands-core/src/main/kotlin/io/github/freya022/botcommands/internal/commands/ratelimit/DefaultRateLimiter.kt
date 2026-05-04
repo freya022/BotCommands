@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
 import io.github.freya022.botcommands.api.commands.ratelimit.bucket.InMemoryBucketAccessor
-import io.github.freya022.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 
 internal class DefaultRateLimiter internal constructor(
@@ -13,7 +12,7 @@ internal class DefaultRateLimiter internal constructor(
     configurationSupplier: BucketConfigurationSupplier,
     private val deleteOnRefill: Boolean
 ) : RateLimiter,
-    RateLimitHandler by DefaultRateLimitHandler(scope, deleteOnRefill),
+    RateLimitHandler by RateLimitHandler.createDefault(scope, deleteOnRefill),
     BucketAccessor by InMemoryBucketAccessor(scope, configurationSupplier) {
 
     override fun toString(): String {
