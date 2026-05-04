@@ -342,6 +342,9 @@ class BApplicationConfigBuilder private constructor() : BApplicationConfigProps 
      *
      * This is recommended if you use a container (to avoid having to manage more files),
      * or to avoid write issues.
+     *
+     * ### Requirements
+     * This requires the database feature to be enabled, see [BDatabaseConfig].
      */
     fun databaseCache(block: ReceiverConsumer<DatabaseApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
         cache = DatabaseApplicationCommandsCacheConfigBuilder().apply(block)

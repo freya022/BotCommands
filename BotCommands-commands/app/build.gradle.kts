@@ -26,8 +26,8 @@ dependencies {
     api(projects.botCommandsCore)
     implementation(projects.botCommandsJdaKtx)
 
-    // Database (for commands caching)
-    implementation(projects.botCommandsDatabase)
+    // Database (optional, for commands caching)
+    compileOnly(projects.botCommandsDatabase)
 
     // -------------------- GLOBAL DEPENDENCIES --------------------
 

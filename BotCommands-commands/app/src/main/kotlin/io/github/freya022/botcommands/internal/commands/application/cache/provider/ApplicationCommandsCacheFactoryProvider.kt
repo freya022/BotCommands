@@ -2,11 +2,13 @@ package io.github.freya022.botcommands.internal.commands.application.cache.provi
 
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.DatabaseApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.FileApplicationCommandsCacheConfig
-import io.github.freya022.botcommands.api.core.db.ConnectionSupplier
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
+import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.*
@@ -32,7 +34,7 @@ internal open class ApplicationCommandsCacheFactoryProvider {
     @Lazy // Due to JDA requirement
     @Bean
     @BService
-    internal open fun applicationCommandsCacheFactory(jda: JDA, applicationConfig: BApplicationConfig, database: InternalDatabase?): ApplicationCommandsCacheFactory {
+    internal open fun applicationCommandsCacheFactory(jda: JDA, applicationConfig: BApplicationConfig, serviceContainer: ServiceContainer): ApplicationCommandsCacheFactory {
         val cacheConfig = applicationConfig.cache
             ?: return NullApplicationCommandsCacheFactory // Logged in [[BApplicationConfigBuilder#build]]
 
@@ -62,8 +64,9 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                 return FileApplicationCommandsCacheFactory(cacheConfig, jda.selfUser.applicationIdLong)
             }
             is DatabaseApplicationCommandsCacheConfig -> {
+                val database = serviceContainer.getServiceOrNull<InternalDatabase>()
                 if (database == null) {
-                    logger.warn { "Cannot use a database as application commands cache as no database is present, see ${classRef<ConnectionSupplier>()}" }
+                    logger.warn { "Cannot use a database as application commands cache as no database is present, see ${classRef<BDatabaseConfig>()}" }
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 }
 
