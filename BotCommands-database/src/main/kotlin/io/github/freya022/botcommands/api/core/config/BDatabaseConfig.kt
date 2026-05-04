@@ -16,7 +16,7 @@ import kotlin.time.toKotlinDuration
  * Configuration for the database feature.
  *
  * A configuration of this feature must be registered for it to be active.
- * When active, a service implementing [ConnectionSupplier] or [HikariSourceSupplier] must be present.
+ * When active, a service implementing [HikariSourceSupplier] (or at least [ConnectionSupplier]) must be present.
  *
  * Spring users can set the `botcommands.database.enable` property to `false` to disable this feature,
  * as adding the dependency will enable it by default.
