@@ -4,7 +4,9 @@ import io.github.bucket4j.BucketConfiguration
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefault
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter.Companion.createDefaultProxied
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.*
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketAccessor
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier
+import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultProxyRateLimiter
 import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultRateLimiter
@@ -26,7 +28,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
     companion object {
         /**
          * Creates a default [RateLimiter] implementation,
-         * see [RateLimitHandler.createDefault] and [InMemoryBucketAccessor] for details.
+         * see [RateLimitHandler.createDefault] and [BucketAccessor.createInMemory] for details.
          *
          * ### Example
          *
@@ -64,7 +66,7 @@ interface RateLimiter : BucketAccessor, RateLimitHandler {
 
         /**
          * Creates a [RateLimiter] implementation which retrieves its buckets using [proxyManager],
-         * see [RateLimitHandler.createDefault] and [ProxyBucketAccessor] for details.
+         * see [RateLimitHandler.createDefault] and [BucketAccessor.createProxied] for details.
          *
          * ### Requirements
          * The proxy requires a [String] to store the bucket key.
