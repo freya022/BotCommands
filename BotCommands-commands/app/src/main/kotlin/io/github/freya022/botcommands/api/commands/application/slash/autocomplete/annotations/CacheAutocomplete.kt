@@ -1,12 +1,8 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.Channel
 
 /**
  * Enables autocomplete caching.
@@ -27,60 +23,46 @@ annotation class CacheAutocomplete(
      * Whether the cache should be used even if [autocomplete cache is disabled][BApplicationConfig.disableAutocompleteCache].
      *
      * This could be useful if your autocomplete is heavy even in a development environment.
-     *
-     * @return `true` if the autocomplete results should be cached anyway
-     *
-     * @see BApplicationConfig.disableAutocompleteCache
-     * @see AutocompleteCacheInfoBuilder.forceCache
      */
     val forceCache: Boolean = false,
 
     /**
      * Sets the cache size for this autocomplete cache, **in kilobytes (KB)**.
-     *
-     * @see AutocompleteCacheInfoBuilder.cacheSize
      */
     val cacheSize: Long = 2048,
 
     /**
      * The set of **option names** (the one you see on Discord) which forms the cache key.
+     * The option on which this autocomplete is applied on, will always be included in the key.
      *
-     * This could be useful when making an autocomplete which depends on multiple options.
-     *
-     * **Notes:**
-     * - The focused option will always be in the composite key.<br>
-     * - As `camelCase` values are transformed into `snake_case`,
-     * using parameter names is fine unless the parameter is a vararg,
-     * in which case you must use the generated option names.
-     *
-     * @see AutocompleteCacheInfoBuilder.compositeKeys
+     * This could be useful when making autocompleting based on multiple option values.
      */
     val compositeKeys: Array<String> = [],
 
     /**
-     * Defines whether this autocomplete will give different results based on which [Guild] this interaction is executing on.
+     * If the cache key includes the guild, meaning the cached values are specific to that guild,
+     * if a query is from a different guild, new values are generated.
      *
-     * @return `true` if the autocomplete depends on the [Guild] this interaction is execution on
-     *
-     * @see AutocompleteCacheInfoBuilder.guildLocal
+     * If there are multiple entity types, for example guild and user,
+     * new values are computed if either the guild or the user is different.
      */
     val guildLocal: Boolean = false,
 
     /**
-     * Defines whether this autocomplete will give different results based on which [User] is executing this interaction.
+     * If the cache key includes the user, meaning the cached values are specific to that user,
+     * if a query is from a different user, new values are generated.
      *
-     * @return `true` if the autocomplete depends on which [User] is executing this interaction
-     *
-     * @see AutocompleteCacheInfoBuilder.userLocal
+     * If there are multiple entity types, for example guild and user,
+     * new values are computed if either the guild or the user is different.
      */
     val userLocal: Boolean = false,
 
     /**
-     * Defines whether this autocomplete will give different results based on which [Channel] this interaction is executing on.
+     * If the cache key includes the channel, meaning the cached values are specific to that channel,
+     * if a query is from a different channel, new values are generated.
      *
-     * @return `true` if the autocomplete depends on the [Channel] this interaction is execution on
-     *
-     * @see AutocompleteCacheInfoBuilder.channelLocal
+     * If there are multiple entity types, for example channel and user,
+     * new values are computed if either the channel or the user is different.
      */
     val channelLocal: Boolean = false
 )
