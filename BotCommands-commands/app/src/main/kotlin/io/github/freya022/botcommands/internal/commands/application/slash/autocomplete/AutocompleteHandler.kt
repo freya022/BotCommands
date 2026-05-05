@@ -84,7 +84,8 @@ internal class AutocompleteHandler(
     }
 
     internal fun validateParameters() {
-        autocompleteInfo.autocompleteCache?.compositeKeys?.let { compositeKeys ->
+        val compositeKeys = autocompleteInfo.cache.compositeKeys
+        if (compositeKeys.isNotEmpty()) {
             val optionDiscordNames = slashCommandInfo.parameters
                 .flatMap { it.allOptions }
                 .filterIsInstance<SlashCommandOption>()

@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 
 internal data object NoCacheAutocomplete : AbstractAutocompleteCache() {
+    override val compositeKeys: Set<String> get() = emptySet()
+
     override suspend fun retrieveAndCall(
         handler: AutocompleteHandler,
         event: CommandAutoCompleteInteractionEvent,

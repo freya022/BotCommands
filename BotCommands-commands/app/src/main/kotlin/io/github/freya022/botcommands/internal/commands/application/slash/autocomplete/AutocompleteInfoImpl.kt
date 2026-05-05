@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.config.applicationConfig
@@ -22,16 +21,14 @@ internal class AutocompleteInfoImpl internal constructor(
     internal val eventFunction = builder.function.toMemberParamFunction<CommandAutoCompleteInteractionEvent, _>(context)
     override val function get() = eventFunction.kFunction
     internal val methodAccessor get() = eventFunction.methodAccessor
-    override val mode: AutocompleteMode = builder.mode
     override val showUserInput: Boolean = builder.showUserInput
 
-    internal val choiceSupplier = context.getService<ChoiceSupplierFactory>().create(function, mode, showUserInput)
+    internal val choiceSupplier = context.getService<ChoiceSupplierFactory>().create(function, builder.mode, showUserInput)
 
-    override val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
-
-    internal val cache = when {
-        context.applicationConfig.disableAutocompleteCache && builder.autocompleteCache?.force != true -> NoCacheAutocomplete
-        else -> AbstractAutocompleteCache.fromMode(this)
+    internal val cache = when (val autocompleteCache = builder.autocompleteCache) {
+        null -> NoCacheAutocomplete
+        else if context.applicationConfig.disableAutocompleteCache && !autocompleteCache.force -> NoCacheAutocomplete
+        else -> AbstractAutocompleteCache.fromMode(autocompleteCache)
     }
 
     override fun invalidate() {
