@@ -1,13 +1,14 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.builder
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
+import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.cache.factory.AbstractAutocompleteCacheFactory
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.factory.AutocompleteCacheFactory
 import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
+import io.github.freya022.botcommands.internal.utils.requireAt
 import kotlin.reflect.KFunction
 
 internal class AutocompleteInfoBuilderImpl internal constructor(
@@ -23,11 +24,16 @@ internal class AutocompleteInfoBuilderImpl internal constructor(
 
     override var showUserInput: Boolean = false
 
-    internal var autocompleteCache: AutocompleteCacheInfo? = null
+    internal var autocompleteCacheFactory: AbstractAutocompleteCacheFactory? = null
         private set
 
-    override fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit) {
-        autocompleteCache = AutocompleteCacheInfoBuilderImpl().apply(block).build()
+    override fun cache(factory: AutocompleteCacheFactory) {
+        requireAt(autocompleteCacheFactory == null, declarationSite) {
+            "Autocomplete cache was already initialized!"
+        }
+
+        autocompleteCacheFactory = factory as? AbstractAutocompleteCacheFactory
+            ?: error("Custom autocomplete caches are not supported yet")
     }
 
     internal fun build(): AutocompleteInfoImpl {

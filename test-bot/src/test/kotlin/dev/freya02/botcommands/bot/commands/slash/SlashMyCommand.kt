@@ -12,6 +12,7 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.*
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.caffeineCache
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.BContext
@@ -137,7 +138,7 @@ class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvid
 
     override fun declareAutocomplete(manager: AutocompleteManager) {
         manager.autocomplete(::runAutocomplete) {
-            cache()
+            caffeineCache()
         }
     }
 

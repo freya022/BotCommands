@@ -3,6 +3,7 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.factory.AutocompleteCacheFactory
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 
 interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
@@ -30,12 +31,7 @@ interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
     /**
      * Sets up autocomplete caching.
      *
-     * The cache key is the input of the focused option, however,
-     * you can use composite keys if you want to cache based off multiple option values,
-     * see [AutocompleteCacheInfoBuilder.compositeKeys] for more details.
-     *
      * @see CacheAutocomplete @CacheAutocomplete
      */
-    fun cache(block: AutocompleteCacheInfoBuilder.() -> Unit = {})
+    fun cache(factory: AutocompleteCacheFactory)
 }
-

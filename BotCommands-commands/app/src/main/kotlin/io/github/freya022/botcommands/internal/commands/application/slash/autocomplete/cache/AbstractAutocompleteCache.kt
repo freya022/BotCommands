@@ -1,6 +1,5 @@
-package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.cache
 
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -15,11 +14,4 @@ internal sealed class AbstractAutocompleteCache {
     ): List<Command.Choice>
 
     abstract fun invalidate()
-
-    companion object {
-        //In case more caches are to come
-        fun fromMode(autocompleteCache: AutocompleteCacheInfo): AbstractAutocompleteCache {
-            return ConstantByKeyAutocompleteCache(autocompleteCache)
-        }
-    }
 }

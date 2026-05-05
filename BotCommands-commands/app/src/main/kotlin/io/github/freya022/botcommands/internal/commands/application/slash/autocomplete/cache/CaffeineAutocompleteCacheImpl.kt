@@ -1,8 +1,7 @@
-package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.caches
+package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.cache
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCacheInfo
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.CompositeAutocompleteKey
 import kotlinx.coroutines.sync.Mutex
@@ -12,12 +11,18 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import kotlin.time.Duration.Companion.minutes
 
-internal class ConstantByKeyAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : BaseAutocompleteCache(cacheInfo) {
+internal class CaffeineAutocompleteCacheImpl internal constructor(
+    compositeKeys: Set<String>,
+    guildLocal: Boolean,
+    channelLocal: Boolean,
+    userLocal: Boolean,
+    cacheSize: Long,
+) : BaseAutocompleteCache(compositeKeys, guildLocal, channelLocal, userLocal) {
     private val cache: Cache<CompositeAutocompleteKey, List<Command.Choice>>
-    private val maxWeight: Long = cacheInfo.cacheSize * 1024
     private val lock = Mutex()
 
     init {
+        val maxWeight: Long = cacheSize * 1024
         cache = Caffeine.newBuilder()
 //            .evictionListener { key: CompositeAutocompleteKey?, value: List<Command.Choice>?, cause: RemovalCause ->
 //                if (key != null && value != null) {
