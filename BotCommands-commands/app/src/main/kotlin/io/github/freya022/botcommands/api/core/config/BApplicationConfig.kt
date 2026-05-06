@@ -3,7 +3,8 @@ package io.github.freya022.botcommands.api.core.config
 import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.ForceAutocompleteCache
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.factory.builder.AutocompleteCacheFactoryBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
@@ -91,7 +92,7 @@ interface BApplicationConfigProps {
     val testGuildIds: List<Long>
 
     /**
-     * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
+     * Disables autocomplete caching, unless [@ForceAutocompleteCache][ForceAutocompleteCache]/[AutocompleteCacheFactoryBuilder.forceCache][AutocompleteCacheFactoryBuilder.forceCache] is used.
      *
      * This could be useful when testing methods that use autocomplete caching while using hotswap.
      *

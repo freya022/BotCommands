@@ -1,36 +1,12 @@
 package io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations
 
-import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.core.config.BApplicationConfig
-
 /**
- * Enables autocomplete caching.
- *
- * This will cache results by key, which is the input of the focused option.<br>
- * However, you can use composite keys if you want to cache based off multiple option values,
- * see [compositeKeys] for more details.
- *
- * @see SlashOption @SlashOption
- * @see AutocompleteHandler @AutocompleteHandler
- *
- * @see AutocompleteInfoBuilder.cache DSL equivalent
+ * Configures how the autocomplete cache key will be formed.
+ * If any component of the key changes, a new set of choices will be generated.
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class CacheAutocomplete(
-    /**
-     * Whether the cache should be used even if [autocomplete cache is disabled][BApplicationConfig.disableAutocompleteCache].
-     *
-     * This could be useful if your autocomplete is heavy even in a development environment.
-     */
-    val forceCache: Boolean = false,
-
-    /**
-     * Sets the cache size for this autocomplete cache, **in kilobytes (KB)**.
-     */
-    val cacheSize: Long = 2048,
-
+annotation class AutocompleteCacheKey(
     /**
      * The set of **option names** (the one you see on Discord) which forms the cache key.
      * The option on which this autocomplete is applied on, will always be included in the key.

@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.api.commands.application.slash.autocomple
 
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.factory.AutocompleteCacheFactory
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 
@@ -30,8 +29,6 @@ interface AutocompleteInfoBuilder : IDeclarationSiteHolderBuilder {
 
     /**
      * Sets up autocomplete caching.
-     *
-     * @see CacheAutocomplete @CacheAutocomplete
      */
     fun cache(factory: AutocompleteCacheFactory)
 }

@@ -45,10 +45,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
  *
  * **Note:** Parameters refers to method parameters, not Discord options.
  *
- * @see SlashOption @SlashOption
- * @see JDASlashCommand @JDASlashCommand
- * @see CacheAutocomplete @CacheAutocomplete
- *
  * @see AutocompleteHandlerProvider DSL equivalent
  */
 @Target(AnnotationTarget.FUNCTION)

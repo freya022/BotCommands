@@ -9,8 +9,10 @@ import io.github.freya022.botcommands.api.commands.application.provider.GlobalAp
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteCacheKey
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CaffeineAutocompleteCache
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.ForceAutocompleteCache
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.inlineClassOptionVararg
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -32,19 +34,24 @@ class SlashSentence {
         event.reply_(parts.assemble(), ephemeral = true).queue()
     }
 
-    // The autocomplete will only work once the user inputs at least 2 strings,
-    // since this is the amount we required on the vararg
-    @CacheAutocomplete(
+    // Use a Caffeine-backed autocomplete cache
+    @CaffeineAutocompleteCache
+    // Optionally configure the cache key, this method will be called if either of the key's values change
+    @AutocompleteCacheKey(
         // Let's just say we cache results based on the two first parts,
         // caching here is absolutely pointless, this is just for the example.
         // Notice how we can use an option which isn't used by the autocomplete function
         compositeKeys = ["part_0", "part_1"],
-        // Force the autocomplete cache for the sake of demonstration,
-        // as it is disabled on dev builds, as defined in Main
-        forceCache = true
     )
+    // Force the autocomplete cache for the sake of demonstration
+    @ForceAutocompleteCache
     @AutocompleteHandler(name = sentencePartAutocompleteName, showUserInput = false)
-    fun onSentencePartAutocomplete(event: CommandAutoCompleteInteractionEvent, parts: SentenceParts) = when {
+    fun onSentencePartAutocomplete(
+        event: CommandAutoCompleteInteractionEvent,
+        // The autocomplete will only work once the user inputs at least 2 strings,
+        // since this is the amount we required on the vararg
+        parts: SentenceParts,
+    ) = when {
         event.focusedOption.value.isEmpty() -> listOf() //Discord isn't going to like empty choices
         else -> listOf(parts.toChoiceContinuation(event.focusedOption.value))
     }

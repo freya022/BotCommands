@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.commands.application.slash.annotations
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.LongRange;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.SlashOption;
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
+import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CaffeineAutocompleteCache;
 import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
@@ -61,7 +61,7 @@ public class SlashMyJavaCommand implements ApplicationGeneratedValueSupplierProv
 		return List.of();
 	}
 
-	@CacheAutocomplete
+	@CaffeineAutocompleteCache
 	@AutocompleteHandler(SlashMyCommand.autocompleteHandlerName)
 	public Collection<Choice> runAutocompleteJava(CommandAutoCompleteInteractionEvent event, String stringOption, @Nullable Double doubleOption) {
 		return List.of(new Choice("test, string: " + stringOption + ", double: " + doubleOption, "test"));

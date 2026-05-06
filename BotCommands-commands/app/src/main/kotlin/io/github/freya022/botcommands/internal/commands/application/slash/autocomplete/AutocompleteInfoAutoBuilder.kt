@@ -2,9 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application.slash.autoc
 
 import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.caffeineCache
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteHandlerProvider
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.declaration.AutocompleteManager
 import io.github.freya022.botcommands.api.core.DeclarationSite
@@ -24,24 +22,7 @@ import kotlin.reflect.KFunction
 internal class AutocompleteInfoAutoBuilder internal constructor() : AutocompleteHandlerProvider {
     override fun declareAutocomplete(manager: AutocompleteManager) {
         val functionAnnotationsMap = manager.context.getService<FunctionAnnotationsMap>()
-        val cacheBuilders = ServiceLoader.load(CacheBuilder::class.java).toList() + object : CacheBuilder {
-            context(builder: AutocompleteInfoBuilder)
-            override fun handle(function: KFunction<Collection<Any>>): Boolean {
-                val annotation = function.findAnnotationRecursive<CacheAutocomplete>() ?: return false
-
-                builder.caffeineCache {
-                    forceCache = annotation.forceCache
-                    cacheSize = annotation.cacheSize
-
-                    compositeKeys = annotation.compositeKeys.toList()
-                    userLocal = annotation.userLocal
-                    channelLocal = annotation.channelLocal
-                    guildLocal = annotation.guildLocal
-                }
-
-                return true
-            }
-        }
+        val cacheBuilders = ServiceLoader.load(CacheBuilder::class.java).toList()
 
         functionAnnotationsMap.get<AutocompleteHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
