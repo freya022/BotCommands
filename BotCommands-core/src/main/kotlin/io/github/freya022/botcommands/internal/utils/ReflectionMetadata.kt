@@ -289,7 +289,7 @@ private class ReflectionMetadataScanner private constructor(
                 return if (logger.isTraceEnabled()) {
                     logger.traceNull(e) { "Ignoring method due to unsatisfied dependencies in ${methodInfo.shortSignature}" }
                 } else {
-                    logger.debugNull { "Ignoring method due to unsatisfied dependency ${e.message} in ${methodInfo.shortSignature}" }
+                    logger.debugNull { "Ignoring method due to unsatisfied dependency in ${methodInfo.shortSignature} => ${e.message}" }
                 }
             } else {
                 throw e
