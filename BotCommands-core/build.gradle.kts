@@ -115,6 +115,7 @@ dependencies {
 
     // Application commands
     "examplesImplementation"(projects.botCommandsCommands.app)
+    "examplesImplementation"(projects.botCommandsAutocompleteCaffeine)
 
     // Components
     "examplesImplementation"(projects.botCommandsComponents)

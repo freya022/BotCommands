@@ -34,9 +34,6 @@ dependencies {
     // Fuzzy matching
     implementation(libs.java.string.similarity)
 
-    // Caching
-    implementation(libs.caffeine)
-
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)

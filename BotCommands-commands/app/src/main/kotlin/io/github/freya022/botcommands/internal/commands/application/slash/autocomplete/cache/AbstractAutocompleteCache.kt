@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.autoco
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 
-internal sealed class AbstractAutocompleteCache {
+abstract class AbstractAutocompleteCache {
     abstract val compositeKeys: Set<String>
 
     abstract suspend fun retrieveAndCall(

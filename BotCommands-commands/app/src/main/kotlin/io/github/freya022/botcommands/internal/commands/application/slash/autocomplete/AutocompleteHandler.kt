@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
  *
  * Due to the Many-to-One associations, the handler cannot store any state, and must be stored in [AutocompleteInfo].
  */
-internal class AutocompleteHandler(
+class AutocompleteHandler internal constructor(
     private val slashCommandInfo: SlashCommandInfoImpl,
     private val autocompleteInfo: AutocompleteInfoImpl
 ) : ExecutableMixin {

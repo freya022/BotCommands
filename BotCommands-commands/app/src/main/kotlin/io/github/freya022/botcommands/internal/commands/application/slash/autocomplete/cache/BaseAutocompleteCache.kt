@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 
 private typealias EntityCacheFunction = (CommandAutoCompleteInteractionEvent) -> Long
 
-internal abstract class BaseAutocompleteCache(
+abstract class BaseAutocompleteCache protected constructor(
     override val compositeKeys: Set<String>,
     guildLocal: Boolean,
     channelLocal: Boolean,

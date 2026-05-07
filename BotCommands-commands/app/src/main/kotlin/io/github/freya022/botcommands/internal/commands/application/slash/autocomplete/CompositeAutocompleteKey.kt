@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.slash.autocomplete
 
-internal class CompositeAutocompleteKey(
+class CompositeAutocompleteKey internal constructor(
     private val keys: Array<String>,
     private val guildId: Long,
     private val channelId: Long,

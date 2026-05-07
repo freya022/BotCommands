@@ -19,7 +19,7 @@ import kotlin.reflect.KFunction
 
 @BService
 @RequiresApplicationCommands
-internal class AutocompleteInfoAutoBuilder internal constructor() : AutocompleteHandlerProvider {
+class AutocompleteInfoAutoBuilder internal constructor() : AutocompleteHandlerProvider {
     override fun declareAutocomplete(manager: AutocompleteManager) {
         val functionAnnotationsMap = manager.context.getService<FunctionAnnotationsMap>()
         val cacheBuilders = ServiceLoader.load(CacheBuilder::class.java).toList()

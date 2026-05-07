@@ -11,6 +11,7 @@ dependencies {
     testImplementation(projects.botCommandsDatabase)
     testImplementation(projects.botCommandsCommands.text)
     testImplementation(projects.botCommandsCommands.app)
+    testImplementation(projects.botCommandsAutocompleteCaffeine)
     testImplementation(projects.botCommandsComponents)
     testImplementation(projects.botCommandsModals)
     testImplementation(projects.botCommandsPagination)
