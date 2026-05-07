@@ -42,6 +42,10 @@ public class MethodArguments implements Cloneable {
         args[index] = value;
     }
 
+    public void clear(int index) {
+        args[index] = NO_VALUE;
+    }
+
     @Nullable
     public Object get(int index) {
         return args[index];

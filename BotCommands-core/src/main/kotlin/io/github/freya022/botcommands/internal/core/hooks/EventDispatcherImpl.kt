@@ -94,11 +94,11 @@ internal class EventDispatcherImpl internal constructor(
     }
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
+        val classPathFunction = eventHandlerFunction.classPathFunction
+        val args = eventHandlerFunction.cloneBaseArgs()
         try {
-            val classPathFunction = eventHandlerFunction.classPathFunction
-            val methodAccessor = classPathFunction.methodAccessor
-            val args = eventHandlerFunction.cloneBaseArgs()
             args[0] = event
+            val methodAccessor = classPathFunction.methodAccessor
 
             val timeout = eventHandlerFunction.timeout
             if (timeout != null) {
@@ -130,6 +130,8 @@ internal class EventDispatcherImpl internal constructor(
             }
 
             printException(event, eventHandlerFunction, e)
+        } finally {
+            args.clear(0)
         }
     }
 
