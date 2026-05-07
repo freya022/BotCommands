@@ -29,6 +29,22 @@ class CaffeineAutocompleteCacheFactoryBuilder internal constructor() : Autocompl
      * @see Caffeine.maximumWeight
      */
     var cacheSize: Long = 2048
+        set(value) {
+            require(value >= 0) { "Size must be greater than or equal to 0" }
+            field = value
+        }
+
+    /**
+     * Sets the caffeine cache size **in kilobytes (KB)**.
+     *
+     * The current size is calculated by the length of the cache key, and the sum of the choice names and values.
+     *
+     * @see Caffeine.maximumWeight
+     */
+    fun cacheSize(size: Long): CaffeineAutocompleteCacheFactoryBuilder {
+        this.cacheSize = size
+        return this
+    }
 
     /**
      * Builds the factory.
