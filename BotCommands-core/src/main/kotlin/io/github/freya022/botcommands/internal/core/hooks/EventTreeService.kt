@@ -11,18 +11,21 @@ private val logger = KotlinLogging.logger { }
 
 @BService
 internal class EventTreeService internal constructor() {
-    private val map: Map<Class<*>, List<Class<*>>> = ClassGraph()
+
+    private typealias ClassName = String
+
+    private val map: Map<ClassName, List<ClassName>> = ClassGraph()
         .acceptPackages(GenericEvent::class.java.packageName, BGenericEvent::class.java.packageName)
         .disableRuntimeInvisibleAnnotations()
         .disableModuleScanning()
         .enableClassInfo()
         .scan().use { scanResult ->
             (scanResult.getClassesImplementing(GenericEvent::class.java) + scanResult.getClassesImplementing(BGenericEvent::class.java)).associate { info ->
-                info.loadClass() to Collections.unmodifiableList(info.subclasses.map { subclassInfo -> subclassInfo.loadClass() })
+                info.name to Collections.unmodifiableList(info.subclasses.map { subclassInfo -> subclassInfo.name })
             }
         }
 
-    internal fun getSubclasses(clazz: Class<*>): List<Class<*>> = map[clazz] ?: emptyList<Class<*>>().also {
+    internal fun getSubclasses(clazz: Class<*>): List<ClassName> = map[clazz.name] ?: emptyList<ClassName>().also {
         logger.warn { "Unknown event type: ${clazz.name}" }
     }
 }

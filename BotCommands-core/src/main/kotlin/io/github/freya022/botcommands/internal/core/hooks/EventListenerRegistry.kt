@@ -29,8 +29,6 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<Class<*>, EventListenerList>
-
 private val logger = KotlinLogging.logger { }
 
 @BService
@@ -41,6 +39,9 @@ internal class EventListenerRegistry internal constructor(
     private val jdaService: JDAService,
     functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
+
+    private typealias ClassName = String
+    private typealias EventMap = MutableMap<ClassName, EventListenerList>
 
     private val defaultTimeout: Duration = config.eventManagerConfig.defaultTimeout ?: Duration.INFINITE
 
@@ -54,7 +55,7 @@ internal class EventListenerRegistry internal constructor(
     }
 
     internal operator fun get(eventType: Class<*>): EventListenerList? {
-        return map[eventType]
+        return map[eventType.name]
     }
 
     internal fun addEventListener(listener: Any) {
@@ -121,7 +122,7 @@ internal class EventListenerRegistry internal constructor(
                     eventParameters.map { serviceContainer.tryGetWrappedService(it).getOrThrow() }
                 })
 
-            val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure
+            val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure.name
             classPathFunc.javaClazz.let { clazz ->
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
