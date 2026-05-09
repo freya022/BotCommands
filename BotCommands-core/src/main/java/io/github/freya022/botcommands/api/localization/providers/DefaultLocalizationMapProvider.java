@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.localization.providers;
 
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
+import io.github.freya022.botcommands.api.core.service.annotations.Lazy;
 import io.github.freya022.botcommands.api.localization.LocalizationMap;
 import io.github.freya022.botcommands.api.localization.LocalizationMapKt;
 import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReaders;
@@ -23,6 +24,7 @@ import java.util.Locale;
  * <p>Additionally, this reads bundles with a {@code -default} postfix on the base name,
  * such as {@code BotCommandsMessages-default_fr_FR}.
  */
+@Lazy
 @BService
 @NullMarked
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
