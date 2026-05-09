@@ -2,10 +2,14 @@ package dev.freya02.botcommands.method.accessors.internal
 
 import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinReflectDefaultMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinReflectDefaultStaticMethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.invoker.direct.JavaReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectStaticMethodAccessor
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.jvm.javaConstructor
+import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.jvmErasure
 
 class KotlinReflectMethodAccessorFactory : MethodAccessorFactory {
 
@@ -13,20 +17,36 @@ class KotlinReflectMethodAccessorFactory : MethodAccessorFactory {
         instance: Any?,
         function: KFunction<R>,
     ): MethodAccessor<R> {
+        val hasOptionals = function.parameters.any { it.isOptional }
+
         return if (function.instanceParameter != null) {
             requireNotNull(instance)
 
-            if (function.parameters.any { it.isOptional }) {
+            if (hasOptionals) {
                 KotlinReflectDefaultMethodAccessor(instance, function)
-            } else {
+            } else if (function.isSuspend || function.hasValueClass()) {
                 KotlinReflectDirectMethodAccessor(instance, function)
+            } else { // Vanilla Java method, don't use kotlin-reflect
+                val executable = function.javaMethod
+                    ?: function.javaConstructor
+                    ?: return KotlinReflectDirectMethodAccessor(instance, function)
+                JavaReflectDirectMethodAccessor(instance, executable)
             }
         } else {
-            if (function.parameters.any { it.isOptional }) {
+            if (hasOptionals) {
                 KotlinReflectDefaultStaticMethodAccessor(function)
-            } else {
+            } else if (function.isSuspend || function.hasValueClass()) {
                 KotlinReflectDirectStaticMethodAccessor(function)
+            } else { // Vanilla Java method, don't use kotlin-reflect
+                val executable = function.javaMethod
+                    ?: function.javaConstructor
+                    ?: return KotlinReflectDirectStaticMethodAccessor(function)
+                JavaReflectDirectMethodAccessor(null, executable)
             }
         }
+    }
+
+    private fun KFunction<*>.hasValueClass(): Boolean {
+        return parameters.any { it.type.jvmErasure.isValue } || returnType.jvmErasure.isValue
     }
 }
