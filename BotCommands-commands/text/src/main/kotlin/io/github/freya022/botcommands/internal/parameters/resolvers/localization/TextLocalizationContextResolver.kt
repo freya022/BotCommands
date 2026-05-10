@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.localization.LocalizationContextImpl
@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.Interaction
 internal class TextLocalizationContextResolver(
     private val userLocaleProvider: UserLocaleProvider,
     private val guildLocaleProvider: GuildLocaleProvider,
-    private val textCommandLocaleProvider: TextCommandLocaleProvider,
+    private val messageLocaleProvider: MessageLocaleProvider,
     private val baseContext: LocalizationContextImpl,
 ) : ClassParameterResolver<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContext::class),
     ICustomResolver<TextLocalizationContextResolver, TextLocalizationContext> {
@@ -26,7 +26,7 @@ internal class TextLocalizationContextResolver(
         return when (event) {
             is Interaction -> baseContext.withLocales(guildLocaleProvider.getLocale(event), userLocaleProvider.getLocale(event))
             is MessageReceivedEvent -> when {
-                event.isFromGuild -> baseContext.withGuildLocale(textCommandLocaleProvider.getLocale(event))
+                event.isFromGuild -> baseContext.withGuildLocale(messageLocaleProvider.getLocale(event.message))
                 else -> baseContext
             }
             else -> throwInternal("Unsupported event type for ${classRef<TextLocalizationContext>()}: ${event.javaClass.name}")

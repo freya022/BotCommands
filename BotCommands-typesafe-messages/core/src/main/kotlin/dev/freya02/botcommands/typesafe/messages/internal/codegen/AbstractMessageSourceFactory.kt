@@ -2,16 +2,16 @@ package dev.freya02.botcommands.typesafe.messages.internal.codegen
 
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
+import dev.freya02.botcommands.typesafe.messages.internal.MessageLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceContext
-import dev.freya02.botcommands.typesafe.messages.internal.TextCommandLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.annotations.DynamicCall
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.Interaction
 import java.lang.invoke.MethodHandle
-import java.util.*
+import java.util.Locale
 
 internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @DynamicCall internal constructor(
     private val params: Params,
@@ -33,7 +33,7 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
         return MessageSourceGenerator.instantiate(sourceHandle, messageSourceContext)
     }
 
-    override fun create(event: MessageReceivedEvent): T {
+    override fun create(message: Message): T {
         val (localizationService, bundle, _, textCommandLocaleProvider, _, _, sourceHandle) = params
 
         checkNotNull(textCommandLocaleProvider) {
@@ -43,7 +43,7 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
         val messageSourceContext = MessageSourceContext(
             localizationService = localizationService,
             localizationBundle = bundle,
-            guildLocaleSupplier = { textCommandLocaleProvider.getLocale(event) },
+            guildLocaleSupplier = { textCommandLocaleProvider.getLocale(message) },
             userLocaleSupplier = null,
         )
 
@@ -67,7 +67,7 @@ internal abstract class AbstractMessageSourceFactory<out T : IMessageSource> @Dy
         internal val localizationService: LocalizationService,
         internal val bundle: String,
         internal val locales: Set<Locale>,
-        internal val textCommandLocaleProvider: TextCommandLocaleProviderAdapter?,
+        internal val textCommandLocaleProvider: MessageLocaleProviderAdapter?,
         internal val guildLocaleProvider: GuildLocaleProvider,
         internal val userLocaleProvider: UserLocaleProvider,
         internal val sourceHandle: MethodHandle,

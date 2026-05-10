@@ -64,7 +64,7 @@ internal class DefaultHelpCommand internal constructor(
             // Ignore and reply in channel/react if we can't send to DMs
             .handle(ErrorResponse.CANNOT_SEND_TO_USER) {
                 if (event.channel.canTalk())
-                    event.channel.sendMessage(messagesFactory.get(event).closedDirectMessages(event)).await()
+                    event.channel.sendMessage(messagesFactory.get(event.message).closedDirectMessages(event)).await()
                 else if (hasReactionPermissions)
                     // May throw REACTION_BLOCKED
                     event.message.addReaction(textConfig.dmClosedEmoji).await()

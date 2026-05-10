@@ -54,7 +54,7 @@ internal class ChannelResolverFactory(private val messagesFactory: TextCommandsM
             channelId: Long
         ): ThreadChannel? = retrieveThreadChannel(event.guild, channelId, onMissingAccess = {
             if (event.channel.canTalk()) {
-                event.message.reply(messagesFactory.get(event).resolverChannelMissingAccess(event, channelId)).queue()
+                event.message.reply(messagesFactory.get(event.message).resolverChannelMissingAccess(event, channelId)).queue()
             }
         })
 

@@ -91,7 +91,7 @@ internal class MessageSourceResolver(
     ): IMessageSource {
         return when (event) {
             is Interaction -> factory.create(event)
-            is MessageReceivedEvent -> factory.create(event)
+            is MessageReceivedEvent -> factory.create(event.message)
             else -> throwInternal("Unhandled event type: $event")
         }
     }

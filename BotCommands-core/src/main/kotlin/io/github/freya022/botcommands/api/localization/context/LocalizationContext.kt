@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.internal.localization.LocalizationContextI
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
@@ -23,7 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
-import java.util.*
+import java.util.Locale
 import java.util.function.Function
 import javax.annotation.CheckReturnValue
 
@@ -182,8 +181,8 @@ interface LocalizationContext {
          * setGuildLocaleProvider(localeProvider::getLocale, event)
          * ```
          */
-        fun setGuildLocaleProvider(provider: Function<MessageReceivedEvent, Locale>, event: MessageReceivedEvent): Builder {
-            return setGuildLocaleProvider(lazy { provider.apply(event) })
+        fun setGuildLocaleProvider(provider: Function<Message, Locale>, message: Message): Builder {
+            return setGuildLocaleProvider(lazy { provider.apply(message) })
         }
 
         /**

@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.api.commands.text.messages
 
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.Interaction
-import java.util.*
+import java.util.Locale
 
 /**
  * Factory of [TextCommandsMessages], the default implementation is [DefaultTextCommandsMessagesFactory].
@@ -24,11 +24,11 @@ interface TextCommandsMessagesFactory {
     fun get(locale: Locale): TextCommandsMessages
 
     /**
-     * Retrieves a [TextCommandsMessages] instance, with the locale derived from this event.
+     * Retrieves a [TextCommandsMessages] instance, with the locale derived from this message.
      *
-     * By default, this uses [TextCommandLocaleProvider] to get the locale.
+     * By default, this uses [MessageLocaleProvider] to get the locale.
      */
-    fun get(event: MessageReceivedEvent): TextCommandsMessages
+    fun get(message: Message): TextCommandsMessages
 
     /**
      * Retrieves a [TextCommandsMessages] instance, with the locale derived from this interaction.

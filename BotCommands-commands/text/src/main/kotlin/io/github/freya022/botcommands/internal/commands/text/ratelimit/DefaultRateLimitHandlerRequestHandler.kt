@@ -33,7 +33,7 @@ internal class DefaultRateLimitHandlerRequestHandler : DefaultRateLimitHandler.R
                 event.guildChannel.canTalk() -> event.channel
                 else -> event.author.openPrivateChannel().await()
             }
-            val messages = context.context.getService<TextCommandsMessagesFactory>().get(event)
+            val messages = context.context.getService<TextCommandsMessagesFactory>().get(event.message)
             val content = getRateLimitMessage(instance, event, messages, probe)
 
             runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {

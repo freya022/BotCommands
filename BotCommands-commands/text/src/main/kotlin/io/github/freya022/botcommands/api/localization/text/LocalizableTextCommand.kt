@@ -8,7 +8,7 @@ import io.github.freya022.botcommands.api.localization.context.TextLocalizationC
 import io.github.freya022.botcommands.api.localization.context.mapToEntries
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
-import java.util.*
+import java.util.Locale
 import javax.annotation.CheckReturnValue
 
 /**
@@ -21,14 +21,14 @@ import javax.annotation.CheckReturnValue
  *
  * ### Configuring the guild locale source
  * They are by default retrieved from the guild,
- * but you can get them in other ways by implementing [TextCommandLocaleProvider].
+ * but you can get them in other ways by implementing [MessageLocaleProvider].
  *
  * @see Localization
  */
 interface LocalizableTextCommand : LocalizableAction {
     /**
      * Returns a localization context for the provided bundle name and path prefix,
-     * using the locale from [TextCommandLocaleProvider].
+     * using the locale from [MessageLocaleProvider].
      */
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext
 
@@ -46,7 +46,7 @@ interface LocalizableTextCommand : LocalizableAction {
      *
      * ### Configuring the guild locale source
      * The locale is retrieved from the [guild][Guild.getLocale] by default,
-     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+     * but can be changed by implementing your own [MessageLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -73,7 +73,7 @@ interface LocalizableTextCommand : LocalizableAction {
      *
      * ### Configuring the guild locale source
      * The locale is retrieved from the [guild][Guild.getLocale] by default,
-     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+     * but can be changed by implementing your own [MessageLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -101,7 +101,7 @@ interface LocalizableTextCommand : LocalizableAction {
      *
      * ### Configuring the guild locale source
      * The locale is retrieved from the [guild][Guild.getLocale] by default,
-     * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+     * but can be changed by implementing your own [MessageLocaleProvider] service.
      *
      * @param localizationPath The path of the message to translate,
      * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -178,7 +178,7 @@ interface LocalizableTextCommand : LocalizableAction {
  *
  * ### Configuring the guild locale source
  * The locale is retrieved from the [guild][Guild.getLocale] by default,
- * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+ * but can be changed by implementing your own [MessageLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
  * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -206,7 +206,7 @@ fun LocalizableTextCommand.getGuildMessage(localizationPath: String, vararg entr
  *
  * ### Configuring the guild locale source
  * The locale is retrieved from the [guild][Guild.getLocale] by default,
- * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+ * but can be changed by implementing your own [MessageLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
  * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]
@@ -234,7 +234,7 @@ fun LocalizableTextCommand.respondGuild(localizationPath: String, vararg entries
  *
  * ### Configuring the guild locale source
  * The locale is retrieved from the [guild][Guild.getLocale] by default,
- * but can be changed by implementing your own [TextCommandLocaleProvider] service.
+ * but can be changed by implementing your own [MessageLocaleProvider] service.
  *
  * @param localizationPath The path of the message to translate,
  * will be prefixed with [localizationPrefix][LocalizableAction.localizationPrefix]

@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOn
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
 
@@ -18,13 +18,13 @@ internal open class TextCommandsMessagesFactoryAutoConfiguration internal constr
     open fun textCommandsMessagesFactory(
         permissionLocalization: PermissionLocalization,
         localizationService: LocalizationService,
-        textCommandLocaleProvider: TextCommandLocaleProvider,
+        messageLocaleProvider: MessageLocaleProvider,
         userLocaleProvider: UserLocaleProvider,
     ): TextCommandsMessagesFactory {
         return DefaultTextCommandsMessagesFactory(
             permissionLocalization,
             localizationService,
-            textCommandLocaleProvider,
+            messageLocaleProvider,
             userLocaleProvider
         )
     }

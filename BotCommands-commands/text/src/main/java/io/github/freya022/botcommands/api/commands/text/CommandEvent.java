@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.text.exceptions.NoIdException
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext;
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand;
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider;
 import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit;
 import io.github.freya022.botcommands.internal.commands.text.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
  * An alternative to using this event is injecting an {@link TextLocalizationContext} in a parameter,
  * or retrieving one using {@link #getLocalizationContext(String, String)}.
  * <p>
- * In both cases, you can configure the locale, using {@link TextCommandLocaleProvider}.
+ * In both cases, you can configure the locale, using {@link MessageLocaleProvider}.
  *
  * <h3>Rate limit cancellation</h3>
  * Although it is recommended to reject commands using {@link TextCommandFilter},

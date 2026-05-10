@@ -4,8 +4,8 @@ import dev.freya02.botcommands.typesafe.messages.api.IMessageSource
 import dev.freya02.botcommands.typesafe.messages.api.IMessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import dev.freya02.botcommands.typesafe.messages.api.exceptions.InvalidSourceFactoryException
+import dev.freya02.botcommands.typesafe.messages.internal.MessageLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.MessageSourceFactoryProvider
-import dev.freya02.botcommands.typesafe.messages.internal.TextCommandLocaleProviderAdapter
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.LineNumber
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.classDesc
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.utils.createSignature
@@ -23,7 +23,7 @@ import io.github.freya022.botcommands.api.localization.interaction.GuildLocalePr
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
 import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
 import io.github.freya022.botcommands.internal.utils.superErasureAt
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import org.slf4j.LoggerFactory
@@ -37,7 +37,7 @@ import java.lang.constant.MethodTypeDesc
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.AccessFlag
-import java.util.*
+import java.util.Locale
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
@@ -79,7 +79,7 @@ object MessageSourceFactoryGenerator {
             .filter { it.isAbstract() }
             // Remove methods we implement
             .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Interaction::class.java && it.returnType == IMessageSource::class.java }
-            .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == MessageReceivedEvent::class.java && it.returnType == IMessageSource::class.java }
+            .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Message::class.java && it.returnType == IMessageSource::class.java }
             .filterNot { it.name == "create" && it.parameterTypes.getOrNull(0) == Locale::class.java && it.parameterTypes.getOrNull(1) == Locale::class.java && it.returnType == IMessageSource::class.java }
             .filterNot { it.name == "getBundleName" && it.parameterTypes.isEmpty() }
             .filterNot { it.name == "getLocales" && it.parameterTypes.isEmpty() }
@@ -160,7 +160,7 @@ object MessageSourceFactoryGenerator {
                 context.getService<LocalizationService>(),
                 bundleName,
                 effectiveLocales,
-                context.getServiceOrNull<TextCommandLocaleProviderAdapter>(),
+                context.getServiceOrNull<MessageLocaleProviderAdapter>(),
                 context.getService<GuildLocaleProvider>(),
                 context.getService<UserLocaleProvider>(),
                 sourceHandle,

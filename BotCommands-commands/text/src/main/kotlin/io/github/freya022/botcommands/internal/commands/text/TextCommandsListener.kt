@@ -113,7 +113,7 @@ internal class TextCommandsListener internal constructor(
         args: String,
         cancellableRateLimit: CancellableRateLimit
     ): Boolean {
-        val localizableTextCommand = localizableTextCommandFactory.create(event)
+        val localizableTextCommand = localizableTextCommandFactory.create(event.message)
         commandInfo.variations.forEach {
             val bcEvent = it.createEvent(event, args, cancellableRateLimit, localizableTextCommand)
 
@@ -150,9 +150,9 @@ internal class TextCommandsListener internal constructor(
 
         exceptionHandler.handleException(event, e, "text command '$msg'", mapOf("Message" to event.jumpUrl))
         if (e is InsufficientPermissionException) {
-            replyError(event, messagesFactory.get(event).missingBotPermissions(event, setOf(e.permission)))
+            replyError(event, messagesFactory.get(event.message).missingBotPermissions(event, setOf(e.permission)))
         } else {
-            replyError(event, messagesFactory.get(event).uncaughtException(event))
+            replyError(event, messagesFactory.get(event.message).uncaughtException(event))
         }
     }
 
@@ -261,12 +261,12 @@ internal class TextCommandsListener internal constructor(
 
         val suggestions = suggestionSupplier.getSuggestions(commandName, candidates)
         if (suggestions.isNotEmpty()) {
-            replyError(event, messagesFactory.get(event).commandNotFound(event, suggestions))
+            replyError(event, messagesFactory.get(event.message).commandNotFound(event, suggestions))
         }
     }
 
     private inline fun fromMessages(event: MessageReceivedEvent, crossinline block: TextCommandsMessages.() -> MessageCreateData): MessageCreateData {
-        return messagesFactory.get(event).run(block)
+        return messagesFactory.get(event.message).run(block)
     }
 
     internal enum class Status {

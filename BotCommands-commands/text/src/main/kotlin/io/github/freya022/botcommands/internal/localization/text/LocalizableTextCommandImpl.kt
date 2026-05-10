@@ -9,25 +9,25 @@ import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.LocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
 import io.github.freya022.botcommands.internal.localization.AbstractLocalizableAction
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
-import java.util.*
+import java.util.Locale
 
 internal class LocalizableTextCommandImpl internal constructor(
-    private val event: MessageReceivedEvent,
+    private val message: Message,
     localizationService: LocalizationService,
     localizationConfig: BLocalizationConfig,
-    private val localeProvider: TextCommandLocaleProvider,
+    private val localeProvider: MessageLocaleProvider,
     private val messagesFactory: BotCommandsMessagesFactory,
 ) : AbstractLocalizableAction(localizationConfig, localizationService), LocalizableTextCommand {
-    private val locale: Locale by lazy { localeProvider.getLocale(event) }
+    private val locale: Locale by lazy { localeProvider.getLocale(message) }
 
     override fun getLocalizationContext(bundleName: String, pathPrefix: String?): TextLocalizationContext {
         return LocalizationContext.builder(localizationService, bundleName)
             .setPrefix(pathPrefix)
-            .setGuildLocaleProvider(localeProvider, event)
+            .setGuildLocaleProvider(localeProvider, message)
             .build()
     }
 
@@ -41,11 +41,11 @@ internal class LocalizableTextCommandImpl internal constructor(
     }
 
     override fun respondGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.channel.sendMessage(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
+        return message.channel.sendMessage(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun replyGuild(localizationPath: String, vararg entries: Localization.Entry): MessageCreateAction {
-        return event.message.reply(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
+        return message.reply(getGuildMessage(localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun respondLocalized(
@@ -53,7 +53,7 @@ internal class LocalizableTextCommandImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): MessageCreateAction {
-        return event.channel.sendMessage(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
+        return message.channel.sendMessage(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 
     override fun replyLocalized(
@@ -61,6 +61,6 @@ internal class LocalizableTextCommandImpl internal constructor(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): MessageCreateAction {
-        return event.message.reply(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
+        return message.reply(getLocalizedMessage(locale, localizationPath, *entries)).useComponentsV2(false)
     }
 }

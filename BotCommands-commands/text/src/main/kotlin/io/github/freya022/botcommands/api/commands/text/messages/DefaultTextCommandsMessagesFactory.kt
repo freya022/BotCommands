@@ -4,10 +4,10 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.PermissionLocalization
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.Interaction
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -42,7 +42,7 @@ import kotlin.concurrent.withLock
 class DefaultTextCommandsMessagesFactory(
     private val permissionLocalization: PermissionLocalization,
     private val localizationService: LocalizationService,
-    private val textCommandLocaleProvider: TextCommandLocaleProvider,
+    private val messageLocaleProvider: MessageLocaleProvider,
     private val userLocaleProvider: UserLocaleProvider,
     private val bundleName: String = "TextCommandsMessages",
     private val commonBundleName: String = "BotCommandsMessages",
@@ -59,7 +59,7 @@ class DefaultTextCommandsMessagesFactory(
         }
     }
 
-    override fun get(event: MessageReceivedEvent): DefaultTextCommandsMessages = get(textCommandLocaleProvider.getLocale(event))
+    override fun get(message: Message): DefaultTextCommandsMessages = get(messageLocaleProvider.getLocale(message))
 
     override fun get(event: Interaction): DefaultTextCommandsMessages = get(userLocaleProvider.getLocale(event))
 }

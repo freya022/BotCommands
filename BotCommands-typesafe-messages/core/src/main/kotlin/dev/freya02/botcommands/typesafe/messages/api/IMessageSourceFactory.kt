@@ -4,10 +4,10 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTyp
 import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFactory
 import io.github.freya022.botcommands.api.localization.interaction.GuildLocaleProvider
 import io.github.freya022.botcommands.api.localization.interaction.UserLocaleProvider
-import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvider
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.interactions.Interaction
-import java.util.*
+import java.util.Locale
 
 /**
  * A factory of [IMessageSource], this **must** be extended by an interface annotated with [@MessageSourceFactory][MessageSourceFactory].
@@ -40,13 +40,13 @@ interface IMessageSourceFactory<out T : IMessageSource> {
     fun create(interaction: Interaction): T
 
     /**
-     * Creates a new message source using the provided [message event][MessageReceivedEvent].
+     * Creates a new message source using the provided message.
      *
-     * The default locale will be retrieved from [TextCommandLocaleProvider].
+     * The default locale will be retrieved from [MessageLocaleProvider].
      *
      * @throws IllegalStateException If the text commands module is absent
      */
-    fun create(event: MessageReceivedEvent): T
+    fun create(message: Message): T
 
     /**
      * Creates a new message source using the provided guild locale, and no user locale.
