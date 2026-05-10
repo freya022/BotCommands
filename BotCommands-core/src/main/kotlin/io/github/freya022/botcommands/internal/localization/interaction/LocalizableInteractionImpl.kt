@@ -36,6 +36,7 @@ class LocalizableInteractionImpl internal constructor(
             .build()
     }
 
+    @Deprecated("Built-in messages are not longer in a single bundle, get an instance from a BotCommandsMessagesFactory")
     override fun getBotCommandsMessages(): BotCommandsMessages {
         return messagesFactory.get(deferrableCallback)
     }
