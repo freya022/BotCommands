@@ -1,6 +1,5 @@
 package dev.freya02.botcommands.bot.commands.text
 
-import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
@@ -8,7 +7,6 @@ import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProv
 
 @Command
 class TextVararg : TextCommandProvider {
-    @CommandMarker
     fun onTextVararg(event: BaseCommandEvent, ints: List<Int>) {
         event.respond("ints: $ints").queue()
     }

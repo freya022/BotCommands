@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.commands.text.autoconfigure
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import dev.freya02.botcommands.jda.ktx.messages.deleteDelayed
 import dev.freya02.botcommands.jda.ktx.requests.*
-import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
@@ -18,7 +17,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
-import java.util.*
+import java.util.TreeMap
 import kotlin.time.Duration.Companion.minutes
 
 private val spacePattern = Regex("\\s+")
@@ -31,12 +30,10 @@ internal class DefaultHelpCommand internal constructor(
 ) : IHelpCommand,
     TextCommandProvider {
 
-    @CommandMarker
     suspend fun onTextHelpFallback(event: CommandEvent) {
         sendGlobalHelp(event)
     }
 
-    @CommandMarker
     suspend fun onTextHelpCommand(event: BaseCommandEvent, commandStr: String) {
         val commandInfo = textCommandsContext.findTextCommand(spacePattern.split(commandStr))
             ?: return event.respond("Command '$commandStr' does not exist").awaitUnit()

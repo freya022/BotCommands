@@ -5,6 +5,7 @@ package io.github.freya022.botcommands.api.annotations
  *
  * IDEs such as IntelliJ will suggest you a quick-fix to ignore unused warnings if annotated with `@CommandMarker`.
  */
+@Deprecated("No longer useful")
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
 annotation class CommandMarker

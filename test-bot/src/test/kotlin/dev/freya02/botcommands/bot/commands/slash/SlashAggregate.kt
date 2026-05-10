@@ -2,7 +2,6 @@ package dev.freya02.botcommands.bot.commands.slash
 
 import dev.freya02.botcommands.bot.CustomObject
 import dev.freya02.botcommands.jda.ktx.messages.reply_
-import io.github.freya022.botcommands.api.annotations.CommandMarker
 import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
@@ -23,14 +22,12 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
 
     data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
 
-    @CommandMarker
     fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, intFromAgg: Int?, inlineAutoStr: MyInlineString, customObject: CustomObject) {
         event.reply_("$agg + $inlineAutoStr", ephemeral = true).queue()
     }
 
     fun intAgg(event: GuildSlashEvent): Int? = null
 
-    @CommandMarker
     fun onInlineAutoStrAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         agg: MyAggregate,
