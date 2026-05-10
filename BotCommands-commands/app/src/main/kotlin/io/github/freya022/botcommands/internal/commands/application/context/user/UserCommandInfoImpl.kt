@@ -13,10 +13,10 @@ import io.github.freya022.botcommands.internal.commands.application.context.user
 import io.github.freya022.botcommands.internal.commands.application.context.user.options.builder.UserCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 import io.github.freya022.botcommands.internal.commands.application.options.ApplicationGeneratedOption
+import io.github.freya022.botcommands.internal.commands.builder.toMemberParamFunction
 import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption

@@ -11,8 +11,10 @@ import io.github.freya022.botcommands.api.commands.application.builder.Applicati
 import io.github.freya022.botcommands.api.commands.application.provider.*
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.objectLogger
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.hasAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
@@ -131,7 +133,13 @@ internal abstract class ApplicationCommandAutoBuilder<T : RootAnnotatedApplicati
     }
 
     protected fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>) {
-        filters += AnnotationUtils.getFilters(context, func, ApplicationCommandFilter::class)
+        filters += getFilterTypes(func)
+            .onEach {
+                require(it.isSubclassOf<ApplicationCommandFilter>()) {
+                    "Filter ${it.simpleNestedName} must implement ${classRef<ApplicationCommandFilter>()}"
+                }
+            }
+            .map { context.getService(it) as ApplicationCommandFilter }
 
         if (func.hasAnnotationRecursive<NSFW>()) {
             throwArgument(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")

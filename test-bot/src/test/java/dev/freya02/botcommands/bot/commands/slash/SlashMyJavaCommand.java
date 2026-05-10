@@ -1,7 +1,8 @@
 package dev.freya02.botcommands.bot.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.CommandPath;
-import io.github.freya022.botcommands.api.commands.annotations.*;
+import io.github.freya022.botcommands.api.commands.annotations.Command;
+import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption;
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier;
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider;
 import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider;
@@ -15,6 +16,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.reflect.ParameterType;
 import io.github.freya022.botcommands.api.ratelimit.RateLimitScope;
+import io.github.freya022.botcommands.api.ratelimit.annotations.Bandwidth;
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit;
+import io.github.freya022.botcommands.api.ratelimit.annotations.Refill;
+import io.github.freya022.botcommands.api.ratelimit.annotations.RefillType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;

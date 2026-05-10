@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
 import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.ExecutableMixin
+import io.github.freya022.botcommands.internal.commands.builder.toMemberParamFunction
 import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.commands.text.builder.TextCommandVariationBuilderImpl
 import io.github.freya022.botcommands.internal.commands.text.options.TextCommandOptionImpl
@@ -17,7 +18,6 @@ import io.github.freya022.botcommands.internal.commands.text.options.TextGenerat
 import io.github.freya022.botcommands.internal.commands.text.options.builder.TextCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption
 import io.github.freya022.botcommands.internal.parameters.ServiceMethodOption

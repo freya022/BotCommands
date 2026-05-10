@@ -5,13 +5,13 @@ import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitBuilder
 
-internal class RateLimitBuilderImpl internal constructor(
+class RateLimitBuilderImpl(
     override val group: String,
     override val rateLimiter: RateLimiter
 ) : RateLimitBuilder {
     override lateinit var declarationSite: DeclarationSite
 
-    internal fun build(): RateLimitInfo {
+    fun build(): RateLimitInfo {
         return RateLimitInfo(group, rateLimiter, declarationSite)
     }
 }

@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.components.annotations
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.builder.bindWith
@@ -18,7 +17,7 @@ import kotlin.reflect.KFunction
  * Declares this function as a select menu listener with the given name.
  *
  * ### Requirements
- * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
+ * - The declaring class must be annotated with [@Handler][Handler] or have a command.
  * - The annotation value to have same name as the one given to [IPersistentActionableComponent.bindTo], however,
  * it can be omitted if you use the type-safe [bindWith] extensions.
  * - First parameter must be [StringSelectEvent]/[EntitySelectEvent].

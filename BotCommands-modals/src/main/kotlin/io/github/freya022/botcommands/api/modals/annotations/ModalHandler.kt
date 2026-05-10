@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.modals.annotations
 
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.options.annotations.Aggregate
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
@@ -14,7 +13,7 @@ import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
  * Declares this function as a modal handler for the specified modal name.
  *
  * ### Requirements
- * - The declaring class must be annotated with [@Handler][Handler] or [@Command][Command].
+ * - The declaring class must be annotated with [@Handler][Handler] or have a command.
  * - The annotation value to have same name as the one given to [ModalBuilder.bindTo].
  * - First parameter must be [ModalEvent].
  * - Optionally: Have all your consecutive [@ModalData][ModalData], specified in [ModalBuilder.bindTo].

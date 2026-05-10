@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
-import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandBuilder
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
 import net.dv8tion.jda.internal.utils.Checks
 
 /**

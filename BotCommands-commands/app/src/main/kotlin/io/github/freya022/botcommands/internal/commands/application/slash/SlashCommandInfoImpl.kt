@@ -18,10 +18,10 @@ import io.github.freya022.botcommands.internal.commands.application.slash.except
 import io.github.freya022.botcommands.internal.commands.application.slash.options.*
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionAggregateBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.utils.LocalizationUtils
+import io.github.freya022.botcommands.internal.commands.builder.toMemberParamFunction
 import io.github.freya022.botcommands.internal.commands.spacedPath
 import io.github.freya022.botcommands.internal.core.options.OptionImpl
 import io.github.freya022.botcommands.internal.core.options.OptionType
-import io.github.freya022.botcommands.internal.core.reflection.toMemberParamFunction
 import io.github.freya022.botcommands.internal.options.transform
 import io.github.freya022.botcommands.internal.parameters.AggregatedParameterMixin
 import io.github.freya022.botcommands.internal.parameters.CustomMethodOption

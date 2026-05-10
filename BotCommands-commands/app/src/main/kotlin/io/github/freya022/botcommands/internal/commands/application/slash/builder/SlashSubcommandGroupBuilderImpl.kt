@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.internal.commands.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.utils.lazyPath
+import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 

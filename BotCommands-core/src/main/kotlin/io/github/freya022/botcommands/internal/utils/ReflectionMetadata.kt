@@ -1,9 +1,6 @@
-@file:Suppress("DEPRECATION")
-
 package io.github.freya022.botcommands.internal.utils
 
 import io.github.classgraph.*
-import io.github.freya022.botcommands.api.commands.annotations.Optional
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.debugNull
@@ -13,7 +10,6 @@ import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.traceNull
 import io.github.freya022.botcommands.api.core.utils.*
-import io.github.freya022.botcommands.internal.commands.CommandsPresenceChecker
 import io.github.freya022.botcommands.internal.core.ClassPathProcessor
 import io.github.freya022.botcommands.internal.core.ClassPathProcessorProvider
 import io.github.freya022.botcommands.internal.core.HandlersPresenceChecker
@@ -24,7 +20,7 @@ import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.MethodMe
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
-import java.util.*
+import java.util.ServiceLoader
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -92,7 +88,6 @@ private class ReflectionMetadataScanner private constructor(
     private val classPathProcessors: List<ClassPathProcessor> = buildList {
         addAll(bootstrap.classPathProcessors)
 
-        add(CommandsPresenceChecker())
         add(ResolverSupertypeChecker())
         add(HandlersPresenceChecker())
 
@@ -297,7 +292,8 @@ private class ReflectionMetadataScanner private constructor(
         val nullabilities = methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
             if (parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }) return@map true
             if (parameterInfo.typeSignatureOrTypeDescriptor.typeAnnotationInfo?.any { it.name.endsWith("Nullable") } == true) return@map true
-            if (parameterInfo.hasAnnotation(Optional::class.java)) return@map true
+            // TODO remove when annotation is removed
+            if (parameterInfo.hasAnnotation("io.github.freya022.botcommands.api.commands.annotations.Optional")) return@map true
 
             false
         }

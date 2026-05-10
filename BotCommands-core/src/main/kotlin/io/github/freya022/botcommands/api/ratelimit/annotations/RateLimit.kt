@@ -1,11 +1,10 @@
-package io.github.freya022.botcommands.api.commands.annotations
+package io.github.freya022.botcommands.api.ratelimit.annotations
 
 import io.github.bucket4j.BandwidthBuilder.BandwidthBuilderCapacityStage
 import io.github.bucket4j.BandwidthBuilder.BandwidthBuilderRefillStage
 import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
-import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.ratelimit.AnnotatedRateLimiterFactory
 import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
@@ -78,7 +77,7 @@ annotation class Refill(
 )
 
 /**
- * Defines a rate limit for a command / component handler.
+ * Defines a rate limit for a command handler.
  *
  * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
  *
@@ -133,7 +132,7 @@ annotation class RateLimit(
 )
 
 /**
- * Uses an existing rate limiter for this command / component handler.
+ * Uses an existing rate limiter for this command handler.
  *
  * **Text commands note:** This applies to the command itself, not only this variation,
  * in other words, this applies to all commands with the same path.
@@ -141,7 +140,6 @@ annotation class RateLimit(
  * See [RateLimitProvider] for examples.
  *
  * @see RateLimitProvider
- * @see CommandBuilder.rateLimitReference DSL equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

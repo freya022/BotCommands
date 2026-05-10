@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.components.builder
 
-import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.components.annotations.ComponentData
 import io.github.freya022.botcommands.api.components.annotations.JDAButtonListener
@@ -44,8 +43,6 @@ interface IActionableComponent<T : IActionableComponent<T>> {
      * Sets the rate limiter of this component to one declared by a [RateLimitProvider].
      *
      * An exception will be thrown when constructing the button if the [group][ComponentRateLimitReference.group] is invalid.
-     *
-     * @see RateLimitReference @RateLimitReference
      */
     @CheckReturnValue
     fun rateLimitReference(reference: ComponentRateLimitReference): T

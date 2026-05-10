@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.messages.reply_
 import io.github.bucket4j.distributed.ExpirationAfterWriteStrategy
 import io.github.bucket4j.postgresql.Bucket4jPostgreSQL
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -15,6 +14,7 @@ import io.github.freya022.botcommands.api.components.annotations.RequiresCompone
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.ratelimit.bucket.BucketConfigurationSupplier
 import io.github.freya022.botcommands.api.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitManager

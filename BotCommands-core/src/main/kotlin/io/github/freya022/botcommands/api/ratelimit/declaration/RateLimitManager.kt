@@ -3,9 +3,6 @@
 package io.github.freya022.botcommands.api.ratelimit.declaration
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
-import io.github.freya022.botcommands.api.commands.annotations.Cooldown
-import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
@@ -20,6 +17,8 @@ import kotlin.time.Duration
 
 /**
  * Allows programmatic declaration of rate limiters using [RateLimitProvider].
+ * The declared rate limits can then be used in annotated/declarative commands,
+ * as well as referenced by components.
  *
  * @see RateLimitProvider
  */
@@ -35,8 +34,6 @@ abstract class RateLimitManager internal constructor() {
 
     /**
      * Creates a rate limiter with the specified group.
-     *
-     * The created rate limiter can be used in [CommandBuilder.rateLimitReference] and [@RateLimitReference][RateLimitReference].
      *
      * **Note:** The rate limiter won't apply if you are a [bot owner][BotOwners.isOwner].
      *
@@ -71,7 +68,6 @@ abstract class RateLimitManager internal constructor() {
      * @param duration The duration before the cooldown expires
      * @param block    Further configures the [RateLimitBuilder]
      *
-     * @see Cooldown @Cooldown
      * @see rateLimit
      */
     @JvmOverloads
@@ -103,7 +99,6 @@ abstract class RateLimitManager internal constructor() {
  * @param deleteOnRefill Whether the cooldown message should be deleted after the cooldown expires
  * @param block          Further configures the [RateLimitBuilder]
  *
- * @see Cooldown @Cooldown
  * @see RateLimitManager.rateLimit
  */
 fun RateLimitManager.cooldown(

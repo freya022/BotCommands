@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.internal.utils
 
-import io.github.freya022.botcommands.api.commands.CommandPath
-import io.github.freya022.botcommands.api.commands.INamedCommand
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -23,18 +21,6 @@ fun String.toDiscordString(): String {
     }
 
     return sb.toString()
-}
-
-fun INamedCommand.lazyPath(): Lazy<CommandPath> = lazy {
-    val components = mutableListOf<String>()
-    var info = this
-
-    do {
-        components.add(index = 0, info.name)
-        info = info.parentInstance ?: break
-    } while (true)
-
-    CommandPath.of(components)
 }
 
 fun Guild?.asScopeString() = if (this == null) "global scope" else "guild '${this.name}' (${this.id})"

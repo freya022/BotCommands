@@ -35,17 +35,17 @@ interface TextCommandsMessages {
     fun ownerOnly(event: MessageReceivedEvent): MessageCreateData
 
     /**
-     * @return Message to display when a user has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a user has exceeded a command's rate limit
      */
     fun userRateLimited(event: MessageReceivedEvent, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when a channel has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a channel has exceeded a command's rate limit
      */
     fun channelRateLimited(event: MessageReceivedEvent, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when a guild has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a guild has exceeded a command's rate limit
      */
     fun guildRateLimited(event: MessageReceivedEvent, deadline: Instant): MessageCreateData
 

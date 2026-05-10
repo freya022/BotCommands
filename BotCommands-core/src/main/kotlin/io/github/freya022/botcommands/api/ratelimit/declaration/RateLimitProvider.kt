@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.api.ratelimit.declaration
 
-import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 
@@ -38,7 +37,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.InterfacedSer
  * }
  * ```
  *
- * @see CommandBuilder.rateLimit In-command equivalent
  * @see RateLimitManager
  * @see InterfacedService @InterfacedService
  */

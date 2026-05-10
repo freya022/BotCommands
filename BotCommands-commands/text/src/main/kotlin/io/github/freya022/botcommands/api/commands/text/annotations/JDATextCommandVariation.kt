@@ -1,17 +1,15 @@
 package io.github.freya022.botcommands.api.commands.text.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.*
-import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
-import io.github.freya022.botcommands.api.commands.text.CommandEvent
-import io.github.freya022.botcommands.api.commands.text.IHelpCommand
-import io.github.freya022.botcommands.api.commands.text.TextCommandFilter
-import io.github.freya022.botcommands.api.commands.text.TextGeneratedValueSupplierProvider
+import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.builder.TextCommandVariationBuilder
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandManager
 import io.github.freya022.botcommands.api.commands.text.provider.TextCommandProvider
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.api.ratelimit.annotations.Cooldown
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
 import net.dv8tion.jda.internal.utils.Checks
 
 /**

@@ -1,8 +1,6 @@
-package io.github.freya022.botcommands.api.commands.annotations
+package io.github.freya022.botcommands.api.ratelimit.annotations
 
 import io.github.bucket4j.distributed.proxy.ProxyManager
-import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.commands.builder.cooldown
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.ratelimit.AnnotatedRateLimiterFactory
 import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
@@ -30,7 +28,6 @@ import java.time.temporal.ChronoUnit
  *
  * @see RateLimit @RateLimit
  *
- * @see CommandBuilder.cooldown In-command equivalent
  * @see RateLimitManager.cooldown Code-declared equivalent
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)

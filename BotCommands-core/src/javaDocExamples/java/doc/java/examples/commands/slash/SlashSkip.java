@@ -1,11 +1,11 @@
 package doc.java.examples.commands.slash;
 
 import io.github.freya022.botcommands.api.commands.annotations.Command;
-import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference;
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent;
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import io.github.freya022.botcommands.api.ratelimit.RateLimitScope;
 import io.github.freya022.botcommands.api.ratelimit.RateLimiter;
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimitReference;
 import io.github.freya022.botcommands.api.ratelimit.bucket.BucketConfigurationSupplier;
 import io.github.freya022.botcommands.api.ratelimit.bucket.Buckets;
 import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitManager;

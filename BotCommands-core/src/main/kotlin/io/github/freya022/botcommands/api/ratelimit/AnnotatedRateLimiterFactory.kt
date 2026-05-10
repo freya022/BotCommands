@@ -1,7 +1,5 @@
 package io.github.freya022.botcommands.api.ratelimit
 
-import io.github.freya022.botcommands.api.commands.annotations.Cooldown
-import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.ratelimit.bucket.BucketConfigurationSupplier
 

@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.api.commands.application.messages
 
 import io.github.freya022.botcommands.api.commands.annotations.BotPermissions
-import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.UserPermissions
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload

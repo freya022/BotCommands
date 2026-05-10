@@ -1,11 +1,9 @@
 package io.github.freya022.botcommands.api.core
 
 import io.github.freya022.botcommands.api.ReceiverConsumer
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.service.BCBotCommandsBootstrap
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -22,8 +20,6 @@ import kotlin.time.measureTimedValue
  * Spring users must not use this, the framework will autoconfigure itself.
  *
  * @see BService @BService
- * @see InterfacedService @InterfacedService
- * @see Command @Command
  */
 object BotCommands {
     private val logger = KotlinLogging.logger { }

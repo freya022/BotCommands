@@ -6,7 +6,7 @@ import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashSubcommandGroupBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.utils.LocalizationUtils
-import io.github.freya022.botcommands.internal.utils.lazyPath
+import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 
 internal class SlashSubcommandGroupInfoImpl(
     topLevelInstance: TopLevelSlashCommandInfoImpl,

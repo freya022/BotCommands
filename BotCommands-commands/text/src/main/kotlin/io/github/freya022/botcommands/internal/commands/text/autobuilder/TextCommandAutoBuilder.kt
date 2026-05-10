@@ -21,9 +21,12 @@ import io.github.freya022.botcommands.api.core.options.builder.inlineClassAggreg
 import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.nullIfBlank
+import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
@@ -194,7 +197,13 @@ internal class TextCommandAutoBuilder(
         declarationSite = DeclarationSite.fromFunctionSignature(metadata.func)
         processOptions(metadata)
 
-        filters += AnnotationUtils.getFilters(context, metadata.func, TextCommandFilter::class)
+        filters += getFilterTypes(metadata.func)
+            .onEach {
+                require(it.isSubclassOf<TextCommandFilter>()) {
+                    "Filter ${it.simpleNestedName} must implement ${classRef<TextCommandFilter>()}"
+                }
+            }
+            .map { context.getService(it) as TextCommandFilter }
 
         description = metadata.annotation.description.nullIfBlank()
         usage = metadata.annotation.usage.nullIfBlank()

@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.core.reflection
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.builder.IBuilderFunctionHolder
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.service.getFunctionService
 import io.github.freya022.botcommands.internal.utils.requireAt
@@ -37,7 +36,3 @@ inline fun <reified T : Any, R> KFunction<R>.toMemberParamFunction(context: BCon
 
 fun <T : Any, R> KFunction<R>.toMemberParamFunction(context: BContext, paramType: KClass<T>) =
     MemberParamFunction(context, this, paramType)
-
-inline fun <reified T : Any, R> IBuilderFunctionHolder<R>.toMemberParamFunction(context: BContext): MemberParamFunction<T, R> {
-    return MemberParamFunction(context, this.function, T::class)
-}

@@ -16,6 +16,8 @@ import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
+import io.github.freya022.botcommands.api.ratelimit.annotations.Cooldown
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 

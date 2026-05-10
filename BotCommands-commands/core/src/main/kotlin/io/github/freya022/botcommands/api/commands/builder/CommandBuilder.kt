@@ -3,9 +3,6 @@
 package io.github.freya022.botcommands.api.commands.builder
 
 import io.github.freya022.botcommands.api.commands.INamedCommand
-import io.github.freya022.botcommands.api.commands.annotations.Cooldown
-import io.github.freya022.botcommands.api.commands.annotations.RateLimit
-import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
@@ -13,6 +10,9 @@ import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
 import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.ratelimit.annotations.Cooldown
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimitReference
 import io.github.freya022.botcommands.api.ratelimit.bucket.Buckets
 import io.github.freya022.botcommands.api.ratelimit.bucket.toSupplier
 import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitBuilder

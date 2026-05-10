@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.core
 
 import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.commands.annotations.Command
 import io.github.freya022.botcommands.api.core.annotations.Handler
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
@@ -26,7 +25,7 @@ internal class HandlersPresenceChecker : ClassPathProcessor {
         val classInfo = data.classInfo
         if (classInfo.isAbstract) return
 
-        val isCommand = classInfo.hasAnnotation(Command::class.java)
+        val isCommand = classInfo.hasAnnotation("io.github.freya022.botcommands.api.commands.annotations.Command")
         val isHandler = classInfo.hasAnnotation(Handler::class.java)
         val isHandlerOrCommand = isHandler || isCommand
 

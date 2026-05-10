@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.internal.commands.builder.CommandBuilderImpl
-import io.github.freya022.botcommands.internal.utils.lazyPath
+import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.EnumSet
 

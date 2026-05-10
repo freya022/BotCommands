@@ -3,7 +3,6 @@ package io.github.freya022.botcommands.internal.core.options
 import io.github.freya022.botcommands.api.core.options.Option
 import io.github.freya022.botcommands.api.core.utils.isPrimitive
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.internal.commands.options.builder.CommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators
 import io.github.freya022.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
@@ -14,19 +13,12 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.jvmErasure
 
-abstract class OptionImpl private constructor(
+abstract class OptionImpl(
     internal val optionParameter: OptionParameter,
     val optionType: OptionType,
-    /** @see CommandOptionBuilderImpl.isOptional */
-    optional: Boolean?
+    forceOptional: Boolean?
 ) : Option {
     constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
-
-    internal constructor(commandOptionBuilder: CommandOptionBuilderImpl) : this(
-        commandOptionBuilder.optionParameter,
-        OptionType.OPTION,
-        commandOptionBuilder.isOptional
-    )
 
     val typeCheckingFunction: KFunction<*>
         get() = optionParameter.typeCheckingFunction
@@ -52,7 +44,7 @@ abstract class OptionImpl private constructor(
         get() = optionParameter.executableParameter
 
     final override val type = kParameter.type
-    final override val isOptional: Boolean = optional ?: kParameter.isOptional
+    final override val isOptional: Boolean = forceOptional ?: kParameter.isOptional
     final override val isNullable: Boolean = kParameter.isNullable
     final override val isVararg: Boolean
         get() = optionParameter.executableFunction.isVarargAggregator()
