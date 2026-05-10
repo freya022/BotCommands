@@ -6,13 +6,13 @@ import io.github.bucket4j.Bucket
 import io.github.bucket4j.ConsumptionProbe
 import io.github.bucket4j.distributed.proxy.ProxyManager
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.commands.ratelimit.AnnotatedRateLimiterFactory
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
-import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitManager
-import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BotOwners
+import io.github.freya022.botcommands.api.ratelimit.AnnotatedRateLimiterFactory
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitManager
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitProvider
 import java.time.temporal.ChronoUnit
 
 /**

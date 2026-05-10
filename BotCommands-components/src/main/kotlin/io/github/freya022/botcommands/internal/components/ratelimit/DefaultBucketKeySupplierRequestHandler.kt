@@ -1,9 +1,9 @@
 package io.github.freya022.botcommands.internal.components.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitingContext
-import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultBucketKeySupplier
+import io.github.freya022.botcommands.api.ratelimit.RateLimitingContext
+import io.github.freya022.botcommands.api.ratelimit.bucket.BucketKeySupplier
+import io.github.freya022.botcommands.internal.ratelimit.DefaultBucketKeySupplier
 
 internal class DefaultBucketKeySupplierRequestHandler : DefaultBucketKeySupplier.RequestHandler {
 

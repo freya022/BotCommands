@@ -5,7 +5,6 @@ import dev.freya02.botcommands.jda.ktx.messages.suppressContentWarning
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.handle
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.*
 import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessages
@@ -23,6 +22,7 @@ import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.service.getServiceOrNull
 import io.github.freya022.botcommands.api.core.utils.getMissingPermissions
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.commands.text.TextCommandsListener.Status.*
 import io.github.freya022.botcommands.internal.commands.text.ratelimit.TextCommandRateLimitHandler
 import io.github.freya022.botcommands.internal.core.ExceptionHandler

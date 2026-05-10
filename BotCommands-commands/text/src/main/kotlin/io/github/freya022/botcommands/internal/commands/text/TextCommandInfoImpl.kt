@@ -1,10 +1,10 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import io.github.freya022.botcommands.api.commands.Usability.UnusableReason
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.commands.text.TextCommandInfo
 import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
+import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.internal.commands.AbstractCommandInfoImpl
 import io.github.freya022.botcommands.internal.commands.UsabilityImpl
 import io.github.freya022.botcommands.internal.commands.spacedPath
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import java.util.*
+import java.util.EnumSet
 import java.util.function.Consumer
 
 internal sealed class TextCommandInfoImpl(

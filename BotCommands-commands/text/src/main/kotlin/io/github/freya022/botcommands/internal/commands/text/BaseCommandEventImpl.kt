@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text
 
 import dev.freya02.jda.emojis.unicode.Emojis
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier
@@ -9,6 +8,7 @@ import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission.MESSAGE_ADD_REACTION

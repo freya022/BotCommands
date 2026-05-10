@@ -1,6 +1,5 @@
 package io.github.freya022.botcommands.internal.components.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitingContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
@@ -8,11 +7,12 @@ import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
-import io.github.freya022.botcommands.internal.commands.ratelimit.NullCancellableRateLimit
-import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
-import io.github.freya022.botcommands.internal.commands.ratelimit.handler.AbstractRateLimitHandler
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.components.controller.ComponentsListener
 import io.github.freya022.botcommands.internal.components.data.ActionComponentData
+import io.github.freya022.botcommands.internal.ratelimit.NullCancellableRateLimit
+import io.github.freya022.botcommands.internal.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.internal.ratelimit.handler.AbstractRateLimitHandler
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 

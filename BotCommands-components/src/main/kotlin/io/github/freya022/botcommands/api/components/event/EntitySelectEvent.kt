@@ -1,15 +1,15 @@
 package io.github.freya022.botcommands.api.components.event
 
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.*
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableEditCallbackImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
-import java.util.*
+import java.util.Locale
 
 /**
  * Interaction event for entity select menus.

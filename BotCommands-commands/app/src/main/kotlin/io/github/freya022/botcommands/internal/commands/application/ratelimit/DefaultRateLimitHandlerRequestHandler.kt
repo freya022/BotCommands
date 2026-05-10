@@ -2,10 +2,10 @@ package io.github.freya022.botcommands.internal.commands.application.ratelimit
 
 import io.github.bucket4j.ConsumptionProbe
 import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessages
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.commands.ratelimit.handler.DefaultRateLimitHandler
+import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.ratelimit.RateLimitingContext
+import io.github.freya022.botcommands.internal.ratelimit.handler.DefaultRateLimitHandler
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.time.Instant
 

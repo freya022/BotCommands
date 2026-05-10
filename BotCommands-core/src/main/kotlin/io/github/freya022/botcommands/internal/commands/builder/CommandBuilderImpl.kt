@@ -3,18 +3,19 @@ package io.github.freya022.botcommands.internal.commands.builder
 import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.CommandType
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.commands.builder.RateLimitBuilder
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitInfo
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
-import io.github.freya022.botcommands.internal.commands.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
+import io.github.freya022.botcommands.api.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitBuilder
+import io.github.freya022.botcommands.internal.ratelimit.RateLimitContainer
+import io.github.freya022.botcommands.internal.ratelimit.builder.RateLimitBuilderImpl
 import io.github.freya022.botcommands.internal.utils.lazyPath
 import net.dv8tion.jda.api.Permission
-import java.util.*
+import java.util.EnumSet
 
 abstract class CommandBuilderImpl(
     override val context: BContext,

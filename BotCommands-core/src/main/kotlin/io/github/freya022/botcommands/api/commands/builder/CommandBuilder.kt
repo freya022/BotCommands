@@ -6,19 +6,20 @@ import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.annotations.Cooldown
 import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.commands.annotations.RateLimitReference
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.Buckets
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.toSupplier
-import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.IDeclarationSiteHolderBuilder
 import io.github.freya022.botcommands.api.core.annotations.IgnoreStackFrame
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
+import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.ratelimit.RateLimiter
+import io.github.freya022.botcommands.api.ratelimit.bucket.Buckets
+import io.github.freya022.botcommands.api.ratelimit.bucket.toSupplier
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitBuilder
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.internal.commands.CommandDSL
 import net.dv8tion.jda.api.Permission
-import java.util.*
+import java.util.EnumSet
 import kotlin.time.Duration
 
 @CommandDSL
@@ -77,7 +78,7 @@ interface CommandBuilder : INamedCommand, IDeclarationSiteHolderBuilder {
      * @see RateLimit @RateLimit
      * @see RateLimitProvider
      */
-    fun rateLimit(rateLimiter: RateLimiter, block: RateLimitBuilder.() -> Unit = {})
+    fun rateLimit(rateLimiter: RateLimiter, block: @CommandDSL RateLimitBuilder.() -> Unit = {})
 
     /**
      * Sets the rate limiter of this command to one declared by a [RateLimitProvider].

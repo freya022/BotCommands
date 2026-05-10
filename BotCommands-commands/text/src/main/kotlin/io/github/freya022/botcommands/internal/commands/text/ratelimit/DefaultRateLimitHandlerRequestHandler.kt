@@ -5,12 +5,12 @@ import dev.freya02.botcommands.jda.ktx.getChannel
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.runIgnoringResponse
 import io.github.bucket4j.ConsumptionProbe
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessages
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.internal.commands.ratelimit.handler.DefaultRateLimitHandler
+import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
+import io.github.freya022.botcommands.api.ratelimit.RateLimitingContext
+import io.github.freya022.botcommands.internal.ratelimit.handler.DefaultRateLimitHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel

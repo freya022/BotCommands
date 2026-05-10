@@ -1,13 +1,13 @@
 package io.github.freya022.botcommands.internal.commands.application.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.commands.application.ApplicationCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.ratelimit.NullCancellableRateLimit
-import io.github.freya022.botcommands.internal.commands.ratelimit.handler.AbstractRateLimitHandler
+import io.github.freya022.botcommands.internal.ratelimit.NullCancellableRateLimit
+import io.github.freya022.botcommands.internal.ratelimit.handler.AbstractRateLimitHandler
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 @BService

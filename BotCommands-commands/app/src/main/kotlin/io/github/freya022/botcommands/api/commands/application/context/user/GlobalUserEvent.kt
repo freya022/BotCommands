@@ -1,14 +1,14 @@
 package io.github.freya022.botcommands.api.commands.application.context.user
 
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.interaction.*
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableInteractionImpl
 import io.github.freya022.botcommands.internal.localization.interaction.LocalizableReplyCallbackImpl
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import java.util.*
+import java.util.Locale
 
 /**
  * Interaction event for global user context commands.

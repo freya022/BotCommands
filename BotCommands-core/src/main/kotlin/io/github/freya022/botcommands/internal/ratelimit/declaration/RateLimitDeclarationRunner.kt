@@ -1,0 +1,31 @@
+package io.github.freya022.botcommands.internal.ratelimit.declaration
+
+import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.utils.joinAsList
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitProvider
+import io.github.freya022.botcommands.internal.ratelimit.RateLimitContainer
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val logger = KotlinLogging.logger { }
+
+@BService(priority = 1) //Higher than all command declarations
+internal class RateLimitDeclarationRunner internal constructor(
+    context: BContext,
+    rateLimitProviders: List<RateLimitProvider>,
+    rateLimitContainer: RateLimitContainer
+) {
+    init {
+        val manager = RateLimitManagerImpl(context, rateLimitContainer)
+        rateLimitProviders.forEach { it.declareRateLimit(manager) }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace {
+                val declarations = rateLimitContainer.allInfos.joinAsList { it.declarationSite.toString() }
+                "Registered ${rateLimitContainer.size} rate limiters:\n$declarations"
+            }
+        } else {
+            logger.debug { "Registered ${rateLimitContainer.size} rate limiters" }
+        }
+    }
+}

@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.api.commands.text;
 
-import io.github.freya022.botcommands.api.commands.ratelimit.CancellableRateLimit;
 import io.github.freya022.botcommands.api.core.BContext;
 import io.github.freya022.botcommands.api.core.DefaultEmbedFooterIconSupplier;
 import io.github.freya022.botcommands.api.core.DefaultEmbedSupplier;
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext;
 import io.github.freya022.botcommands.api.localization.text.LocalizableTextCommand;
 import io.github.freya022.botcommands.api.localization.text.TextCommandLocaleProvider;
+import io.github.freya022.botcommands.api.ratelimit.CancellableRateLimit;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;

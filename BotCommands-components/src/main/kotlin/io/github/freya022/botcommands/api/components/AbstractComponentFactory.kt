@@ -2,12 +2,12 @@ package io.github.freya022.botcommands.api.components
 
 import dev.freya02.botcommands.jda.ktx.components.findAll
 import dev.freya02.botcommands.jda.ktx.components.toDefaultComponentTree
-import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.builder.ITimeoutableComponent
 import io.github.freya022.botcommands.api.components.builder.IUniqueComponent
 import io.github.freya022.botcommands.api.components.builder.group.ComponentGroupFactory
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitReference
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.components.MessageTopLevelComponent

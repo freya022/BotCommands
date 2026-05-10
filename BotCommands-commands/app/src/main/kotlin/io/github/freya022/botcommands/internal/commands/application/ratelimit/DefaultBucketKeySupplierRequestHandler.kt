@@ -1,8 +1,8 @@
 package io.github.freya022.botcommands.internal.commands.application.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitingContext
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketKeySupplier
-import io.github.freya022.botcommands.internal.commands.ratelimit.DefaultBucketKeySupplier
+import io.github.freya022.botcommands.api.ratelimit.RateLimitingContext
+import io.github.freya022.botcommands.api.ratelimit.bucket.BucketKeySupplier
+import io.github.freya022.botcommands.internal.ratelimit.DefaultBucketKeySupplier
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 
 internal class DefaultBucketKeySupplierRequestHandler : DefaultBucketKeySupplier.RequestHandler {

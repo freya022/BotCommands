@@ -1,11 +1,11 @@
 package doc.java.examples.ratelimit;
 
 import io.github.bucket4j.distributed.proxy.ProxyManager;
-import io.github.freya022.botcommands.api.commands.ratelimit.AnnotatedRateLimiterFactory;
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimitScope;
-import io.github.freya022.botcommands.api.commands.ratelimit.RateLimiter;
-import io.github.freya022.botcommands.api.commands.ratelimit.bucket.BucketConfigurationSupplier;
 import io.github.freya022.botcommands.api.core.service.annotations.BService;
+import io.github.freya022.botcommands.api.ratelimit.AnnotatedRateLimiterFactory;
+import io.github.freya022.botcommands.api.ratelimit.RateLimitScope;
+import io.github.freya022.botcommands.api.ratelimit.RateLimiter;
+import io.github.freya022.botcommands.api.ratelimit.bucket.BucketConfigurationSupplier;
 import org.jspecify.annotations.NullMarked;
 
 @BService

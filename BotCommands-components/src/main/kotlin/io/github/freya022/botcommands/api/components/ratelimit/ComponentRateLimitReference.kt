@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.api.components.ratelimit
 
-import io.github.freya022.botcommands.api.commands.ratelimit.declaration.RateLimitProvider
 import io.github.freya022.botcommands.api.components.AbstractComponentFactory
+import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitProvider
 
 /**
  * Represents a reference to a rate limiter previously declared by a [RateLimitProvider].
