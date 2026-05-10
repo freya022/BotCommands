@@ -3,11 +3,8 @@ package io.github.freya022.botcommands.internal.parameters.resolvers.channels
 import dev.freya02.botcommands.jda.ktx.requests.awaitCatching
 import dev.freya02.botcommands.jda.ktx.requests.onErrorResponse
 import dev.freya02.botcommands.jda.ktx.retrieve.retrieveThreadChannelById
-import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.exceptions.InvalidChannelTypeException
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.objectLogger
-import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import net.dv8tion.jda.api.entities.Guild
