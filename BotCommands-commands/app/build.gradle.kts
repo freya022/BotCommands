@@ -25,6 +25,7 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
     api(projects.botCommandsCommands.core)
+    api(projects.botCommandsRateLimit)
     implementation(projects.botCommandsJdaKtx)
 
     // Database (optional, for commands caching)

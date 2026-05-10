@@ -22,7 +22,7 @@ dependencies {
     // JDA
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
-    api(projects.botCommandsRateLimit)
+    implementation(projects.botCommandsJdaKtx)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
@@ -42,18 +42,10 @@ tasks.withType<Test> {
     jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-    }
-}
-
 publishedProjectEnvironment {
     configureJarArtifact(
-        artifactId = "BotCommands-commands-core",
-        description = "Common code for text and application commands.",
-        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-commands/core",
+        artifactId = "BotCommands-rate-limit",
+        description = "Common code for rate limiting.",
+        url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-rate-limit",
     )
 }

@@ -10,7 +10,7 @@ import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitManager
 import java.time.temporal.ChronoUnit
 
 /**
- * Add a simple rate limit-based cooldown of this text / application command and components.
+ * Add a simple rate limit-based cooldown of this text / application command.
  *
  * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
  *

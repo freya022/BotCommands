@@ -4,6 +4,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":test-commons")
 include(":BotCommands-core")
+include(":BotCommands-rate-limit")
 include(":BotCommands-database")
 include(":BotCommands-app-emojis")
 include(":BotCommands-commands:core")
