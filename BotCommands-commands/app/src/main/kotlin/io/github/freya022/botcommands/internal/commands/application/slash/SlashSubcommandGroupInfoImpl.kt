@@ -4,14 +4,16 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.commands.application.slash.SlashSubcommandGroupInfo
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
+import io.github.freya022.botcommands.internal.commands.INamedCommandMixin
 import io.github.freya022.botcommands.internal.commands.application.slash.builder.SlashSubcommandGroupBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.utils.LocalizationUtils
-import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 
 internal class SlashSubcommandGroupInfoImpl(
     topLevelInstance: TopLevelSlashCommandInfoImpl,
     builder: SlashSubcommandGroupBuilderImpl
-) : SlashSubcommandGroupInfo {
+) : SlashSubcommandGroupInfo,
+    INamedCommandMixin {
+
     override val parentInstance = topLevelInstance
     override val name = builder.name
     override val path: CommandPath by lazyPath()

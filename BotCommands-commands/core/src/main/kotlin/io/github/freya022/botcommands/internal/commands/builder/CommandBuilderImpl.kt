@@ -11,7 +11,7 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.api.ratelimit.RateLimiter
 import io.github.freya022.botcommands.api.ratelimit.declaration.RateLimitBuilder
-import io.github.freya022.botcommands.internal.commands.utils.lazyPath
+import io.github.freya022.botcommands.internal.commands.INamedCommandMixin
 import io.github.freya022.botcommands.internal.ratelimit.RateLimitContainer
 import io.github.freya022.botcommands.internal.ratelimit.builder.RateLimitBuilderImpl
 import net.dv8tion.jda.api.Permission
@@ -20,7 +20,9 @@ import java.util.EnumSet
 abstract class CommandBuilderImpl(
     override val context: BContext,
     override val name: String
-) : CommandBuilder {
+) : CommandBuilder,
+    INamedCommandMixin {
+
     abstract val type: CommandType
     final override lateinit var declarationSite: DeclarationSite
 

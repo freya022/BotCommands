@@ -7,10 +7,10 @@ import io.github.freya022.botcommands.api.commands.application.slash.builder.Sla
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.setCallerAsDeclarationSite
+import io.github.freya022.botcommands.internal.commands.INamedCommandMixin
 import io.github.freya022.botcommands.internal.commands.NamedCommandMap
 import io.github.freya022.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfoImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfoImpl
-import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
@@ -18,7 +18,9 @@ internal class SlashSubcommandGroupBuilderImpl internal constructor(
     private val context: BContext,
     override val name: String,
     private val topLevelBuilder: TopLevelSlashCommandBuilderImpl
-) : SlashSubcommandGroupBuilder {
+) : SlashSubcommandGroupBuilder,
+    INamedCommandMixin {
+
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazyPath()
     override lateinit var declarationSite: DeclarationSite

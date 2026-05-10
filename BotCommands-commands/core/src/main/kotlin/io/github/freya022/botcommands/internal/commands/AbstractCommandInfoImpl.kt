@@ -5,13 +5,13 @@ import io.github.freya022.botcommands.api.commands.CommandPath
 import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.ratelimit.RateLimitInfo
 import io.github.freya022.botcommands.internal.commands.builder.CommandBuilderImpl
-import io.github.freya022.botcommands.internal.commands.utils.lazyPath
 import net.dv8tion.jda.api.Permission
 import java.util.EnumSet
 
 abstract class AbstractCommandInfoImpl(
     builder: CommandBuilderImpl
-) : CommandInfo {
+) : CommandInfo,
+    INamedCommandMixin {
 
     final override val name: String = builder.name
     final override val path: CommandPath by lazyPath()
