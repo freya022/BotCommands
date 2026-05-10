@@ -1,8 +1,6 @@
 package io.github.freya022.botcommands.api.components.annotations
 
 import io.github.freya022.botcommands.api.commands.annotations.Command
-import io.github.freya022.botcommands.api.commands.annotations.Cooldown
-import io.github.freya022.botcommands.api.commands.annotations.RateLimit
 import io.github.freya022.botcommands.api.components.Components
 import io.github.freya022.botcommands.api.components.builder.IPersistentActionableComponent
 import io.github.freya022.botcommands.api.components.builder.bindWith
@@ -55,9 +53,6 @@ import kotlin.reflect.KFunction
  *
  * @see Components
  * @see Aggregate @Aggregate
- *
- * @see Cooldown @Cooldown
- * @see RateLimit @RateLimit
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
