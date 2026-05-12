@@ -2,9 +2,9 @@ package io.github.freya022.botcommands.api.utils;
 
 import dev.freya02.jda.emojis.unicode.Emojis;
 import dev.freya02.jda.emojis.unicode.UnicodeEmojis;
+import dev.freya02.jda.emojis.unicode.UnicodeEmojisManager;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
-import net.fellbaum.jemoji.EmojiManager;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -15,9 +15,6 @@ import java.util.NoSuchElementException;
  */
 @NullMarked
 public class EmojiUtils {
-    private static final int REGIONAL_INDICATOR_A_CODEPOINT = 127462;
-    private static final int REGIONAL_INDICATOR_Z_CODEPOINT = 127487;
-
     /**
      * Returns the Unicode emoji from a Discord alias (e.g. {@code :joy:}).
      *
@@ -53,31 +50,17 @@ public class EmojiUtils {
      */
     @Nullable
     public static String resolveEmojiOrNull(String input) {
-        var emoji = EmojiManager.getByDiscordAlias(input);
-
-        if (emoji.isEmpty()) emoji = EmojiManager.getEmoji(input);
-        if (emoji.isEmpty()) {
-            // Try to get regional indicators https://github.com/felldo/JEmoji/issues/44
-            final var alias = removeColonFromAlias(input);
-            if (alias.startsWith("regional_indicator_")) {
-                final char character = alias.charAt(19);
-                if (character >= 'a' && character <= 'z') {
-                    final int codepoint = REGIONAL_INDICATOR_A_CODEPOINT + (character - 'a');
-                    return Character.toString(codepoint);
-                }
-            } else {
-                final int codepoint = input.codePointAt(0);
-                if (codepoint >= REGIONAL_INDICATOR_A_CODEPOINT && codepoint <= REGIONAL_INDICATOR_Z_CODEPOINT) {
-                    return input;
-                }
-            }
-            return null;
+        String emoji = UnicodeEmojisManager.getEmojiByAlias(input);
+        if (emoji != null) {
+            return emoji;
         }
-        return emoji.get().getEmoji();
-    }
 
-    private static String removeColonFromAlias(final String alias) {
-        return alias.startsWith(":") && alias.endsWith(":") ? alias.substring(1, alias.length() - 1) : alias;
+        // In case it was a Unicode emoji already, just check it is valid
+        if (UnicodeEmojisManager.isValidEmoji(input)) {
+            return input;
+        }
+
+        return null;
     }
 
     /**
