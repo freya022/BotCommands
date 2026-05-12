@@ -14,9 +14,6 @@ import java.time.temporal.ChronoUnit
  *
  * **Note:** This won't apply if you are a [bot owner][BotOwners.isOwner].
  *
- * **Text commands note:** This applies to the command itself, not only this variation,
- * in other words, this applies to all commands with the same path.
- *
  * ### Persistent bucket storage
  * Since this annotation stores buckets in-memory by default, the rate limits applied will be lost upon restart,
  * however you can implement [AnnotatedRateLimiterFactory] in a service,
