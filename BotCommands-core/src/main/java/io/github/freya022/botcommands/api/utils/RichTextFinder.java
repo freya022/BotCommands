@@ -1,9 +1,7 @@
 package io.github.freya022.botcommands.api.utils;
 
+import dev.freya02.jda.emojis.unicode.UnicodeEmojisManager;
 import net.dv8tion.jda.api.entities.Message.MentionType;
-import net.fellbaum.jemoji.Emoji;
-import net.fellbaum.jemoji.EmojiManager;
-import net.fellbaum.jemoji.IndexedEmoji;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -121,15 +119,15 @@ public class RichTextFinder {
                 continue; // No alias end found
             }
 
-            final Optional<Emoji> optEmoji = EmojiManager.getByDiscordAlias(input.substring(aliasBegin, aliasEnd + 1));
-            if (optEmoji.isEmpty()) {
+            final String alias = input.substring(aliasBegin + 1, aliasEnd);
+            final String emoji = UnicodeEmojisManager.getEmojiByAlias(alias);
+            if (emoji == null) {
                 aliasBegin += 1; // Do not find back the same alias
                 continue;
             }
 
-            final Emoji emoji = optEmoji.get();
             if (!isInCustomEmote(emoji)) {
-                normalMentionMap.put(aliasBegin, new RichText(emoji.getEmoji(), RichTextType.UNICODE_EMOTE));
+                normalMentionMap.put(aliasBegin, new RichText(emoji, RichTextType.UNICODE_EMOTE));
                 addedStrs.put(aliasBegin, input.substring(aliasBegin, aliasEnd + 1));
             }
 
