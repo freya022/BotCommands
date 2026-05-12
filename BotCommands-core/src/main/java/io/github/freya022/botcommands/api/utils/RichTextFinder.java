@@ -87,14 +87,14 @@ public class RichTextFinder {
                 next = it.next();
                 endIndex = input.indexOf(next, startIndex);
 
-                final String middleSubstring = this.input.substring(startIndex, endIndex).trim();
+                final String middleSubstring = this.input.substring(startIndex, endIndex);
                 if (!middleSubstring.isEmpty()) {
                     normalMentionMap.put(startIndex, new RichText(middleSubstring, RichTextType.TEXT));
                 }
             }
 
             startIndex = endIndex + next.length();
-            final String endSubstring = this.input.substring(startIndex).trim();
+            final String endSubstring = this.input.substring(startIndex);
             if (!endSubstring.isEmpty()) {
                 normalMentionMap.put(startIndex, new RichText(endSubstring, RichTextType.TEXT));
             }
