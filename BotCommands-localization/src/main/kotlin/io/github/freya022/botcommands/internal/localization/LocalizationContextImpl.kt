@@ -4,7 +4,7 @@ import io.github.freya022.botcommands.api.localization.Localization
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.AppLocalizationContext
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
-import io.github.freya022.botcommands.internal.utils.LocalizationUtils
+import io.github.freya022.botcommands.internal.localization.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.util.*

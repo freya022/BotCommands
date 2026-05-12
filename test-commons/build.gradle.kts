@@ -7,6 +7,7 @@ dependencies {
     api(libs.jda)
     api(projects.botCommandsCore)
     compileOnly(projects.botCommandsDatabase)
+    implementation(projects.botCommandsLocalization)
 
     api(libs.bundles.test)
 

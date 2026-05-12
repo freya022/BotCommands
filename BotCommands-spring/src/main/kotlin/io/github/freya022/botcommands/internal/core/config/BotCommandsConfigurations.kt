@@ -41,12 +41,3 @@ internal class BotCommandsEventManagerConfiguration(
 internal fun BEventManagerConfigBuilder.applyConfig(configuration: BotCommandsEventManagerConfiguration) = apply {
     defaultTimeout = configuration.defaultTimeout
 }
-
-@ConfigurationProperties(prefix = "botcommands.localization", ignoreUnknownFields = false)
-internal class BotCommandsLocalizationConfiguration(
-    override val responseBundles: Set<String> = emptySet(),
-) : AbstractBotCommandsConfiguration(), BLocalizationConfigProps
-
-internal fun BLocalizationConfigBuilder.applyConfig(configuration: BotCommandsLocalizationConfiguration) = apply {
-    responseBundles += configuration.responseBundles
-}

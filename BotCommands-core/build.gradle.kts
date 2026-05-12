@@ -91,10 +91,6 @@ dependencies {
     "javaDocExamplesImplementation"(projects.botCommandsDatabase)
     "kotlinDocExamplesImplementation"(projects.botCommandsDatabase)
 
-    // YAML (de)serialization
-    "javaDocExamplesImplementation"(libs.jackson.dataformat.yaml)
-    "kotlinDocExamplesImplementation"(libs.jackson.dataformat.yaml)
-
     // Persistent rate limiting
     "javaDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
     "kotlinDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
@@ -130,6 +126,7 @@ dependencies {
     byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 
     testImplementation(projects.botCommandsMethodAccessors.classfile)
+    testImplementation(projects.botCommandsLocalization)
 
     testImplementation(libs.kotlin.metadata)
 }

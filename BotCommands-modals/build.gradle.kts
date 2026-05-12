@@ -29,6 +29,7 @@ dependencies {
     // JDA
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
+    api(projects.botCommandsLocalization)
     implementation(projects.botCommandsJdaKtx)
 
     // -------------------- GLOBAL DEPENDENCIES --------------------

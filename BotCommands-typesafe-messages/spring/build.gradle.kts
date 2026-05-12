@@ -31,6 +31,8 @@ dependencies {
 
     testImplementation(projects.botCommandsSpring)
     testImplementation(libs.spring.boot.starter.test)
+
+    testImplementation(projects.botCommandsLocalization)
 }
 
 setMainJvmTarget(target = 24)

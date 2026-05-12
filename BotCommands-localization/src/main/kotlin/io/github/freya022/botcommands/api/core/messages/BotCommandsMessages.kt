@@ -20,22 +20,22 @@ interface BotCommandsMessages {
     fun uncaughtException(event: GenericEvent): MessageCreateData
 
     /**
-     * @return Message to display when the bot is missing [permissions][io.github.freya022.botcommands.api.commands.annotations.BotPermissions]
+     * @return Message to display when the bot is missing permissions
      */
     fun missingBotPermissions(event: GenericEvent, permissions: Set<Permission>): MessageCreateData
 
     /**
-     * @return Message to display when a user has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a user has exceeded a command's rate limit
      */
     fun userRateLimited(event: GenericEvent, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when a channel has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a channel has exceeded a command's rate limit
      */
     fun channelRateLimited(event: GenericEvent, deadline: Instant): MessageCreateData
 
     /**
-     * @return Message to display when a guild has exceeded a command's [rate limit][io.github.freya022.botcommands.api.commands.annotations.RateLimit]
+     * @return Message to display when a guild has exceeded a command's rate limit
      */
     fun guildRateLimited(event: GenericEvent, deadline: Instant): MessageCreateData
 

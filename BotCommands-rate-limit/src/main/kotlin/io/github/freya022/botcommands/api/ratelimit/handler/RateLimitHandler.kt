@@ -1,7 +1,6 @@
 package io.github.freya022.botcommands.api.ratelimit.handler
 
 import io.github.bucket4j.ConsumptionProbe
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessages
 import io.github.freya022.botcommands.api.ratelimit.RateLimitScope
 import io.github.freya022.botcommands.api.ratelimit.RateLimitingContext
 import io.github.freya022.botcommands.internal.ratelimit.handler.DefaultRateLimitHandler
@@ -20,7 +19,7 @@ interface RateLimitHandler {
          *   then it is sent to the user's DMs, or returns if not possible.
          * - Interactions are simply replying an ephemeral message to the user.
          *
-         * All messages sent to the user are localized messages from [BotCommandsMessages] and will be deleted when expired.
+         * All messages sent to the user are localized messages using messages from the module's message pack and will be deleted when expired.
          *
          * **Note:** The rate limit message won't be deleted in a private channel,
          * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.

@@ -37,6 +37,7 @@ dependencies {
 
     dokka(projects.botCommandsCore)
     dokka(projects.botCommandsRateLimit)
+    dokka(projects.botCommandsLocalization)
     dokka(projects.botCommandsDatabase)
     dokka(projects.botCommandsAppEmojis)
     dokka(projects.botCommandsCommands.core)

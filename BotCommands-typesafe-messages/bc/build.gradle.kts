@@ -23,6 +23,8 @@ dependencies {
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
     byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
+
+    testImplementation(projects.botCommandsLocalization)
 }
 
 setMainJvmTarget(target = 24)

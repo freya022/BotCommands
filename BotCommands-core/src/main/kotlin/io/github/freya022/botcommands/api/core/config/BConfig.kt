@@ -28,7 +28,6 @@ interface BConfig : IConfig, BConfigProps {
 
     val eventManagerConfig: BEventManagerConfig
     val serviceConfig: BServiceConfig
-    val localizationConfig: BLocalizationConfig
     val coroutineScopesConfig: BCoroutineScopesConfig
 
     /**
@@ -199,7 +198,6 @@ class BConfigBuilder : BConfigProps {
 
     val eventManagerConfig = BEventManagerConfigBuilder()
     val serviceConfig = BServiceConfigBuilder()
-    val localizationConfig = BLocalizationConfigBuilder()
     val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -302,10 +300,6 @@ class BConfigBuilder : BConfigProps {
         coroutineScopesConfig.apply(block)
     }
 
-    fun localization(block: ReceiverConsumer<BLocalizationConfigBuilder>) {
-        localizationConfig.apply(block)
-    }
-
     /**
      * Registers a configuration for the relevant module, enabling the features provided by the module.
      *
@@ -337,13 +331,11 @@ class BConfigBuilder : BConfigProps {
             override val enableShutdownHook = this@BConfigBuilder.enableShutdownHook
             override val eventManagerConfig = this@BConfigBuilder.eventManagerConfig.build()
             override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
-            override val localizationConfig = this@BConfigBuilder.localizationConfig.build()
             override val coroutineScopesConfig = this@BConfigBuilder.coroutineScopesConfig.build()
             private val _configs = (this@BConfigBuilder._configs + mapOf(
                 this.configType to this,
                 eventManagerConfig.configType to eventManagerConfig,
                 serviceConfig.configType to serviceConfig,
-                localizationConfig.configType to localizationConfig,
                 coroutineScopesConfig.configType to coroutineScopesConfig,
             )).unmodifiableView()
             override val configs get() = _configs.values

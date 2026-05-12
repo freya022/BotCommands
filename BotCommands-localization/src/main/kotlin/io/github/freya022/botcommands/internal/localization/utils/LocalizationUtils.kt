@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.internal.utils
+package io.github.freya022.botcommands.internal.localization.utils
 
 internal object LocalizationUtils {
 

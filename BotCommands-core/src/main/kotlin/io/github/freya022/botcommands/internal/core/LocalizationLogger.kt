@@ -20,7 +20,7 @@ class LocalizationLogger internal constructor(private val logger: KLogger) {
     companion object {
         private val map: MutableMap<String, LocalizationLogger> = hashMapOf()
 
-        internal fun clearAll() {
+        fun clearAll() {
             map.clear()
         }
 
@@ -32,7 +32,6 @@ class LocalizationLogger internal constructor(private val logger: KLogger) {
 
         inline fun <reified T : Any> of() = KotlinLogging.loggerOf<T>().toSingleLogger()
 
-        @PublishedApi
-        internal fun KLogger.toSingleLogger() = map.computeIfAbsent(this.name) { LocalizationLogger(this) }
+        fun KLogger.toSingleLogger() = map.computeIfAbsent(this.name) { LocalizationLogger(this) }
     }
 }

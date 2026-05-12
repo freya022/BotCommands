@@ -3,8 +3,6 @@ package io.github.freya022.botcommands.api.core.options.builder
 import io.github.freya022.botcommands.api.core.service.annotations.Condition
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalService
 import io.github.freya022.botcommands.api.core.service.annotations.Dependencies
-import io.github.freya022.botcommands.api.localization.annotations.LocalizationBundle
-import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 
 interface OptionRegistry<T : OptionAggregateBuilder<T>> : OptionAggregateBuilderContainer<T> {
@@ -22,7 +20,7 @@ interface OptionRegistry<T : OptionAggregateBuilder<T>> : OptionAggregateBuilder
     fun serviceOption(declaredName: String)
 
     /**
-     * Declares a custom option, such as an [TextLocalizationContext] (with [@LocalizationBundle][LocalizationBundle]).
+     * Declares a custom option.
      *
      * Additional types can be added by implementing [ICustomResolver].
      *

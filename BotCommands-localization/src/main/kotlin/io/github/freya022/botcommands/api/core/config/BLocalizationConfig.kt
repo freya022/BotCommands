@@ -8,9 +8,25 @@ import io.github.freya022.botcommands.api.localization.readers.JacksonLocalizati
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 import io.github.freya022.botcommands.internal.core.config.ConfigurationValue
 
+/**
+ * Configuration for the localization feature.
+ *
+ * @see [BLocalizationConfig.builder]
+ * @see [registerLocalization]
+ */
 @InjectedService
 interface BLocalizationConfig : IConfig, BLocalizationConfigProps {
     override val configType get() = BLocalizationConfig::class.java
+
+    companion object {
+        /**
+         * Creates a new [BLocalizationConfigBuilder], you must [build][BLocalizationConfigBuilder.build] it and [register][BConfigBuilder.registerModule] it.
+         */
+        @JvmStatic
+        fun builder(): BLocalizationConfigBuilder {
+            return BLocalizationConfigBuilder.create()
+        }
+    }
 }
 
 interface BLocalizationConfigProps {
@@ -34,8 +50,13 @@ interface BLocalizationConfigProps {
     val responseBundles: Set<String>
 }
 
+/**
+ * Builder of [BLocalizationConfig].
+ *
+ * @see BLocalizationConfig.builder
+ */
 @ConfigDSL
-class BLocalizationConfigBuilder internal constructor() : BLocalizationConfigProps {
+class BLocalizationConfigBuilder private constructor() : BLocalizationConfigProps {
     override val responseBundles: MutableSet<String> = hashSetOf()
 
     /**
@@ -55,8 +76,26 @@ class BLocalizationConfigBuilder internal constructor() : BLocalizationConfigPro
         responseBundles += responseBundle
     }
 
-    @JvmSynthetic
-    internal fun build() = object : BLocalizationConfig {
+    fun build() = object : BLocalizationConfig {
         override val responseBundles: Set<String> = this@BLocalizationConfigBuilder.responseBundles.toImmutableSet()
     }
+
+    internal companion object {
+        @JvmSynthetic
+        internal fun create(): BLocalizationConfigBuilder = BLocalizationConfigBuilder()
+    }
+}
+
+/**
+ * Registers the localization feature.
+ *
+ * @param block A block for further configuration
+ *
+ * @see BLocalizationConfig
+ */
+fun BConfigBuilder.registerLocalization(block: BLocalizationConfigBuilder.() -> Unit = { }) {
+    val config = BLocalizationConfigBuilder.create()
+        .apply(block)
+        .build()
+    registerModule(config)
 }

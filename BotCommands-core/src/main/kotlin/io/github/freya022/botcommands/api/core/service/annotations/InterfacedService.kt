@@ -2,11 +2,7 @@ package io.github.freya022.botcommands.api.core.service.annotations
 
 import io.github.freya022.botcommands.api.core.GlobalExceptionHandler
 import io.github.freya022.botcommands.api.core.JDAService
-import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
-import io.github.freya022.botcommands.api.localization.providers.LocalizationMapProvider
-import io.github.freya022.botcommands.api.localization.readers.LocalizationMapReader
 
 /**
  * Marker annotation on interfaces intended to be implemented by a service.
@@ -24,13 +20,7 @@ import io.github.freya022.botcommands.api.localization.readers.LocalizationMapRe
  *
  * @see JDAService
  *
- * @see BotCommandsMessagesFactory
- *
  * @see GlobalExceptionHandler
- *
- * @see LocalizationMapProvider
- * @see LocalizationMapReader
- * @see FormattableArgumentFactory
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)

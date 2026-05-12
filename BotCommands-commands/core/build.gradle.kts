@@ -23,6 +23,7 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
     api(projects.botCommandsRateLimit)
+    api(projects.botCommandsLocalization)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 

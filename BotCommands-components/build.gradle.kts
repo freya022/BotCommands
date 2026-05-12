@@ -30,6 +30,7 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
     api(projects.botCommandsRateLimit)
+    api(projects.botCommandsLocalization)
     implementation(projects.botCommandsJdaKtx)
 
     // Database module

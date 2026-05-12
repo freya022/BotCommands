@@ -26,6 +26,7 @@ dependencies {
     api(projects.botCommandsCore)
     api(projects.botCommandsCommands.core)
     api(projects.botCommandsRateLimit)
+    api(projects.botCommandsLocalization)
     implementation(projects.botCommandsJdaKtx)
 
     // Database (optional, for commands caching)
