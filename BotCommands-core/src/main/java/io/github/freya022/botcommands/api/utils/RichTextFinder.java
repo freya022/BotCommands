@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.utils;
 
+import net.dv8tion.jda.api.entities.Message.MentionType;
 import net.fellbaum.jemoji.Emoji;
 import net.fellbaum.jemoji.EmojiManager;
 import net.fellbaum.jemoji.IndexedEmoji;
@@ -50,15 +51,15 @@ public class RichTextFinder {
         this.matcher = EMPTY_PATTERN.matcher(this.input);
 
         if (getIMentionable) {
-            findAllMentions(RichTextType.USER, RichTextType.USER.getPattern());
-            findAllMentions(RichTextType.CHANNEL, RichTextType.CHANNEL.getPattern());
-            findAllMentions(RichTextType.EMOJI, RichTextType.EMOJI.getPattern());
-            findAllMentions(RichTextType.ROLE, RichTextType.ROLE.getPattern());
+            findAllMentions(RichTextType.USER, MentionType.USER.getPattern());
+            findAllMentions(RichTextType.CHANNEL, MentionType.CHANNEL.getPattern());
+            findAllMentions(RichTextType.EMOJI, MentionType.EMOJI.getPattern());
+            findAllMentions(RichTextType.ROLE, MentionType.ROLE.getPattern());
         }
 
         if (getGlobalMentions) {
-            findAllMentions(RichTextType.HERE, RichTextType.HERE.getPattern());
-            findAllMentions(RichTextType.EVERYONE, RichTextType.EVERYONE.getPattern());
+            findAllMentions(RichTextType.HERE, MentionType.HERE.getPattern());
+            findAllMentions(RichTextType.EVERYONE, MentionType.EVERYONE.getPattern());
         }
 
         if (getEmojis) {
