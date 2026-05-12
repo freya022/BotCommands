@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.db.query
 
+import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.InterfacedService
 import java.sql.Connection

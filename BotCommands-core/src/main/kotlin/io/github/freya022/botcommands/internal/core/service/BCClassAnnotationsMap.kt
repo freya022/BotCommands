@@ -5,12 +5,6 @@ import io.github.freya022.botcommands.api.core.service.annotations.RequiresDefau
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceType
 import kotlin.reflect.KClass
 
-/**
- * NOTE: As this only contains annotated classes,
- * this means that service factories are not checked for their annotations.
- * For example, you cannot retrieve services annotated with [@Command][io.github.freya022.botcommands.api.commands.annotations.Command],
- * unless the class itself has the annotation
- */
 @BService(priority = Int.MAX_VALUE - 1)
 @ServiceType(ClassAnnotationsMap::class)
 @RequiresDefaultInjection

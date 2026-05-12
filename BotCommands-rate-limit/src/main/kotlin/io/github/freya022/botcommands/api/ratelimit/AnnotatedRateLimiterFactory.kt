@@ -5,7 +5,7 @@ import io.github.freya022.botcommands.api.ratelimit.bucket.BucketConfigurationSu
 
 /**
  * Creates [RateLimiter] instances for annotations which creates rate limits,
- * such as [@RateLimit][RateLimit] and [@Cooldown][Cooldown].
+ * the default implementation uses [RateLimiter.createDefault].
  *
  * ### Example
  * ```java
