@@ -5,7 +5,10 @@ import dev.freya02.jda.emojis.unicode.UnicodeEmojisManager.IndexedEmoji;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +32,7 @@ import java.util.regex.Pattern;
 @NullMarked
 public class RichTextFinder {
     private static final Pattern URL_PATTERN = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+    private static final Pattern EXACT_CUSTOM_EMOJI_PATTERN = Pattern.compile("^<a?:[a-zA-Z0-9_]+:[0-9]+>");
     private static final Pattern EMPTY_PATTERN = Pattern.compile("");
 
     private final String input;
@@ -127,7 +131,7 @@ public class RichTextFinder {
                 continue;
             }
 
-            if (!isInCustomEmote(emoji)) {
+            if (!isInCustomEmote(aliasBegin, aliasEnd)) {
                 normalMentionMap.put(aliasBegin, new RichText(emoji, RichTextType.UNICODE_EMOTE));
                 addedStrs.put(aliasBegin, input.substring(aliasBegin, aliasEnd + 1));
             }
@@ -136,20 +140,25 @@ public class RichTextFinder {
         }
     }
 
-    private boolean isInCustomEmote(Emoji emoji) {
-        for (RichText richText : normalMentionMap.values()) {
-            if (richText.type != RichTextType.EMOJI) continue;
-
-            for (String aliasItem : emoji.getDiscordAliases()) {
-                final boolean customEmoteHasEmoji = richText.substring.startsWith(aliasItem, 1);
-
-                if (customEmoteHasEmoji) {
-                    return true;
-                }
-            }
+    // This cannot be implemented by checking the ranges of found "EMOJI" substrings,
+    // as the custom emoji parser may have been disabled
+    private boolean isInCustomEmote(int aliasBegin, int aliasEnd) {
+        int nearestChevron = input.lastIndexOf("<", aliasBegin);
+        if (nearestChevron == -1) {
+            // No custom emoji behind
+            return false;
         }
 
-        return false;
+        // Check if there is a custom emoji, and if there is, if the alias is included in the custom emoji's range
+        Matcher matcher = EXACT_CUSTOM_EMOJI_PATTERN.matcher(input).region(nearestChevron, input.length());
+        if (matcher.matches()) {
+            // Is the alias inside the custom emoji?
+            // No need to check the start bound, it is already set to the nearest '<'
+            return aliasEnd < matcher.end();
+        } else {
+            // Not a custom emoji
+            return false;
+        }
     }
 
     private void extractUnicodeEmojis() {
