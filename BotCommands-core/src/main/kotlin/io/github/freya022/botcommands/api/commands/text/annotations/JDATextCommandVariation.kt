@@ -69,6 +69,8 @@ import net.dv8tion.jda.internal.utils.Checks
  * ### Rate limiting
  *
  * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown].
+ * The annotations apply to the command itself, not only this variation,
+ * in other words, this applies to all commands with the same path.
  *
  * @see Category @Category
  * @see Hidden @Hidden
