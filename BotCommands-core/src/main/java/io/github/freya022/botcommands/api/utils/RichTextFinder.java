@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.utils;
 
 import dev.freya02.jda.emojis.unicode.UnicodeEmojisManager;
+import dev.freya02.jda.emojis.unicode.UnicodeEmojisManager.IndexedEmoji;
 import net.dv8tion.jda.api.entities.Message.MentionType;
 import org.jspecify.annotations.NullMarked;
 
@@ -152,9 +153,9 @@ public class RichTextFinder {
     }
 
     private void extractUnicodeEmojis() {
-        for (IndexedEmoji indexedEmoji : EmojiManager.extractEmojisInOrderWithIndex(input)) {
-            normalMentionMap.put(indexedEmoji.getCharIndex(), new RichText(indexedEmoji.getEmoji().getEmoji(), RichTextType.UNICODE_EMOTE));
-            addedStrs.put(indexedEmoji.getCharIndex(), indexedEmoji.getEmoji().getEmoji());
+        for (IndexedEmoji indexedEmoji : UnicodeEmojisManager.extractEmojiInOrder(input)) {
+            normalMentionMap.put(indexedEmoji.getIndex(), new RichText(indexedEmoji.getSurrogates(), RichTextType.UNICODE_EMOTE));
+            addedStrs.put(indexedEmoji.getIndex(), indexedEmoji.getSurrogates());
         }
     }
 
