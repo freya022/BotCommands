@@ -1,4 +1,5 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.registerSourceSet
 
 plugins {
     id("repositories-conventions")
@@ -7,6 +8,12 @@ plugins {
     id("dokka-conventions")
     id("spring-configuration-metadata-conventions")
 }
+
+// Register other source sets
+// NOTE: Register them before dependencies, or you won't be able to add deps to them
+// Use different source sets so we can use the same class names without clashes
+registerSourceSet(name = "javaDocExamples")
+registerSourceSet(name = "kotlinDocExamples")
 
 val byteBuddyAgent: Configuration by configurations.creating
 

@@ -81,20 +81,6 @@ dependencies {
     "javaDocExamplesImplementation"(projects.botCommandsCommands.text)
     "kotlinDocExamplesImplementation"(projects.botCommandsCommands.text)
 
-    // Application commands (rare examples that are about core features but use a different module to demonstrate)
-    "javaDocExamplesImplementation"(projects.botCommandsCommands.app)
-    "kotlinDocExamplesImplementation"(projects.botCommandsCommands.app)
-
-    // Database
-    "javaDocExamplesImplementation"(libs.hikaricp)
-    "kotlinDocExamplesImplementation"(libs.hikaricp)
-    "javaDocExamplesImplementation"(projects.botCommandsDatabase)
-    "kotlinDocExamplesImplementation"(projects.botCommandsDatabase)
-
-    // Persistent rate limiting
-    "javaDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
-    "kotlinDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
-
     // -------------------- EXAMPLES DEPENDENCIES --------------------
 
     // Logging

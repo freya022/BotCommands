@@ -1,4 +1,5 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.registerSourceSet
 
 plugins {
     id("repositories-conventions")
@@ -6,6 +7,12 @@ plugins {
     id("publish-conventions")
     id("dokka-conventions")
 }
+
+// Register other source sets
+// NOTE: Register them before dependencies, or you won't be able to add deps to them
+// Use different source sets so we can use the same class names without clashes
+registerSourceSet(name = "javaDocExamples")
+registerSourceSet(name = "kotlinDocExamples")
 
 val byteBuddyAgent: Configuration by configurations.creating
 
@@ -28,6 +35,22 @@ dependencies {
 
     // Spring context
     compileOnly(libs.spring.context) // Optional
+
+    // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
+
+    // Application commands
+    "javaDocExamplesImplementation"(projects.botCommandsCommands.app)
+    "kotlinDocExamplesImplementation"(projects.botCommandsCommands.app)
+
+    // Database
+    "javaDocExamplesImplementation"(libs.hikaricp)
+    "kotlinDocExamplesImplementation"(libs.hikaricp)
+    "javaDocExamplesImplementation"(projects.botCommandsDatabase)
+    "kotlinDocExamplesImplementation"(projects.botCommandsDatabase)
+
+    // Persistent rate limiting
+    "javaDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
+    "kotlinDocExamplesImplementation"(libs.bucket4j.jdk17.postgresql)
 
     // -------------------- TEST DEPENDENCIES --------------------
 
