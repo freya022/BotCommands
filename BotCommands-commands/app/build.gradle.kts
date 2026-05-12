@@ -44,6 +44,9 @@ dependencies {
     // Fuzzy matching
     implementation(libs.java.string.similarity)
 
+    // Efficient data structures
+    implementation(libs.trove4j.core)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)

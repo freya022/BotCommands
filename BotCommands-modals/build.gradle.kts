@@ -32,7 +32,8 @@ dependencies {
     api(projects.botCommandsLocalization)
     implementation(projects.botCommandsJdaKtx)
 
-    // -------------------- GLOBAL DEPENDENCIES --------------------
+    // Efficient data structures
+    implementation(libs.trove4j.core)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 

@@ -15,6 +15,9 @@ dependencies {
     implementation(libs.slf4j.api)
     implementation(libs.kotlin.logging)
 
+    // Efficient data structures
+    implementation(libs.trove4j.core)
+
     // JDA
     compileOnly(libs.jda)
     api(projects.botCommandsCore)

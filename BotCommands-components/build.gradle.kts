@@ -36,7 +36,8 @@ dependencies {
     // Database module
     implementation(projects.botCommandsDatabase)
 
-    // -------------------- GLOBAL DEPENDENCIES --------------------
+    // Efficient data structures
+    api(libs.trove4j.core)
 
     // Rate limiting
     implementation(libs.bucket4j.jdk17.core)

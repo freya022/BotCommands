@@ -49,7 +49,7 @@ dependencies {
     api(libs.jackson.module.kotlin)
 
     // Efficient data structures
-    api(libs.trove4j.core)
+    implementation(libs.trove4j.core)
 
     // Rate limiting
     api(libs.bucket4j.jdk17.core)
