@@ -56,12 +56,8 @@ dependencies {
 
     // -------------------- EMOJI DEPENDENCIES --------------------
 
-    // All Unicode emojis
-    api(libs.jemoji)
     // JDA-specific emojis
-    api(libs.jda.emojis) {
-        exclude(module = "JDA")
-    }
+    api(libs.jda.emojis)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
