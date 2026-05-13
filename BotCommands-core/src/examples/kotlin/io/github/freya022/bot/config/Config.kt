@@ -1,8 +1,8 @@
 package io.github.freya022.bot.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
@@ -35,7 +35,7 @@ data class Config(val token: String,
         val instance: Config by lazy {
             logger.info { "Loading configuration at ${configFilePath.absolutePathString()}" }
 
-            return@lazy DefaultObjectMapper.mapper.readValue(configFilePath.readText())
+            return@lazy ObjectMapper().readValue(configFilePath.readText())
         }
     }
 }

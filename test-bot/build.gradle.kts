@@ -18,6 +18,10 @@ dependencies {
     testImplementation(libs.kotlin.logging)
     testImplementation(projects.botCommandsJdaKtx)
 
+    // Deserialization
+    testImplementation(libs.jackson.databind)
+    testImplementation(libs.jackson.module.kotlin)
+
     // Logging
     testImplementation(libs.logback.classic)
 

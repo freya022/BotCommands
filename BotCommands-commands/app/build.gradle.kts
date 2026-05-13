@@ -39,6 +39,10 @@ dependencies {
     // Database (optional, for commands caching)
     compileOnly(projects.botCommandsDatabase)
 
+    // Deserialization
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.module.kotlin)
+
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
     // Fuzzy matching

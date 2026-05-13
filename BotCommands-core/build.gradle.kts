@@ -44,10 +44,6 @@ dependencies {
 
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
-    // Deserialization
-    api(libs.jackson.databind)
-    api(libs.jackson.module.kotlin)
-
     // Efficient data structures
     implementation(libs.trove4j.core)
 
@@ -87,6 +83,10 @@ dependencies {
     "examplesImplementation"(projects.botCommandsDatabase)
     "examplesImplementation"(libs.h2)
     "examplesImplementation"(libs.flyway.core)
+
+    // Deserialization
+    "examplesImplementation"(libs.jackson.databind)
+    "examplesImplementation"(libs.jackson.module.kotlin)
 
     // Text commands
     "examplesImplementation"(projects.botCommandsCommands.text)

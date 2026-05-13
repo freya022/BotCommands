@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import dev.freya02.botcommands.jda.ktx.coroutines.await
 import io.github.freya022.botcommands.api.commands.INamedCommand
 import io.github.freya022.botcommands.api.commands.application.TopLevelApplicationCommandInfo
@@ -14,7 +16,6 @@ import io.github.freya022.botcommands.api.core.IDeclarationSiteHolder
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig.LogDataIf
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
 import io.github.freya022.botcommands.internal.commands.application.cache.factory.ApplicationCommandsCacheFactory
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLogger
@@ -154,8 +155,8 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun checkCommandJson(oldData: String): Boolean {
         val newBytes = commandData.toJsonBytes()
 
-        val oldCommands = DefaultObjectMapper.readList(oldData) as List<Map<String, *>>
-        val newCommands = DefaultObjectMapper.readList(newBytes) as List<Map<String, *>>
+        val oldCommands = mapper.readValue<List<Map<String, *>>>(oldData)
+        val newCommands = mapper.readValue<List<Map<String, *>>>(newBytes)
 
         val isSame = DiffLogger.withLogger(guild.asScopeString()) {
             cacheConfig.diffEngine.instance.checkCommands(oldCommands, newCommands)
@@ -295,6 +296,8 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun Collection<CommandData>.toJsonBytes(): ByteArray = DataArray.fromCollection(this).toJson()
 
     companion object {
+        private val mapper = ObjectMapper()
+
         fun ofGlobal(context: BContextImpl, manager: GlobalApplicationCommandManager): ApplicationCommandsUpdater {
             return ApplicationCommandsUpdater(context, null, manager)
         }

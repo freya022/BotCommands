@@ -1,7 +1,8 @@
 package io.github.freya022.botcommands.commands.application.diff
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.freya022.botcommands.api.commands.application.diff.DiffEngine
-import io.github.freya022.botcommands.api.core.utils.DefaultObjectMapper
 import io.github.freya022.botcommands.api.core.utils.readResource
 import io.github.freya022.botcommands.internal.commands.application.diff.DiffLoggerImpl
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -9,6 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
 object JsonDiffTest {
+
+    private val mapper = ObjectMapper()
 
     @ParameterizedTest
     @EnumSource(DiffEngine::class)
@@ -36,8 +39,8 @@ object JsonDiffTest {
 
     @Suppress("UNCHECKED_CAST")
     private fun runTest(diffEngine: DiffEngine, folderName: String, shouldBeEqual: Boolean) {
-        val oldMap = readResource("/commands_data/$folderName/old.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
-        val newMap = readResource("/commands_data/$folderName/new.json").let(DefaultObjectMapper::readList) as List<Map<String, *>>
+        val oldMap: List<Map<String, *>> = readResource("/commands_data/$folderName/old.json").let(mapper::readValue)
+        val newMap: List<Map<String, *>> = readResource("/commands_data/$folderName/new.json").let(mapper::readValue)
 
         DiffLoggerImpl("tests").apply {
             val isEqual = diffEngine.instance.checkCommands(oldMap, newMap)

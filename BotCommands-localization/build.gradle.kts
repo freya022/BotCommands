@@ -30,6 +30,10 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
 
+    // Deserialization
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.module.kotlin)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring context

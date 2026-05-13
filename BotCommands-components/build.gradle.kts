@@ -33,6 +33,10 @@ dependencies {
     api(projects.botCommandsLocalization)
     implementation(projects.botCommandsJdaKtx)
 
+    // Deserialization
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.module.kotlin)
+
     // Database module
     implementation(projects.botCommandsDatabase)
 
