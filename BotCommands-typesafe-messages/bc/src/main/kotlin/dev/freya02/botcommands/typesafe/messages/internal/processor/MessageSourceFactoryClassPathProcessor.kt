@@ -5,8 +5,8 @@ import dev.freya02.botcommands.typesafe.messages.api.annotations.MessageSourceFa
 import dev.freya02.botcommands.typesafe.messages.internal.codegen.MessageSourceFactoryGenerator
 import io.github.freya022.botcommands.api.core.service.BCServiceContainer
 import io.github.freya022.botcommands.api.core.service.ServiceSupplier
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.core.ClassPathProcessor
+import io.github.freya022.botcommands.internal.utils.shortQualifiedName
 import kotlin.reflect.KClass
 
 internal object MessageSourceFactoryClassPathProcessor : ClassPathProcessor {

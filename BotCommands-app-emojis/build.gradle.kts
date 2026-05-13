@@ -24,6 +24,8 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
 
+    implementation(libs.classgraph)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)

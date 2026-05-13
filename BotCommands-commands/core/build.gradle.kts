@@ -25,6 +25,8 @@ dependencies {
     api(projects.botCommandsRateLimit)
     api(projects.botCommandsLocalization)
 
+    implementation(libs.classgraph)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring context

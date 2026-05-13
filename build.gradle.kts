@@ -32,6 +32,7 @@ dependencies {
     // Architecture tests
     testImplementation(libs.konsist)
     testImplementation(libs.kotlin.metadata)
+    testImplementation(libs.classgraph)
 
     // ---------------------- AGGREGATED DOCS DEPENDENCIES ----------------------
 

@@ -25,6 +25,8 @@ dependencies {
     // Logging
     implementation(libs.kotlin.logging)
 
+    implementation(libs.classgraph)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot

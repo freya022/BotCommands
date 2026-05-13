@@ -37,7 +37,7 @@ dependencies {
     implementation(projects.botCommandsJdaKtx)
 
     // Classpath scanning
-    api(libs.classgraph)
+    implementation(libs.classgraph)
 
     api(projects.botCommandsMethodAccessors.core) // API due to opt-in annotation
     implementation(projects.botCommandsMethodAccessors.kotlinReflect)

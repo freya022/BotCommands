@@ -2,7 +2,9 @@ package io.github.freya022.botcommands.internal.parameters.resolvers
 
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
-import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.core.utils.isAssignableFrom
+import io.github.freya022.botcommands.api.core.utils.isSubclassOf
+import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.parameters.ParameterResolver
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.internal.core.ClassPathProcessor
@@ -12,6 +14,8 @@ import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.M
 import io.github.freya022.botcommands.internal.parameters.resolvers.exceptions.MissingResolverSuperclass
 import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.classRef
+import io.github.freya022.botcommands.internal.utils.shortQualifiedName
+import io.github.freya022.botcommands.internal.utils.shortSignature
 import java.lang.reflect.Method
 
 // This checker works on all classes from the user packages, but only on "services" of internal classes

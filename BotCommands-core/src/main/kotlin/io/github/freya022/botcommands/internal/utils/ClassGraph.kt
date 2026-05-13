@@ -1,6 +1,4 @@
-@file:JvmName("ClassGraphUtils")
-
-package io.github.freya022.botcommands.api.core.utils
+package io.github.freya022.botcommands.internal.utils
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo

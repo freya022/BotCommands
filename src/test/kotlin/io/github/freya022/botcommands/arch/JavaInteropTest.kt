@@ -11,7 +11,7 @@ import io.github.classgraph.BaseTypeSignature
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
+import io.github.freya022.botcommands.internal.utils.shortQualifiedName
 import java.lang.reflect.Method
 import java.lang.reflect.Type
 import java.time.Duration as JavaDuration

@@ -18,6 +18,8 @@ dependencies {
     // Logging
     implementation(libs.kotlin.logging)
 
+    implementation(libs.classgraph)
+
     // -------------------- TEST DEPENDENCIES --------------------
 
     // JUnit + Mockk + Logback
