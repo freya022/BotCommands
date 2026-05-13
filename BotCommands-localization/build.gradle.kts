@@ -2,7 +2,6 @@ import dev.freya02.botcommands.plugins.configureJarArtifact
 import dev.freya02.botcommands.utils.registerSourceSet
 
 plugins {
-    id("repositories-conventions")
     id("kotlin-conventions")
     id("publish-conventions")
     id("dokka-conventions")

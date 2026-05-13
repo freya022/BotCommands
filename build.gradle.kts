@@ -1,7 +1,6 @@
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 
 plugins {
-    id("repositories-conventions")
     id("kotlin-conventions")
     id("publish-conventions")
 
