@@ -24,7 +24,7 @@ class H2DatabaseSource : HikariSourceSupplier {
 
     init {
         //Migrate BC tables
-        createFlyway("bc", "bc_database_scripts").migrate()
+        createFlyway("bc_commands_app", "db/bc-migration/app-commands").migrate()
 
         //You can use the same function for your database, you just have to change the schema and scripts location
         //Migrate BC test tables
