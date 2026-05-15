@@ -11,7 +11,7 @@ import java.sql.Connection
 @IgnoreServiceTypes(Database::class)
 internal class InternalDatabase internal constructor(private val database: Database) : Database by database {
     override suspend fun fetchConnection(readOnly: Boolean): Connection {
-        val connection = database.fetchConnection()
+        val connection = database.fetchConnection(readOnly)
         return object : Connection by connection {
             private val defaultSchema = schema
 
