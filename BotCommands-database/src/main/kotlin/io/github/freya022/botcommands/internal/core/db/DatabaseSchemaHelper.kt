@@ -66,6 +66,24 @@ object DatabaseSchemaHelper {
             //            .baselineVersion("4.0.0.2026.05.13")
             //            .load()
             //            .baseline()
+
+            // ALTER TABLE bc.bc_component_component_group
+            // SET SCHEMA bc_components;
+            //
+            // ALTER TABLE bc.bc_component_constraints
+            // SET SCHEMA bc_components;
+            //
+            // ALTER TABLE bc.bc_ephemeral_handler
+            // SET SCHEMA bc_components;
+            //
+            // ALTER TABLE bc.bc_ephemeral_timeout
+            // SET SCHEMA bc_components;
+            //
+            // ALTER TABLE bc.bc_persistent_handler
+            // SET SCHEMA bc_components;
+            //
+            // ALTER TABLE bc.bc_persistent_timeout
+            // SET SCHEMA bc_components;
             logger.warn { "The 3.X schema needs to be migrated to 4.X. Current version: '$oldSchemaVersion'. $fallbackMessage" }
             return false
         }
