@@ -17,13 +17,13 @@ class TestH2Source : ConnectionSupplier {
     override fun getConnection(): Connection = source.connection
 
     init {
-        createFlyway("bc", "bc_database_scripts").migrate()
+        createFlyway("bc", scriptLocations = arrayOf("bc_database_scripts/generic", "bc_database_scripts/h2")).migrate()
     }
 
-    private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure(javaClass.classLoader)
+    private fun createFlyway(schema: String, vararg scriptLocations: String): Flyway = Flyway.configure(javaClass.classLoader)
         .dataSource(source)
         .schemas(schema)
-        .locations(scriptsLocation)
+        .locations(*scriptLocations)
         .validateMigrationNaming(true)
         .loggers("slf4j")
         .load()

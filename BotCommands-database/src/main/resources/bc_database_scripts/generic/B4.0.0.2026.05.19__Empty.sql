@@ -1,0 +1,2 @@
+-- Empty script, this only exists so people who use old instructions on an empty database won't create unnecessary stuff
+-- and if they notice nothing was done, it should make them realize.
