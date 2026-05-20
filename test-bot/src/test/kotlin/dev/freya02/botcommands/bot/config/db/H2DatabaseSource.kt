@@ -33,7 +33,7 @@ class H2DatabaseSource : HikariSourceSupplier {
         logger.info { "Created database source" }
     }
 
-    private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure()
+    private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure(javaClass.classLoader)
         .dataSource(source)
         .schemas(schema)
         .locations(scriptsLocation)
