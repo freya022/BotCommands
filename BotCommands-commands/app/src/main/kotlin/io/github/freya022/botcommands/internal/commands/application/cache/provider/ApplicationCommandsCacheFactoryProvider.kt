@@ -72,7 +72,19 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 }
 
-                if (!validateDatabaseCacheSchema(database)) {
+                // Can't move to method due to reflection loading `Database` (which is `compileOnly`)
+                val isSchemaValid = runBlocking {
+                    DatabaseSchemaHelper.validateSchemaVersion(
+                        logger,
+                        database,
+                        schemaName = "bc_commands_app",
+                        // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
+                        latestVersion = "4.0.0-alpha.1", // Change in the latest migration script too
+                        featureName = "application commands",
+                        fallbackMessage = "Falling back to an in-memory store."
+                    )
+                }
+                if (!isSchemaValid) {
                     return MemoryApplicationCommandsCacheFactory(cacheConfig)
                 }
 
@@ -81,17 +93,5 @@ internal open class ApplicationCommandsCacheFactoryProvider {
             }
             else -> throwInternal("Unsupported cache config: $cacheConfig")
         }
-    }
-
-    private fun validateDatabaseCacheSchema(database: Database): Boolean = runBlocking {
-        DatabaseSchemaHelper.validateSchemaVersion(
-            logger,
-            database,
-            schemaName = "bc_commands_app",
-            // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
-            latestVersion = "4.0.0-alpha.1", // Change in the latest migration script too
-            featureName = "application commands",
-            fallbackMessage = "Falling back to an in-memory store."
-        )
     }
 }
