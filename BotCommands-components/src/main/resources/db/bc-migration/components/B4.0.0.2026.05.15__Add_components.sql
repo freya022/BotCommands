@@ -1,4 +1,4 @@
-SET search_path TO bc_components;
+SET SCHEMA 'bc_components';
 
 -- region Setup
 CREATE TABLE schema_version
@@ -98,5 +98,3 @@ CREATE TABLE bc_component_component_group
     PRIMARY KEY (group_id, component_id)
 );
 -- endregion
-
-RESET search_path;
