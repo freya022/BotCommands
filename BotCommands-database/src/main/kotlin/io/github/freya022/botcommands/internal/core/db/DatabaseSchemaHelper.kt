@@ -41,49 +41,7 @@ object DatabaseSchemaHelper {
                 return false
             }
 
-            // TODO document 3.X -> 4.X migration process (test on H2),
-            //  the user needs to run all migrations until latest 3.X,
-            //  and run:
-            //    ALTER TABLE bc.application_commands_cache
-            //      SET SCHEMA bc_commands_app
-            //
-            //    CREATE TABLE bc_commands_app.schema_version
-            //    (
-            //        one_row bool DEFAULT TRUE,
-            //        version text NOT NULL,
-            //
-            //        PRIMARY KEY (one_row),
-            //        CHECK (one_row)
-            //    );
-            //
-            //    INSERT INTO bc_commands_app.schema_version
-            //    VALUES (TRUE, '4.0.0-alpha.1');
-            //  finally:
-            //    Flyway.configure(javaClass.classLoader)
-            //            .dataSource(source)
-            //            .schemas("bc_commands_app")
-            //            .locations("db/bc-migration/app-commands")
-            //            .baselineVersion("4.0.0.2026.05.13")
-            //            .load()
-            //            .baseline()
-
-            // ALTER TABLE bc.bc_component_component_group
-            // SET SCHEMA bc_components;
-            //
-            // ALTER TABLE bc.bc_component_constraints
-            // SET SCHEMA bc_components;
-            //
-            // ALTER TABLE bc.bc_ephemeral_handler
-            // SET SCHEMA bc_components;
-            //
-            // ALTER TABLE bc.bc_ephemeral_timeout
-            // SET SCHEMA bc_components;
-            //
-            // ALTER TABLE bc.bc_persistent_handler
-            // SET SCHEMA bc_components;
-            //
-            // ALTER TABLE bc.bc_persistent_timeout
-            // SET SCHEMA bc_components;
+            // TODO document 3.X -> 4.X migration process
             logger.warn { "The 3.X schema needs to be migrated to 4.X. Current version: '$oldSchemaVersion'. $fallbackMessage" }
             return false
         }
