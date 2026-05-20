@@ -17,7 +17,12 @@ class TestH2Source : ConnectionSupplier {
     override fun getConnection(): Connection = source.connection
 
     init {
+        // Just to make sure old migrations still work
         createFlyway("bc", scriptLocations = arrayOf("bc_database_scripts/generic", "bc_database_scripts/h2")).migrate()
+
+        // Actual migrations
+        createFlyway("bc_commands_app", scriptLocations = arrayOf("db/bc-migration/app-commands")).migrate()
+        createFlyway("bc_components", scriptLocations = arrayOf("db/bc-migration/components")).migrate()
     }
 
     private fun createFlyway(schema: String, vararg scriptLocations: String): Flyway = Flyway.configure(javaClass.classLoader)
