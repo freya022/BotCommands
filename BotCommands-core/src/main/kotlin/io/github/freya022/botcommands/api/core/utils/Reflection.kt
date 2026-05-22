@@ -209,7 +209,7 @@ fun KFunction<*>.getSignature(
     val parameters = getParameters(parameterNames, qualifiedTypes)
 
     append("$declaringClassName.$methodName($parameters)")
-    if (returnType)
+    if (returnType && !isConstructor)
         append(": ${getReturnType(qualifiedTypes)}")
     if (source)
         append(" (${getSource()})")
