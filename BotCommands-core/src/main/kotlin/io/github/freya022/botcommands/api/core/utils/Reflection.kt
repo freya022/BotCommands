@@ -195,6 +195,7 @@ val Class<*>.allInterfaces: List<Class<*>>
     }
 
 fun KFunction<*>.getSignature(
+    parameters: Boolean = true,
     parameterNames: List<String> = listOf(),
     qualifiedClass: Boolean = false,
     qualifiedTypes: Boolean = false,
@@ -206,7 +207,7 @@ fun KFunction<*>.getSignature(
         else -> declaringClass.simpleNestedName
     }
     val methodName = name
-    val parameters = getParameters(parameterNames, qualifiedTypes)
+    val parameters = if (parameters) getParameters(parameterNames, qualifiedTypes) else "..."
 
     append("$declaringClassName.$methodName($parameters)")
     if (returnType && !isConstructor)
@@ -215,7 +216,7 @@ fun KFunction<*>.getSignature(
         append(" (${getSource()})")
 }
 
-fun KFunction<*>.getParameters(parameterNames: List<String>, qualifiedTypes: Boolean): String {
+private fun KFunction<*>.getParameters(parameterNames: List<String>, qualifiedTypes: Boolean): String {
     return valueParameters.joinToString {
         val type = if (qualifiedTypes) it.type.qualifiedNestedName else it.type.simpleNestedName
         when (it.name) {
