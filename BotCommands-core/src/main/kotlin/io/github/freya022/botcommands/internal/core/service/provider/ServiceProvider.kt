@@ -22,6 +22,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
+import kotlin.time.TimedValue
 import kotlin.time.measureTimedValue
 
 /**
@@ -31,8 +32,20 @@ internal typealias ProviderName = String
 
 internal typealias Instance = Any
 
-// Don't use TimedValue as it is nullable
-internal data class TimedInstantiation<R : Instance>(val instance: R, val duration: Duration)
+@JvmInline
+internal value class TimedInstantiation<R : Instance> private constructor(private val value: TimedValue<R>) {
+    val instance: R get() = value.value
+    val duration: Duration get() = value.duration
+
+    operator fun component1() = instance
+    operator fun component2() = duration
+
+    companion object {
+        inline fun <R : Instance> of(block: () -> R): TimedInstantiation<R> {
+            return TimedInstantiation(measureTimedValue(block))
+        }
+    }
+}
 
 internal sealed interface ServiceProvider : Comparable<ServiceProvider> {
     val name: String
@@ -259,11 +272,6 @@ private fun ServiceProvider.checkCustomCondition(serviceContainer: BCServiceCont
     }
 }
 
-internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedInstantiation<T> {
-    val (value, duration) = measureTimedValue(block)
-    return TimedInstantiation(value, duration)
-}
-
 internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
         serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
@@ -312,7 +320,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceCo
         }
     }
 
-    return measureTimedInstantiation {
+    return TimedInstantiation.of {
         accessor.call(args)
             ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
                 errorMessage = "Service factory returned null",
