@@ -38,7 +38,7 @@ internal class BCInstantiableServices internal constructor(serviceProviders: Ser
                     serviceError.errorMessage
                 )
 
-                /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE,*/ ServiceError.ErrorType.INVALID_CONSTRUCTING_FUNCTION, ServiceError.ErrorType.INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
+                /*UNAVAILABLE_PARAMETER, UNAVAILABLE_INJECTED_SERVICE,*/ ServiceError.ErrorType.INVALID_TYPE/*, FAILED_FATAL_CUSTOM_CONDITION*/ ->
                 throwArgument("Could not load lazy service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
                 else -> provider
@@ -49,7 +49,7 @@ internal class BCInstantiableServices internal constructor(serviceProviders: Ser
                     serviceError.errorMessage
                 )
 
-                ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.INVALID_CONSTRUCTING_FUNCTION, ServiceError.ErrorType.INVALID_TYPE, ServiceError.ErrorType.FAILED_FATAL_CUSTOM_CONDITION ->
+                ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.INVALID_TYPE, ServiceError.ErrorType.FAILED_FATAL_CUSTOM_CONDITION ->
                     throwArgument("Could not load service provider '${provider.name}':\n${serviceError.toDetailedString()}")
 
                 ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY, ServiceError.ErrorType.FAILED_CONDITION, ServiceError.ErrorType.FAILED_CUSTOM_CONDITION, ServiceError.ErrorType.UNAVAILABLE_INSTANCE -> {

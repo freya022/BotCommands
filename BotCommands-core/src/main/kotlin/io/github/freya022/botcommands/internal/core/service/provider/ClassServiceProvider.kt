@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
-import io.github.freya022.botcommands.api.core.service.ServiceResult
 import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
@@ -13,14 +12,11 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.throwInternal
-import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.jvmName
-
-private val logger = KotlinLogging.logger { }
 
 internal class ClassServiceProvider internal constructor(
     private val clazz: KClass<*>
@@ -46,6 +42,23 @@ internal class ClassServiceProvider internal constructor(
     override val isLazy = hasAnnotation<Lazy>()
     override val priority = getAnnotatedServicePriority()
 
+    /** `null` = object */
+    private val constructor: KFunction<*>?
+
+    init {
+        if (clazz.isObject) {
+            constructor = null
+        } else {
+            constructor = requireNotNull(clazz.constructors.singleOrNull()) {
+                "Class ${clazz.simpleNestedName} must have exactly one constructor"
+            }
+
+            require(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
+                "Constructor of ${clazz.simpleNestedName} must be public"
+            }
+        }
+    }
+
     override fun canInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
         // Returns null if there is no error, the error itself if there's one
         if (serviceError !== ServiceProvider.nullServiceError) return serviceError
@@ -65,12 +78,10 @@ internal class ClassServiceProvider internal constructor(
         commonCanInstantiate(serviceContainer, clazz, clazz)?.let { serviceError -> return serviceError }
 
         //Is a singleton
-        if (clazz.isObject) return null
+        if (constructor == null) return null
 
         //Check constructor parameters
-        //It's fine if there's no constructor, it just means it's not instantiable
-        val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
-        constructingFunction.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
+        constructor.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         return null
     }
@@ -96,41 +107,19 @@ internal class ClassServiceProvider internal constructor(
     }
 
     private fun createInstanceNonCached(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-        measureNullableTimedInstantiation { clazz.objectInstance }?.let { timedInstantiation ->
-            return timedInstantiation
+        return when {
+            constructor != null -> constructor.callConstructingFunction(serviceContainer)
+            else -> measureTimedInstantiation { clazz.objectInstance!! }
         }
-
-        val constructingFunction = findConstructingFunction(clazz).getOrThrow()
-
-        return constructingFunction.callConstructingFunction(serviceContainer)
-    }
-
-    private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
-        val constructors = clazz.constructors
-        if (constructors.isEmpty())
-            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Class ${clazz.simpleNestedName} must have an accessible constructor")
-        if (constructors.size != 1)
-            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Class ${clazz.simpleNestedName} must have exactly one constructor")
-
-        val constructor = constructors.single()
-        if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
-            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Constructor of ${clazz.simpleNestedName} must be public")
-        }
-
-        return ServiceResult.pass(constructor)
     }
 
     override fun getProviderFunction(): KFunction<*>? {
-        if (clazz.isObject) return null
-
-        val constructor = clazz.constructors.firstOrNull()
-        if (constructor == null) logger.warn { "No constructor in ${clazz.shortQualifiedName}" }
-
+        // Null if object
         return constructor
     }
 
     override fun getProviderSignature(): String {
-        if (clazz.isObject) return "<object ${clazz.shortQualifiedName}>"
+        if (constructor == null) return "<object ${clazz.shortQualifiedName}>"
         return getProviderFunction()?.getSignature(parameters = false) ?: "<no-provider ${clazz.shortQualifiedName}>"
     }
 

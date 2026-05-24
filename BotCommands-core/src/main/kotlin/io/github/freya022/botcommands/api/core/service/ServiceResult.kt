@@ -18,7 +18,6 @@ class ServiceError private constructor(
 ) {
     enum class ErrorType(val explanation: String) {
         UNKNOWN("Unknown service error"),
-        INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
         NO_PROVIDER("No class annotated as a service or service factories were found"),
         NO_USABLE_PROVIDER("All providers returned errors"),
         NON_UNIQUE_PROVIDERS("Multiple providers were found but none were marked as primary"),
