@@ -7,11 +7,11 @@ import io.github.freya022.botcommands.api.core.service.ServiceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
+import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.isObject
-import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Modifier
@@ -131,7 +131,7 @@ internal class ClassServiceProvider internal constructor(
 
     override fun getProviderSignature(): String {
         if (clazz.isObject) return "<object ${clazz.shortQualifiedName}>"
-        return getProviderFunction()?.shortSignature ?: "<no-provider ${clazz.shortQualifiedName}>"
+        return getProviderFunction()?.getSignature(parameters = false) ?: "<no-provider ${clazz.shortQualifiedName}>"
     }
 
     override fun toString() = providerKey
