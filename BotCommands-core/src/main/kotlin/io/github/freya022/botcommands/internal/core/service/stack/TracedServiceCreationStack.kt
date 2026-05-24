@@ -14,7 +14,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
 
 internal class TracedServiceCreationStack : ServiceCreationStack {
-    private sealed class ServiceOperation<in V>(protected val provider: ServiceProvider) {
+    private sealed class ServiceOperation<in V>(val provider: ServiceProvider) {
         private val mark = TimeSource.Monotonic.markNow()
 
         val providerKey get() = provider.providerKey
@@ -93,6 +93,9 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
     private val localSet: ThreadLocal<Deque<ServiceOperation<*>>> = ThreadLocal.withInitial { ArrayDeque() }
     private val set: Deque<ServiceOperation<*>> get() = localSet.get()
+
+    override val currentProviders: List<ServiceProvider>
+        get() = set.map { it.provider }
 
     override fun contains(provider: ServiceProvider) = set.any { it.providerKey == provider.providerKey }
 
