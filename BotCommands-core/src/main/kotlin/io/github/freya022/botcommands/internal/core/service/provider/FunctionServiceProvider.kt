@@ -53,7 +53,7 @@ internal class FunctionServiceProvider(
     }
 
     private fun checkInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
-        commonCanInstantiate(serviceContainer, function, primaryType)?.let { serviceError -> return serviceError }
+        checkConditions(serviceContainer, function, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         function.instanceParameter?.let { instanceParameter ->

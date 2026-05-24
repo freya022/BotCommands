@@ -146,7 +146,7 @@ internal fun ServiceProvider.getServiceTypes(primaryType: KClass<*>): Set<KClass
     return effectiveTypes
 }
 
-internal fun ServiceProvider.commonCanInstantiate(serviceContainer: BCServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
+internal fun ServiceProvider.checkConditions(serviceContainer: BCServiceContainerImpl, annotatedElement: KAnnotatedElement, checkedClass: KClass<*>): ServiceError? {
     findAnnotations<Dependencies>().forEach { dependencies ->
         dependencies.value.forEach { dependency ->
             val dependencyError = checkDependency(serviceContainer, dependency)
