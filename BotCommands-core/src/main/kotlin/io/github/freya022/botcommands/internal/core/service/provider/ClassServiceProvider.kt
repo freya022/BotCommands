@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Modifier
@@ -82,7 +83,9 @@ internal class ClassServiceProvider internal constructor(
     }
 
     private fun createInstanceNonCached(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-        return constructor.callConstructingFunction(serviceContainer)
+        val accessor = MethodAccessorFactoryProvider.getAccessorFactory().create<Any?>(instance = null, constructor)
+        val args = constructor.getDependencyValues(serviceContainer, accessor)
+        return TimedInstantiation.of { accessor.call(args)!! }
     }
 
     override fun getProviderFunction(): KFunction<*> {
