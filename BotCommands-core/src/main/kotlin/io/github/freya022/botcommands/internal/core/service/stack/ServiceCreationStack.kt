@@ -9,6 +9,8 @@ import io.github.freya022.botcommands.internal.core.service.provider.TimedInstan
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 internal interface ServiceCreationStack {
+    val currentProviders: List<ServiceProvider>
+
     operator fun contains(provider: ServiceProvider): Boolean
 
     fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError?

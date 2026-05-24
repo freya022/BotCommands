@@ -7,6 +7,8 @@ import io.github.freya022.botcommands.api.core.service.annotations.MissingServic
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
+import io.github.freya022.botcommands.internal.core.service.exceptions.ServiceCheckException
+import io.github.freya022.botcommands.internal.core.service.exceptions.ServiceCreationException
 import io.github.freya022.botcommands.internal.core.service.provider.*
 import io.github.freya022.botcommands.internal.core.service.stack.ServiceCreationStackImpl
 import io.github.freya022.botcommands.internal.core.service.stack.TracedServiceCreationStack
@@ -14,6 +16,7 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.declaringClass
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -121,18 +124,34 @@ internal class BCServiceContainerImpl internal constructor(
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : Any> createService(provider: ServiceProvider): T = lock.withLock {
-        try {
-            val instance =  serviceCreationStack.withServiceCreateKey(provider) {
+        val instance = try {
+            serviceCreationStack.withServiceCreateKey(provider) {
                 provider.createInstance(this) as TimedInstantiation<T>
             }
-
-            if (!provider.primaryType.isInstance(instance))
-                throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
-
-            instance
+        } catch (e: ServiceCreationException) {
+            throw e
+        } catch (e: ServiceCheckException) {
+            throw e
         } catch (e: Exception) {
-            e.rethrow("Unable to create service ${provider.primaryType.simpleNestedName}")
+            throw createCreateException(provider, e)
         }
+
+        if (!provider.primaryType.isInstance(instance))
+            throwInternal("Provider primary type is ${provider.primaryType.jvmName} but instance is of type ${instance.javaClass.name}, provider: ${provider.getProviderSignature()}")
+
+        return instance
+    }
+
+    private fun createCreateException(provider: ServiceProvider, e: Exception): ServiceCreationException {
+        val cause = if (e is InvocationTargetException) e.cause!! else e
+        val currentProviders = serviceCreationStack.currentProviders
+        val message = if (currentProviders.isNotEmpty()) {
+            val requiredBy = currentProviders.asReversed().joinAsList { it.getProviderSignature() }
+            "Unable to create service from ${provider.getProviderSignature()}\nAs required by:\n${requiredBy}"
+        } else {
+            "Unable to create service from ${provider.getProviderSignature()}"
+        }
+        throw ServiceCreationException(cause, message)
     }
 
     override fun getServiceNamesForAnnotation(annotationType: KClass<out Annotation>): Collection<String> {
@@ -344,11 +363,30 @@ internal class BCServiceContainerImpl internal constructor(
     internal fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null
 
-        return serviceCreationStack.withServiceCheckKey(provider) {
-            provider.canInstantiate(this)
+        try {
+            return serviceCreationStack.withServiceCheckKey(provider) {
+                provider.canInstantiate(this)
+            }
+        } catch (e: ServiceCreationException) {
+            throw e
+        } catch (e: ServiceCheckException) {
+            throw e
+        } catch (e: Exception) {
+            throw createCheckException(provider, e)
         }
     }
 
+    private fun createCheckException(provider: ServiceProvider, e: Exception): ServiceCheckException {
+        val cause = if (e is InvocationTargetException) e.cause!! else e
+        val currentProviders = serviceCreationStack.currentProviders
+        val message = if (currentProviders.isNotEmpty()) {
+            val requiredBy = currentProviders.asReversed().joinAsList { it.getProviderSignature() }
+            "Unable to check status of service provider ${provider.getProviderSignature()}\nAs required by:\n${requiredBy}"
+        } else {
+            "Unable to check status of service provider ${provider.getProviderSignature()}"
+        }
+        return ServiceCheckException(cause, message)
+    }
 }
 
 internal fun ServiceContainer.getFunctionService(function: KFunction<*>): Any = when {

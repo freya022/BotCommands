@@ -14,6 +14,9 @@ internal class ServiceCreationStackImpl : ServiceCreationStack {
     private val localSet: ThreadLocal<Deque<ServiceProvider>> = ThreadLocal.withInitial { ArrayDeque() }
     private val set get() = localSet.get()
 
+    override val currentProviders: List<ServiceProvider>
+        get() = set.toList()
+
     override fun contains(provider: ServiceProvider) = set.any { it.providerKey == provider.providerKey }
 
     //If services have circular dependencies during checking, consider it to not be an issue
