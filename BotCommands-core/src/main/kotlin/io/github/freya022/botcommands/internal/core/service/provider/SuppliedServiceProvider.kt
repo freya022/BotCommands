@@ -40,7 +40,7 @@ internal class SuppliedServiceProvider internal constructor(
     }
 
     private fun createInstanceNonCached(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-        return measureTimedInstantiation {
+        return TimedInstantiation.of {
             val service = serviceSupplier!!.supplier(serviceContainer.getService())
             serviceSupplier = null // Let GC take what won't be used anymore
             service

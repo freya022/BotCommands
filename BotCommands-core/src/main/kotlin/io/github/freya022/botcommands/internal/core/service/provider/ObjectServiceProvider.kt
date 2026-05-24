@@ -23,7 +23,7 @@ internal class ObjectServiceProvider internal constructor(
     }
 
     private fun createInstanceNonCached(): TimedInstantiation<*> {
-        return measureTimedInstantiation { clazz.objectInstance!! }
+        return TimedInstantiation.of { clazz.objectInstance!! }
     }
 
     override fun getProviderFunction(): KFunction<*>? {
