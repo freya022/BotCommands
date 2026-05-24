@@ -6,7 +6,8 @@ import io.github.freya022.botcommands.internal.core.service.provider.Instance
 import io.github.freya022.botcommands.internal.core.service.provider.ServiceProvider
 import io.github.freya022.botcommands.internal.core.service.provider.TimedInstantiation
 import io.github.freya022.botcommands.internal.core.service.stack.ServiceCreationStack.Companion.logger
-import java.util.*
+import java.util.ArrayDeque
+import java.util.Deque
 import kotlin.properties.Delegates
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -90,33 +91,29 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
         }
     }
 
-    private val localSet: ThreadLocal<LinkedList<ServiceOperation<*>>> = ThreadLocal.withInitial { LinkedList() }
-    private val set: LinkedList<ServiceOperation<*>> get() = localSet.get()
+    private val localSet: ThreadLocal<Deque<ServiceOperation<*>>> = ThreadLocal.withInitial { ArrayDeque() }
+    private val set: Deque<ServiceOperation<*>> get() = localSet.get()
 
     override fun contains(provider: ServiceProvider) = set.any { it.providerKey == provider.providerKey }
 
     //If services have circular dependencies during checking, consider it to not be an issue
     override fun withServiceCheckKey(provider: ServiceProvider, block: () -> ServiceError?): ServiceError? {
-        return withServiceKey(provider, ::ServiceCheckOperation, block, onDuplicate = {
+        if (contains(provider))
             return null
-        })
+
+        val serviceOperation = ServiceCheckOperation(provider)
+        return withServiceOperation(serviceOperation, block)
     }
 
-    override fun <R : Instance> withServiceCreateKey(
-        provider: ServiceProvider,
-        block: () -> TimedInstantiation<R>
-    ): R {
-        return withServiceKey(provider, ::ServiceCreateOperation, block, onDuplicate = {
+    override fun <R : Instance> withServiceCreateKey(provider: ServiceProvider, block: () -> TimedInstantiation<R>): R {
+        if (contains(provider))
             throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
-        }).instance
+
+        val serviceOperation = ServiceCreateOperation(provider)
+        return withServiceOperation(serviceOperation, block).instance
     }
 
-    private inline fun <R> withServiceKey(provider: ServiceProvider, operationSupplier: (ServiceProvider) -> ServiceOperation<R>, crossinline block: () -> R, onDuplicate: () -> Nothing): R {
-        if (provider in this)
-            onDuplicate() // Does not return
-
-        val serviceOperation = operationSupplier(provider)
-
+    private inline fun <R> withServiceOperation(serviceOperation: ServiceOperation<R>, crossinline block: () -> R): R {
         // Add the new OP to the children of the current OP
         if (set.isNotEmpty())
             set.last().children += serviceOperation
@@ -131,10 +128,14 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
             set.removeLast()
 
             if (set.isEmpty()) {
-                logger.trace {
-                    buildString { serviceOperation.print() }.trim()
-                }
+                logOperations(serviceOperation)
             }
+        }
+    }
+
+    private fun <R> logOperations(serviceOperation: ServiceOperation<R>) {
+        logger.trace {
+            buildString { serviceOperation.print() }.trim()
         }
     }
 }
