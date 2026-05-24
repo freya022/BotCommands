@@ -2,15 +2,9 @@ package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
 import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
-import io.github.freya022.botcommands.api.core.service.ServiceSupplier
-import io.github.freya022.botcommands.api.core.service.annotations.Lazy
-import io.github.freya022.botcommands.api.core.service.annotations.Primary
-import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.getSignature
-import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
-import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
@@ -19,8 +13,8 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.jvmName
 
 internal class ClassServiceProvider internal constructor(
-    private val clazz: KClass<*>
-) : ServiceProvider {
+    clazz: KClass<*>
+) : AbstractClassServiceProvider(clazz) {
     init {
         require(!Modifier.isAbstract(clazz.java.modifiers) && !clazz.java.isInterface) {
             "Abstract class '${clazz.simpleNestedName}' cannot be constructed"
@@ -33,29 +27,13 @@ internal class ClassServiceProvider internal constructor(
      */
     private var serviceError: ServiceError? = ServiceProvider.nullServiceError
 
-    override val annotations = clazz.getAllAnnotations()
-    override val name = getServiceName(clazz)
-    override val providerKey = clazz.jvmName
-    override val primaryType get() = clazz
-    override val types = getServiceTypes(primaryType)
-    override val isPrimary = hasAnnotation<Primary>()
-    override val isLazy = hasAnnotation<Lazy>()
-    override val priority = getAnnotatedServicePriority()
-
-    /** `null` = object */
-    private val constructor: KFunction<*>?
+    private val constructor = requireNotNull(clazz.constructors.singleOrNull()) {
+        "Class ${clazz.simpleNestedName} must have exactly one constructor"
+    }
 
     init {
-        if (clazz.isObject) {
-            constructor = null
-        } else {
-            constructor = requireNotNull(clazz.constructors.singleOrNull()) {
-                "Class ${clazz.simpleNestedName} must have exactly one constructor"
-            }
-
-            require(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
-                "Constructor of ${clazz.simpleNestedName} must be public"
-            }
+        require(constructor.visibility == KVisibility.PUBLIC || constructor.visibility == KVisibility.INTERNAL) {
+            "Constructor of ${clazz.simpleNestedName} must be public"
         }
     }
 
@@ -76,9 +54,6 @@ internal class ClassServiceProvider internal constructor(
 
     private fun checkInstantiate(serviceContainer: BCServiceContainerImpl): ServiceError? {
         commonCanInstantiate(serviceContainer, clazz, clazz)?.let { serviceError -> return serviceError }
-
-        //Is a singleton
-        if (constructor == null) return null
 
         //Check constructor parameters
         constructor.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
@@ -107,25 +82,14 @@ internal class ClassServiceProvider internal constructor(
     }
 
     private fun createInstanceNonCached(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-        return when {
-            constructor != null -> constructor.callConstructingFunction(serviceContainer)
-            else -> measureTimedInstantiation { clazz.objectInstance!! }
-        }
+        return constructor.callConstructingFunction(serviceContainer)
     }
 
-    override fun getProviderFunction(): KFunction<*>? {
-        // Null if object
+    override fun getProviderFunction(): KFunction<*> {
         return constructor
     }
 
     override fun getProviderSignature(): String {
-        if (constructor == null) return "<object ${clazz.shortQualifiedName}>"
-        return getProviderFunction()?.getSignature(parameters = false) ?: "<no-provider ${clazz.shortQualifiedName}>"
+        return getProviderFunction().getSignature(parameters = false)
     }
-
-    override fun toString() = providerKey
 }
-
-@PublishedApi
-internal fun ServiceProvider.getServiceName(clazz: KClass<*>) =
-    getAnnotatedServiceName() ?: ServiceSupplier.defaultName(clazz)
