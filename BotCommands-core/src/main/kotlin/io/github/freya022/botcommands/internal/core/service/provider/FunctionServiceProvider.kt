@@ -6,17 +6,19 @@ import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.getSignature
+import io.github.freya022.botcommands.api.core.utils.isStatic
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
 import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
 internal class FunctionServiceProvider(
+    private val declaringClass: KClass<*>,
     private val function: KFunction<*>,
     override var instance: Any? = null
 ) : ServiceProvider {
@@ -28,6 +30,9 @@ internal class FunctionServiceProvider(
     override val isPrimary = hasAnnotation<Primary>()
     override val isLazy = hasAnnotation<Lazy>()
     override val priority = getAnnotatedServicePriority()
+
+    private val isObjectFunction = declaringClass.isObject
+    private val isStatic = function.isStatic
 
     /**
      * If not the sentinel value, the service was attempted to be created.
@@ -59,16 +64,10 @@ internal class FunctionServiceProvider(
         checkConditions(serviceContainer, function, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
-        function.instanceParameter?.let { instanceParameter ->
-            val erasure = instanceParameter.type.jvmErasure
-            // If an object, don't check if it can be created,
-            // as it may not be annotated as a service but still be usable
-            if (erasure.isObject)
-                return@let
-
-            serviceContainer.canCreateService(erasure)?.let { serviceError ->
+        if (!isObjectFunction && !isStatic) {
+            serviceContainer.canCreateService(declaringClass)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_INSTANCE.toError(
-                    errorMessage = "The '${instanceParameter.type.simpleNestedName}' instance required by the service factory was unavailable",
+                    errorMessage = "The '${declaringClass.simpleNestedName}' instance required by the service factory was unavailable",
                     failedFunction = function,
                     nestedError = serviceError,
                     extra = mapOf(
@@ -103,14 +102,13 @@ internal class FunctionServiceProvider(
     }
 
     private fun callConstructingFunction(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-        val instance: Any? = when (val instanceParameter = function.instanceParameter) {
-            null -> null
-            else -> {
-                val instanceErasure = instanceParameter.type.jvmErasure
-                instanceErasure.objectInstance
-                    ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
-                        throwArgument(function, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
-                    }
+        val instance: Any? = if (isObjectFunction) {
+            declaringClass.objectInstance!!
+        } else if (isStatic) {
+            null
+        } else {
+            serviceContainer.tryGetService(declaringClass).getOrThrow {
+                throwArgument(function, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
             }
         }
 

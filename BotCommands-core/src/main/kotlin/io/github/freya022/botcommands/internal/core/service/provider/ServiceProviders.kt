@@ -51,6 +51,6 @@ internal class ServiceProviders : ClassPathProcessor {
             data.method.kotlinFunction
                 ?: data.classData.kClass.memberProperties.find { it.javaGetter == method }?.getter
                 ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
-        putServiceProvider(FunctionServiceProvider(function))
+        putServiceProvider(FunctionServiceProvider(data.classData.kClass, function))
     }
 }
