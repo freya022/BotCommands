@@ -1,11 +1,14 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.api.core.service.ServiceError
+import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import io.github.freya022.botcommands.api.core.service.annotations.Primary
 import io.github.freya022.botcommands.api.core.utils.getAllAnnotations
 import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
+import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.utils.*
 import kotlin.reflect.KFunction
@@ -44,7 +47,7 @@ internal class FunctionServiceProvider(
         val serviceError = checkInstantiate(serviceContainer)
         //Do not cache service error if a parameter is unavailable, a retrial is allowed
         when (serviceError?.errorType) {
-            ServiceError.ErrorType.UNAVAILABLE_PARAMETER, ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY -> {}
+            ErrorType.UNAVAILABLE_PARAMETER, ErrorType.UNAVAILABLE_DEPENDENCY -> {}
 
             else -> this.serviceError = serviceError
         }
@@ -64,7 +67,7 @@ internal class FunctionServiceProvider(
                 return@let
 
             serviceContainer.canCreateService(erasure)?.let { serviceError ->
-                return ServiceError.ErrorType.UNAVAILABLE_INSTANCE.toError(
+                return ErrorType.UNAVAILABLE_INSTANCE.toError(
                     errorMessage = "The '${instanceParameter.type.simpleNestedName}' instance required by the service factory was unavailable",
                     failedFunction = function,
                     nestedError = serviceError,
@@ -94,9 +97,33 @@ internal class FunctionServiceProvider(
             """.trimIndent())
         }
 
-        val timedInstantiation = function.callConstructingFunction(serviceContainer)
+        val timedInstantiation = callConstructingFunction(serviceContainer)
         instance = timedInstantiation.instance
         return timedInstantiation
+    }
+
+    private fun callConstructingFunction(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
+        val instance: Any? = when (val instanceParameter = function.instanceParameter) {
+            null -> null
+            else -> {
+                val instanceErasure = instanceParameter.type.jvmErasure
+                instanceErasure.objectInstance
+                    ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
+                        throwArgument(function, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
+                    }
+            }
+        }
+
+        val accessor = MethodAccessorFactoryProvider.getAccessorFactory().create(instance, function)
+        val args = function.getDependencyValues(serviceContainer, accessor)
+
+        return TimedInstantiation.of {
+            accessor.call(args)
+                ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
+                    errorMessage = "Service factory returned null",
+                    failedFunction = function
+                ))
+        }
     }
 
     override fun getProviderFunction(): KFunction<*> = function

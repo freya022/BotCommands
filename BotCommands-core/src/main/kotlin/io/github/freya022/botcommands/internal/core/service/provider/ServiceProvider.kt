@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
+import dev.freya02.botcommands.method.accessors.internal.MethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.MethodArguments
 import io.github.freya022.botcommands.api.core.service.ConditionalServiceChecker
 import io.github.freya022.botcommands.api.core.service.CustomConditionChecker
 import io.github.freya022.botcommands.api.core.service.ServiceError
@@ -7,18 +9,15 @@ import io.github.freya022.botcommands.api.core.service.ServiceError.ErrorType
 import io.github.freya022.botcommands.api.core.service.annotations.*
 import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.internal.core.exceptions.ServiceException
-import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
 import io.github.freya022.botcommands.internal.core.service.BCServiceContainerImpl
 import io.github.freya022.botcommands.internal.core.service.Singletons
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
-import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
@@ -290,19 +289,7 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceC
     return null
 }
 
-internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceContainerImpl): TimedInstantiation<*> {
-    val instance: Any? = when (val instanceParameter = this.instanceParameter) {
-        null -> null
-        else -> {
-            val instanceErasure = instanceParameter.type.jvmErasure
-            instanceErasure.objectInstance
-                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow {
-                    throwArgument(this, "Could not run function as it is not static, the declaring class isn't an object, and service creation failed:\n${it.toDetailedString()}")
-                }
-        }
-    }
-
-    val accessor = MethodAccessorFactoryProvider.getAccessorFactory().create(instance, this)
+internal fun KFunction<*>.getDependencyValues(serviceContainer: BCServiceContainerImpl, accessor: MethodAccessor<*>): MethodArguments {
     val args = accessor.createBlankArguments()
     this.valueParameters.forEachIndexed { index, parameter ->
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
@@ -320,11 +307,5 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceCo
         }
     }
 
-    return TimedInstantiation.of {
-        accessor.call(args)
-            ?: throw ServiceException(ErrorType.PROVIDER_RETURNED_NULL.toError(
-                errorMessage = "Service factory returned null",
-                failedFunction = this
-            ))
-    }
+    return args
 }
