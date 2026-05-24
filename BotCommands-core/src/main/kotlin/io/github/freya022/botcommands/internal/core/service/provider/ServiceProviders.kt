@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.core.service.provider
 
 import io.github.freya022.botcommands.internal.core.ClassPathProcessor
+import io.github.freya022.botcommands.internal.utils.isObject
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Method
@@ -32,7 +33,11 @@ internal class ServiceProviders : ClassPathProcessor {
         if (!data.isService) return
         if (data.classInfo.isAnnotation) return
 
-        putServiceProvider(ClassServiceProvider(data.kClass))
+        if (data.kClass.isObject) {
+            putServiceProvider(ObjectServiceProvider(data.kClass))
+        } else {
+            putServiceProvider(ClassServiceProvider(data.kClass))
+        }
     }
 
     override fun processMethod(data: ClassPathProcessor.MethodData) {

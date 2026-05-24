@@ -264,12 +264,6 @@ internal inline fun <T : Any> measureTimedInstantiation(block: () -> T): TimedIn
     return TimedInstantiation(value, duration)
 }
 
-internal inline fun <T : Any> measureNullableTimedInstantiation(block: () -> T?): TimedInstantiation<T>? {
-    val (value, duration) = measureTimedValue(block)
-    if (value == null) return null
-    return TimedInstantiation(value, duration)
-}
-
 internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceContainerImpl): ServiceError? {
     this.nonInstanceParameters.forEach {
         serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
