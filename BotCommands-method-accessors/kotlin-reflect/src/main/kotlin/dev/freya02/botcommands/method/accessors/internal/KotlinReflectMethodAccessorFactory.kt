@@ -5,6 +5,7 @@ import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinR
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.JavaReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectStaticMethodAccessor
+import dev.freya02.botcommands.method.accessors.internal.utils.isInnerClass
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -23,7 +24,8 @@ class KotlinReflectMethodAccessorFactory : MethodAccessorFactory {
 
         val requiresInstance = when (val executable = function.javaMethod ?: function.javaConstructor) {
             is Method -> !Modifier.isStatic(executable.modifiers)
-            is Constructor<*> -> false
+            // For inner class constructors, pass the outer class as the instance parameter
+            is Constructor<*> -> executable.declaringClass.isInnerClass
             else -> error("Could not get executable from $function")
         }
         return if (requiresInstance) {
