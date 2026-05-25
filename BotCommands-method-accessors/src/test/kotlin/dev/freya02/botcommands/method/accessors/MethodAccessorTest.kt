@@ -52,6 +52,7 @@ object MethodAccessorTest {
         Arguments.argumentSet("With inline class return type", TestClass(), TestClass::runWithInlineClassReturnType, listOf<Any?>()),
         Arguments.argumentSet("With nested inline class return type", TestClass(), TestClass::runWithNestedInlineClassReturnType, listOf<Any?>()),
         Arguments.argumentSet("With static modifier", null, TestStatic::run, listOf<Any?>()),
+        testCaller("From object", TestObject, TestObject::run, listOf()),
         Arguments.argumentSet("With static modifier and instance", TestStatic, TestStatic::run, listOf<Any?>()),
         Arguments.argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
         Arguments.argumentSet("With inline class default", TestClass(), TestClass::runWithDefaultInlineClassArg, listOf<Any?>()),
@@ -68,6 +69,10 @@ object MethodAccessorTest {
         Arguments.argumentSet("Suspend with nested inline class arg", TestClass(), TestClass::coRunWithNestedInlineClassArg, listOf<Any?>(NestedInlineDouble(InlineDouble(3.14159)))),
         Arguments.argumentSet("Suspend and return inline class", TestClass(), TestClass::coRunWithInlineClassReturnType, listOf<Any?>()),
     )
+
+    private fun testCaller(name: String, instance: Any?, function: KFunction<*>, arguments: List<Any?>): Arguments {
+        return Arguments.argumentSet(name, instance, function, arguments)
+    }
 
     @MethodSource("factories")
     @ParameterizedTest
@@ -111,6 +116,13 @@ object MethodAccessorTest {
 }
 
 interface TestInterface {
+
+    fun run() {
+
+    }
+}
+
+object TestObject {
 
     fun run() {
 
