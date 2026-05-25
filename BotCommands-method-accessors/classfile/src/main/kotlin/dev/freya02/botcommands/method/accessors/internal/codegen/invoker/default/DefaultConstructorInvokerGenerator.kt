@@ -1,6 +1,7 @@
 package dev.freya02.botcommands.method.accessors.internal.codegen.invoker.default
 
 import dev.freya02.botcommands.method.accessors.internal.codegen.AbstractClassFileMethodAccessorGenerator
+import dev.freya02.botcommands.method.accessors.internal.codegen.ClassFileMemberMethodAccessorGenerator
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.CD_DefaultConstructorMarker
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.TypeKind
@@ -23,6 +24,7 @@ internal object DefaultConstructorInvokerGenerator : AbstractDefaultInvokerGener
             MethodTypeDesc.of(CD_void, effectiveParameters)
         }
 
+        val thisSlot = codeBuilder.receiverSlot()
         val argsSlot = codeBuilder.parameterSlot(0)
 
         val maskSlot = codeBuilder.allocateLocal(TypeKind.INT)
@@ -36,6 +38,11 @@ internal object DefaultConstructorInvokerGenerator : AbstractDefaultInvokerGener
         codeBuilder.dup() // So we can return it
 
         // <instance>."<init>"([params], mask, null)
+        if (this is ClassFileMemberMethodAccessorGenerator<*> && isInnerClassConstructor) {
+            // In an inner class, pass the outer instance as an argument
+            codeBuilder.aload(thisSlot)
+            codeBuilder.getfield(thisClass, "instance", effectiveInstanceDesc)
+        }
         loadDefaultParameters(argsSlot, maskSlot, continuationSlot, codeBuilder)
         codeBuilder.invokespecial(instanceDesc, INIT_NAME, methodTypeDesc)
     }

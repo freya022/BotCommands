@@ -53,6 +53,11 @@ object MethodAccessorTest {
         Arguments.argumentSet("With nested inline class return type", TestClass(), TestClass::runWithNestedInlineClassReturnType, listOf<Any?>()),
         Arguments.argumentSet("With static modifier", null, TestStatic::run, listOf<Any?>()),
         testCaller("From object", TestObject, TestObject::run, listOf()),
+        testCaller("Nested class constructor 0-arg", null, TestClass::NestedClass, listOf()),
+        testCaller("Inner class constructor 0-arg", TestClass(), TestClass::InnerClass, listOf()),
+        testCaller("Inner class constructor 1-arg", TestClass(), TestClass::InnerClassOneArg, listOf("foobar")),
+        // TODO enable when KT-14990 is fixed in Kotlin 2.4.0
+//        testCaller("Inner class constructor with defaults", TestClass(), TestClass::InnerClassWithDefaults, listOf()),
         Arguments.argumentSet("With static modifier and instance", TestStatic, TestStatic::run, listOf<Any?>()),
         Arguments.argumentSet("With defaults", TestClass(), TestClass::runWithDefaults, listOf<Any?>()),
         Arguments.argumentSet("With inline class default", TestClass(), TestClass::runWithDefaultInlineClassArg, listOf<Any?>()),
@@ -223,6 +228,17 @@ class TestClass {
     suspend fun coRunWithInlineClassReturnType(): InlineDouble {
         return InlineDouble(2.0)
     }
+
+    class NestedClass
+
+    @Suppress("RedundantInnerClassModifier")
+    inner class InnerClass
+
+    @Suppress("RedundantInnerClassModifier")
+    inner class InnerClassOneArg(@Suppress("unused") arg: String)
+
+    @Suppress("RedundantInnerClassModifier")
+    inner class InnerClassWithDefaults(@Suppress("unused") val x: Int = 1)
 }
 
 @JvmInline

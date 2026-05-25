@@ -1,6 +1,7 @@
 package dev.freya02.botcommands.method.accessors.internal.codegen.invoker.default
 
 import dev.freya02.botcommands.method.accessors.internal.codegen.AbstractClassFileMethodAccessorGenerator
+import dev.freya02.botcommands.method.accessors.internal.codegen.ClassFileMemberMethodAccessorGenerator
 import dev.freya02.botcommands.method.accessors.internal.codegen.invoker.AbstractInvokerGenerator
 import dev.freya02.botcommands.method.accessors.internal.codegen.utils.unboxOrCastTo
 import java.lang.classfile.CodeBuilder
@@ -17,7 +18,11 @@ internal abstract class AbstractDefaultInvokerGenerator : AbstractInvokerGenerat
     ) {
         var valueParameterIndex = 0 // Used for mask calculation
         val nonInstanceParameters = function.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
-        val javaParameterTypes = executable.parameterTypes
+        val javaParameterTypes = when (this) {
+            // For inner class constructors, drop outer class argument as it is handled separately
+            is ClassFileMemberMethodAccessorGenerator<*> if isInnerClassConstructor -> executable.parameterTypes.drop(1)
+            else -> executable.parameterTypes.toList()
+        }
         nonInstanceParameters.forEachIndexed { index, parameter ->
             val javaParameterType = javaParameterTypes[index]
 
