@@ -20,8 +20,9 @@ import kotlin.reflect.jvm.jvmErasure
 internal class FunctionServiceProvider(
     private val declaringClass: KClass<*>,
     private val function: KFunction<*>,
-    override var instance: Any? = null
 ) : ServiceProvider {
+    override var instance: Any? = null
+
     override val annotations = function.getAllAnnotations()
     override val name = getServiceName(function)
     override val providerKey = function.getSignature(source = false, qualifiedClass = true, qualifiedTypes = true)
