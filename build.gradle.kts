@@ -19,6 +19,8 @@ dependencies {
     // -------------------- DEFAULT SUBPROJECTS DEPENDENCIES --------------------
 
     api(projects.botCommandsCore)
+    api(projects.botCommandsDatabase)
+    api(projects.botCommandsCommands.app)
     api(projects.botCommandsComponents)
     api(projects.botCommandsModals)
 
