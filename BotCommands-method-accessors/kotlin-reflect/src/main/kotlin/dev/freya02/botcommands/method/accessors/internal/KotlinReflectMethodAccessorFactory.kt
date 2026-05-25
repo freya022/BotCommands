@@ -5,8 +5,10 @@ import dev.freya02.botcommands.method.accessors.internal.invoker.default.KotlinR
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.JavaReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectMethodAccessor
 import dev.freya02.botcommands.method.accessors.internal.invoker.direct.KotlinReflectDirectStaticMethodAccessor
+import java.lang.reflect.Constructor
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -19,7 +21,12 @@ class KotlinReflectMethodAccessorFactory : MethodAccessorFactory {
     ): MethodAccessor<R> {
         val hasOptionals = function.parameters.any { it.isOptional }
 
-        return if (function.instanceParameter != null) {
+        val requiresInstance = when (val executable = function.javaMethod ?: function.javaConstructor) {
+            is Method -> !Modifier.isStatic(executable.modifiers)
+            is Constructor<*> -> false
+            else -> error("Could not get executable from $function")
+        }
+        return if (requiresInstance) {
             requireNotNull(instance)
 
             if (hasOptionals) {
