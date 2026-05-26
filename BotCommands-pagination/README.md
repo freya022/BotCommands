@@ -2,7 +2,7 @@
 [bc-module-maven-central-link]: https://central.sonatype.com/artifact/io.github.freya022/BotCommands-pagination
 
 # BotCommands module - Pagination
-Provides various types of paginations, using components.
+Provides various types of customizable paginations.
 
 ## Installation
 [![BotCommands-pagination on maven central][bc-module-maven-central-shield] ][bc-module-maven-central-link]

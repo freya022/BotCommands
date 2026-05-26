@@ -27,7 +27,7 @@ dependencies {
 publishedProjectEnvironment {
     configureJarArtifact(
         artifactId = "BotCommands-pagination",
-        description = "Provides various types of paginations, using components.",
+        description = "Provides various types of customizable paginations.",
         url = "https://github.com/freya022/BotCommands/tree/3.X/BotCommands-pagination",
     )
 }
