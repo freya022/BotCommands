@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Resolver
+@RequiresApplicationCommands
 internal class EmojiResolver : ClassParameterResolver<EmojiResolver, Emoji>(Emoji::class),
                                SlashParameterResolver<EmojiResolver, Emoji> {
 

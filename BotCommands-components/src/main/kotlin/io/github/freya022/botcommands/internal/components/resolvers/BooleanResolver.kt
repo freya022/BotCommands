@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.resolvers
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.timeout.options.TimeoutOption
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 
 @Resolver
 @ServiceName("componentBooleanResolver")
+@RequiresComponents
 internal class BooleanResolver : ClassParameterResolver<BooleanResolver, Boolean>(Boolean::class),
                                  ComponentParameterResolver<BooleanResolver, Boolean>,
                                  TimeoutParameterResolver<BooleanResolver, Boolean> {

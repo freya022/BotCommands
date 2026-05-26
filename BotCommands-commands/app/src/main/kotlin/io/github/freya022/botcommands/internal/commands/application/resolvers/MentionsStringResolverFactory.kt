@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.internal.commands.application.checkGuildOnly
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.MentionsString
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
@@ -37,7 +38,8 @@ import kotlin.reflect.safeCast
 import kotlin.reflect.typeOf
 
 @ResolverFactory
-internal object MentionsStringResolverFactory : ParameterResolverFactory() {
+@RequiresApplicationCommands
+internal class MentionsStringResolverFactory : ParameterResolverFactory() {
     internal class MentionsStringResolver private constructor(
         private val mentionTypes: Array<out MentionType>,
         private val transform: (IMentionable) -> IMentionable?

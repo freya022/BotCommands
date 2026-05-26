@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.api.core.service.annotations.ResolverFacto
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.api.modals.ModalEvent
+import io.github.freya022.botcommands.api.modals.annotations.RequiresModals
 import io.github.freya022.botcommands.api.modals.options.ModalOption
 import io.github.freya022.botcommands.api.parameters.ParameterResolverFactory
 import io.github.freya022.botcommands.api.parameters.ResolverRequest
@@ -21,7 +22,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
 @ResolverFactory
-internal object ModalIMentionableResolverFactory : ParameterResolverFactory() {
+@RequiresModals
+internal class ModalIMentionableResolverFactory : ParameterResolverFactory() {
 
     override val supportedTypesStr: List<String> = listOf(
         "<out ${IMentionable::class.shortQualifiedName}>",

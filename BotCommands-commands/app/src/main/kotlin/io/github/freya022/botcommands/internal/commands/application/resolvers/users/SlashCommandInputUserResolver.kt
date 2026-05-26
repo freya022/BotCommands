@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers.users
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.entities.inputUser
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Resolver
+@RequiresApplicationCommands
 internal class SlashCommandInputUserResolver :
         AbstractInputUserResolver<SlashCommandInputUserResolver>(),
         SlashParameterResolver<SlashCommandInputUserResolver, InputUser> {

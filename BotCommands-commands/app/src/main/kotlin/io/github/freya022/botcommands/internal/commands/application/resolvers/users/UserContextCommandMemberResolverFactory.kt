@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers.users
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @ResolverFactory
+@RequiresApplicationCommands
 internal class UserContextCommandMemberResolverFactory(
     private val resolver: UserContextCommandInputUserResolver,
 ) : TypedParameterResolverFactory(Member::class) {

@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text.resolvers
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.core.service.annotations.ServiceName
@@ -16,6 +17,7 @@ import java.util.regex.Pattern
 
 @Resolver
 @ServiceName("textCommandIMentionableResolver")
+@RequiresTextCommands
 internal class IMentionableResolver : ClassParameterResolver<IMentionableResolver, IMentionable>(IMentionable::class),
                                       TextParameterResolver<IMentionableResolver, IMentionable> {
 

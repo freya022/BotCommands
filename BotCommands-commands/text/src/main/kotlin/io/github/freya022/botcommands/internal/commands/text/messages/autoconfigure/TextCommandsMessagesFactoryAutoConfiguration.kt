@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text.messages.autoconfigure
 
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.messages.DefaultTextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
@@ -10,6 +11,7 @@ import io.github.freya022.botcommands.api.localization.text.MessageLocaleProvide
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfiguration
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
 
+@RequiresTextCommands
 @InternalAutoConfiguration
 internal open class TextCommandsMessagesFactoryAutoConfiguration internal constructor() {
 

@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.core.db.query
 
 import gnu.trove.map.TIntObjectMap
 import gnu.trove.map.hash.TIntObjectHashMap
+import io.github.freya022.botcommands.api.core.db.annotations.RequiresDatabase
 import io.github.freya022.botcommands.api.core.db.query.AbstractParametrizedQuery
 import io.github.freya022.botcommands.api.core.db.query.ParametrizedQueryFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -16,7 +17,8 @@ import java.sql.PreparedStatement
  */
 @Lazy
 @BService
-internal object PostgresParametrizedQueryFactory : ParametrizedQueryFactory<PostgresParametrizedQueryFactory.PostgresParametrizedQuery> {
+@RequiresDatabase
+internal class PostgresParametrizedQueryFactory : ParametrizedQueryFactory<PostgresParametrizedQueryFactory.PostgresParametrizedQuery> {
     internal class PostgresParametrizedQuery internal constructor(
         preparedStatement: PreparedStatement,
         private val rawSql: String

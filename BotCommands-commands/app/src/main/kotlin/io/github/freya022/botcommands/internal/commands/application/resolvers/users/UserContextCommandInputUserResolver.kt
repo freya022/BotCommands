@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers.users
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.core.entities.InputUser
 import io.github.freya022.botcommands.api.core.entities.inputUser
@@ -9,6 +10,7 @@ import io.github.freya022.botcommands.internal.parameters.resolvers.users.Abstra
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @Resolver
+@RequiresApplicationCommands
 internal class UserContextCommandInputUserResolver :
         AbstractInputUserResolver<UserContextCommandInputUserResolver>(),
         UserContextParameterResolver<UserContextCommandInputUserResolver, InputUser> {

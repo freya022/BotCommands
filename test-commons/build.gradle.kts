@@ -8,6 +8,8 @@ dependencies {
     compileOnly(projects.botCommandsDatabase)
     implementation(projects.botCommandsLocalization)
 
+    implementation(libs.classgraph)
+
     api(libs.bundles.test)
 
     // Mocking

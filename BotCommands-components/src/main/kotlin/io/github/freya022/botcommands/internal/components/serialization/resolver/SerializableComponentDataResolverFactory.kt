@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.serialization.resolver
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.GlobalComponentDataSerializer
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
@@ -19,6 +20,7 @@ import io.github.freya022.botcommands.internal.utils.annotationRef
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 @ResolverFactory
+@RequiresComponents
 internal class SerializableComponentDataResolverFactory(
     private val globalSerializer: GlobalComponentDataSerializer,
 ) : ParameterResolverFactory() {

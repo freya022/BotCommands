@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.ratelimit
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.ratelimit.ComponentRateLimitingContext
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 private val componentsListenerLogger = KotlinLogging.loggerOf<ComponentsListener>()
 
 @BService
+@RequiresComponents
 internal class ComponentRateLimitHandler internal constructor(
     private val context: BContext,
     private val botOwners: BotOwners,

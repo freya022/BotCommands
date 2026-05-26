@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.text.ratelimit
 
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -11,6 +12,7 @@ import io.github.freya022.botcommands.internal.ratelimit.handler.AbstractRateLim
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
+@RequiresTextCommands
 internal class TextCommandRateLimitHandler internal constructor(
     private val context: BContext,
     private val botOwners: BotOwners,
