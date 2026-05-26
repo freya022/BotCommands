@@ -13,7 +13,6 @@ dependencies {
     compileOnly(libs.jda)
     api(projects.botCommandsCore)
     implementation(projects.botCommandsLocalization)
-    compileOnly(projects.botCommandsCommands.text)
 
     // Logging
     implementation(libs.kotlin.logging)
