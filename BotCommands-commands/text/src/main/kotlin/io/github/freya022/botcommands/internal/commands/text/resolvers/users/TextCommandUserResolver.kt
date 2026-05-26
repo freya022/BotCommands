@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text.resolvers.users
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
 import io.github.freya022.botcommands.api.parameters.ClassParameterResolver
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 
 @Resolver
+@RequiresTextCommands
 internal class TextCommandUserResolver(
     private val resolver: TextCommandInputUserResolver,
 ) : ClassParameterResolver<TextCommandUserResolver, User>(User::class),

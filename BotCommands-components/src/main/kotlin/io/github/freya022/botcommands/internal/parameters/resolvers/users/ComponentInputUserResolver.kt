@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.users
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.BContext
@@ -12,6 +13,7 @@ import io.github.freya022.botcommands.internal.utils.throwArgument
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 @Resolver
+@RequiresComponents
 internal class ComponentInputUserResolver(
     context: BContext,
 ) : AbstractInputUserResolver<ComponentInputUserResolver>(),

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.context.user.options.UserContextCommandOption
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.Resolver
@@ -13,7 +14,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @Resolver
-internal object UserSnowflakeResolver :
+@RequiresApplicationCommands
+internal class UserSnowflakeResolver :
         ClassParameterResolver<UserSnowflakeResolver, UserSnowflake>(UserSnowflake::class),
         SlashParameterResolver<UserSnowflakeResolver, UserSnowflake>,
         UserContextParameterResolver<UserSnowflakeResolver, UserSnowflake> {

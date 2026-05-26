@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.components.resolvers
 
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.components.options.ComponentOption
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 
 @ResolverFactory
 @ServiceName("componentChannelResolverFactory")
+@RequiresComponents
 internal class ChannelResolverFactory(private val messagesFactory: BotCommandsMessagesFactory) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
         private val messagesFactory: BotCommandsMessagesFactory,

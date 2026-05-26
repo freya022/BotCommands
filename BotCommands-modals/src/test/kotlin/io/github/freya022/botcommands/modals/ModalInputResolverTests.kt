@@ -78,14 +78,14 @@ object ModalInputResolverTests {
             every { findAnnotationOnService("modalAttachmentListResolver", Resolver::class) } returns Resolver(0)
             every { findAnnotationOnService("modalBooleanResolver", Resolver::class) } returns Resolver(0)
 
-            every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver
-            every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver
-            every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver
-            every { getService("modalAttachmentResolver", ParameterResolver::class) } returns ModalAttachmentResolver
-            every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver
-            every { getService("modalBooleanResolver", ParameterResolver::class) } returns ModalBooleanResolver
+            every { getService("modalMentionsResolver", ParameterResolver::class) } returns ModalMentionsResolver()
+            every { getService("modalStringResolver", ParameterResolver::class) } returns ModalStringResolver()
+            every { getService("modalStringListResolver", ParameterResolver::class) } returns ModalStringListResolver()
+            every { getService("modalAttachmentResolver", ParameterResolver::class) } returns ModalAttachmentResolver()
+            every { getService("modalAttachmentListResolver", ParameterResolver::class) } returns ModalAttachmentListResolver()
+            every { getService("modalBooleanResolver", ParameterResolver::class) } returns ModalBooleanResolver()
         }
-        val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory), listOf())
+        val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory()), listOf())
 
         val parameter = ::userFunc.valueParameters[index]
         val request = TypedResolverRequest(ModalParameterResolver::class.java, ParameterWrapper(parameter))

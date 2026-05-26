@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.parameters.resolvers.localization
 
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
 import io.github.freya022.botcommands.api.localization.LocalizationService
 import io.github.freya022.botcommands.api.localization.context.TextLocalizationContext
@@ -15,6 +16,7 @@ import kotlin.reflect.typeOf
 
 // Don't require enabled feature, could be used by user's own impl
 @ResolverFactory
+@RequiresTextCommands
 internal class TextLocalizationContextResolverFactory(
     private val localizationService: LocalizationService,
     private val userLocaleProvider: UserLocaleProvider,

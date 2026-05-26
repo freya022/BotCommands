@@ -1,12 +1,14 @@
 package io.github.freya022.botcommands.internal.components.controller
 
 import io.github.freya022.botcommands.api.components.ComponentInteractionFilter
+import io.github.freya022.botcommands.api.components.annotations.RequiresComponents
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 
 @BService
+@RequiresComponents
 internal class ComponentFilters internal constructor(filters: List<ComponentInteractionFilter>) {
     private val filters: Map<String, ComponentInteractionFilter> = filters.associateBy { it.javaClass.name }
 

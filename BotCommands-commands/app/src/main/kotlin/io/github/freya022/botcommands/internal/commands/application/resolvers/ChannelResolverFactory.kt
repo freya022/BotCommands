@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.resolvers
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import io.github.freya022.botcommands.api.commands.application.slash.options.SlashCommandOption
 import io.github.freya022.botcommands.api.core.reflect.ParameterWrapper
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.*
 
 @ResolverFactory
+@RequiresApplicationCommands
 internal class ChannelResolverFactory : AbstractChannelResolverFactory() {
 
     internal class ChannelResolver(

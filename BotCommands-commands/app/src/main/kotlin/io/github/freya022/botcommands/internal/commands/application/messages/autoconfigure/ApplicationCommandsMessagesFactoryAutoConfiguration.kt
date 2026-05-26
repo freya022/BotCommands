@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.messages.autoconfigure
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.commands.application.messages.ApplicationCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.application.messages.DefaultApplicationCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.ConditionalOnMissingService
@@ -10,6 +11,7 @@ import io.github.freya022.botcommands.internal.core.service.annotations.Internal
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
 
 @InternalAutoConfiguration
+@RequiresApplicationCommands
 internal open class ApplicationCommandsMessagesFactoryAutoConfiguration internal constructor() {
 
     @InternalAutoConfigurationBeanService

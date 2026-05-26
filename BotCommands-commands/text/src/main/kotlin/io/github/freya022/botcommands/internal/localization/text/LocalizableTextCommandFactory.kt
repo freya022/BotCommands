@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.localization.text
 
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.core.config.BLocalizationConfig
 import io.github.freya022.botcommands.api.core.messages.BotCommandsMessagesFactory
 import io.github.freya022.botcommands.api.core.service.annotations.BService
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message
 
 // Don't require enabled feature, could be used by user's own impl
 @BService
+@RequiresTextCommands
 internal class LocalizableTextCommandFactory internal constructor(
     private val localizationService: LocalizationService,
     private val localizationConfig: BLocalizationConfig,

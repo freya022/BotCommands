@@ -40,6 +40,8 @@ dependencies {
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
     byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
+
+    testRuntimeOnly(libs.hikaricp)
 }
 
 tasks.withType<Test> {

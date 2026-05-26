@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.internal.commands.text.resolvers
 
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
+import io.github.freya022.botcommands.api.commands.text.annotations.RequiresTextCommands
 import io.github.freya022.botcommands.api.commands.text.messages.TextCommandsMessagesFactory
 import io.github.freya022.botcommands.api.commands.text.options.TextCommandOption
 import io.github.freya022.botcommands.api.core.service.annotations.ResolverFactory
@@ -19,6 +20,7 @@ import java.util.regex.Pattern
 
 @ResolverFactory
 @ServiceName("textCommandChannelResolverFactory")
+@RequiresTextCommands
 internal class ChannelResolverFactory(private val messagesFactory: TextCommandsMessagesFactory) : AbstractChannelResolverFactory() {
     internal class ChannelResolver(
         private val messagesFactory: TextCommandsMessagesFactory,

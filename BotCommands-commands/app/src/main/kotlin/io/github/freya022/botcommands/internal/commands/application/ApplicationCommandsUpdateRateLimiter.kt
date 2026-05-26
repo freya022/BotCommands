@@ -2,6 +2,7 @@ package io.github.freya022.botcommands.internal.commands.application
 
 import io.github.bucket4j.Bandwidth
 import io.github.bucket4j.Bucket
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.annotations.Lazy
 import kotlinx.coroutines.future.await
@@ -51,6 +52,7 @@ private class DefaultApplicationCommandsUpdateRateLimiter : ApplicationCommandsU
 
 @BService
 @Configuration
+@RequiresApplicationCommands
 internal open class ApplicationCommandsUpdateRateLimiterProvider {
     @Lazy
     @Bean

@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.ratelimit
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.config.BConfig
@@ -11,6 +12,7 @@ import io.github.freya022.botcommands.internal.ratelimit.handler.AbstractRateLim
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 @BService
+@RequiresApplicationCommands
 internal class ApplicationCommandRateLimitHandler internal constructor(
     private val context: BContext,
     private val botOwners: BotOwners,

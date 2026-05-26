@@ -15,12 +15,12 @@ import io.github.freya022.botcommands.internal.core.service.annotations.Internal
 import io.github.freya022.botcommands.internal.core.service.annotations.InternalAutoConfigurationBeanService
 import io.github.freya022.botcommands.internal.utils.reference
 
+@RequiresTextCommands
 @InternalAutoConfiguration
 internal open class HelpCommandAutoConfiguration {
 
     @InternalAutoConfigurationBeanService
     @ConditionalOnMissingService(IHelpCommand::class)
-    @RequiresTextCommands
     @ConditionalService(IsHelpDisabledChecker::class)
     open fun iHelpCommand(
         config: BTextConfig,

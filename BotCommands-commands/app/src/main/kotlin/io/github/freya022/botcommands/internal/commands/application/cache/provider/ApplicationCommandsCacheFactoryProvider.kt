@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.application.cache.provider
 
+import io.github.freya022.botcommands.api.commands.application.annotations.RequiresApplicationCommands
 import io.github.freya022.botcommands.api.core.config.BApplicationConfig
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.core.config.BDatabaseConfig
@@ -30,6 +31,7 @@ private val logger = KotlinLogging.loggerOf<ApplicationCommandsCache>()
 
 @BService
 @Configuration
+@RequiresApplicationCommands
 internal open class ApplicationCommandsCacheFactoryProvider {
     @Lazy // Due to JDA requirement
     @Bean
