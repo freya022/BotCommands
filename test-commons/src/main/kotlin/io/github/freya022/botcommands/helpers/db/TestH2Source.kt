@@ -21,7 +21,6 @@ class TestH2Source : ConnectionSupplier {
         createFlyway("bc", scriptLocations = arrayOf("bc_database_scripts/generic", "bc_database_scripts/h2")).migrate()
 
         // Actual migrations
-        createFlyway("bc_commands_app", scriptLocations = arrayOf("db/bc-migration/app-commands/generic", "db/bc-migration/app-commands/h2")).migrate()
         createFlyway("bc_components", scriptLocations = arrayOf("db/bc-migration/components/generic", "db/bc-migration/components/h2")).migrate()
     }
 
