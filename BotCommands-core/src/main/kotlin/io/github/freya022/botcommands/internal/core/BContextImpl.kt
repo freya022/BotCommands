@@ -286,6 +286,7 @@ class BContextImpl internal constructor(
     }
 
     private fun CoroutineScope.shutdownExecutor() {
+        @OptIn(ExperimentalStdlibApi::class)
         val executor = coroutineContext[ExecutorCoroutineDispatcher]?.executor as? ExecutorService
         if (forceShutdown) {
             cancel("Cancelled by shutdown")
