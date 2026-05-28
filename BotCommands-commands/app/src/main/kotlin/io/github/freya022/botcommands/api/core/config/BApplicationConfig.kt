@@ -344,8 +344,26 @@ class BApplicationConfigBuilder private constructor() : BApplicationConfigProps 
      * This is recommended if you use a container (to avoid having to manage more files),
      * or to avoid write issues.
      *
-     * ### Requirements
-     * This requires the database feature to be enabled, see [BDatabaseConfig].
+     * ## Database requirements
+     * The `BotCommands-database` module must be configured, see [BDatabaseConfig].
+     *
+     * The database must be a PostgreSQL instance, any recent version should do.
+     *
+     * ## Setting up the database schema
+     * The tables required to store components are defined by the scripts in `db/bc-migration/app-commands`.
+     *
+     * It is recommended to use a migration tool to run these automatically, for example with Flyway:
+     *
+     * ```java
+     * Flyway.configure(getClass().getClassLoader())
+     *      .dataSource(source)
+     *      .schemas("bc_commands_app")
+     *      .locations("db/bc-migration/app-commands/postgresql")
+     *      .load()
+     *      .migrate();
+     * ```
+     * This will run all the migration scripts required to set up your database,
+     * you can run this in the same class as your connection supplier.
      */
     fun databaseCache(block: ReceiverConsumer<DatabaseApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
         cache = DatabaseApplicationCommandsCacheConfigBuilder().apply(block)

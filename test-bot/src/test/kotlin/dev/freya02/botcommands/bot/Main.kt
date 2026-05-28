@@ -63,7 +63,7 @@ object Main {
                 }
 
                 registerApplicationCommands {
-                    databaseCache {
+                    fileCache {
                         @OptIn(DevConfig::class)
                         checkOnline = true
                     }

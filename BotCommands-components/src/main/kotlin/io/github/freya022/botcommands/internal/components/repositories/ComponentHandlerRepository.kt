@@ -17,7 +17,7 @@ internal class ComponentHandlerRepository(
     context(transaction: Transaction)
     internal suspend fun getPersistentHandler(id: Int): PersistentHandler? {
         return transaction.preparedStatement(
-            "SELECT handler_name, user_data FROM bc_persistent_handler WHERE component_id = ?"
+            "SELECT handler_name, user_data FROM bc_components.bc_persistent_handler WHERE component_id = ?"
         ) {
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
@@ -30,7 +30,7 @@ internal class ComponentHandlerRepository(
 
     context(transaction: Transaction)
     internal suspend fun insertPersistentHandler(componentId: Int, handler: PersistentHandler) {
-        transaction.preparedStatement("INSERT INTO bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
+        transaction.preparedStatement("INSERT INTO bc_components.bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
             executeUpdate(componentId, handler.handlerName, handler.userData.mapToArray { it?.asBytes() })
         }
     }
@@ -38,7 +38,7 @@ internal class ComponentHandlerRepository(
     context(transaction: Transaction)
     internal suspend fun getEphemeralHandler(id: Int): EphemeralHandler<*>? {
         return transaction.preparedStatement(
-            "SELECT handler_id FROM bc_ephemeral_handler WHERE component_id = ?"
+            "SELECT handler_id FROM bc_components.bc_ephemeral_handler WHERE component_id = ?"
         ) {
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
@@ -51,7 +51,7 @@ internal class ComponentHandlerRepository(
 
     context(transaction: Transaction)
     internal suspend fun insertEphemeralHandler(componentId: Int, handler: EphemeralHandler<*>) {
-        transaction.preparedStatement("INSERT INTO bc_ephemeral_handler (component_id, handler_id) VALUES (?, ?)") {
+        transaction.preparedStatement("INSERT INTO bc_components.bc_ephemeral_handler (component_id, handler_id) VALUES (?, ?)") {
             executeUpdate(componentId, ephemeralComponentHandlers.put(handler))
         }
     }

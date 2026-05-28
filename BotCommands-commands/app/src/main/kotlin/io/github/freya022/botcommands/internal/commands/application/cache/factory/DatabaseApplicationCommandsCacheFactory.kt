@@ -2,16 +2,16 @@ package io.github.freya022.botcommands.internal.commands.application.cache.facto
 
 import gnu.trove.map.hash.TLongObjectHashMap
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
+import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.internal.commands.application.cache.ApplicationCommandsCache
 import io.github.freya022.botcommands.internal.commands.application.cache.DatabaseApplicationCommandsCache
-import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 internal class DatabaseApplicationCommandsCacheFactory(
     override val cacheConfig: ApplicationCommandsCacheConfig,
-    private val database: InternalDatabase,
+    private val database: Database,
     private val applicationId: Long
 ) : ApplicationCommandsCacheFactory {
     private val lock = ReentrantLock()

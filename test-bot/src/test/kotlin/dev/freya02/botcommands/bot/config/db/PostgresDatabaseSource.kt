@@ -27,7 +27,8 @@ class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
 
     init {
         //Migrate BC tables
-        createFlyway("bc", "bc_database_scripts").migrate()
+        createFlyway("bc_commands_app", scriptLocations = arrayOf("db/bc-migration/app-commands/generic", "db/bc-migration/app-commands/postgresql")).migrate()
+        createFlyway("bc_components", scriptLocations = arrayOf("db/bc-migration/components/generic", "db/bc-migration/components/postgresql")).migrate()
 
         //You can use the same function for your database, you just have to change the schema and scripts location
         //Migrate BC test tables
@@ -36,10 +37,10 @@ class PostgresDatabaseSource(config: Config) : HikariSourceSupplier {
         logger.info { "Created database source" }
     }
 
-    private fun createFlyway(schema: String, scriptsLocation: String): Flyway = Flyway.configure(javaClass.classLoader)
+    private fun createFlyway(schema: String, vararg scriptLocations: String): Flyway = Flyway.configure(javaClass.classLoader)
         .dataSource(source)
         .schemas(schema)
-        .locations(scriptsLocation)
+        .locations(*scriptLocations)
         .validateMigrationNaming(true)
         .loggers("slf4j")
         .load()

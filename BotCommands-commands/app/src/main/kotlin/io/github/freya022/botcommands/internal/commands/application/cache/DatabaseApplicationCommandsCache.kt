@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.internal.commands.application.cache
 
+import io.github.freya022.botcommands.api.core.db.Database
 import io.github.freya022.botcommands.api.core.db.preparedStatement
-import io.github.freya022.botcommands.internal.core.db.InternalDatabase
 import net.dv8tion.jda.api.entities.Guild
 
 internal class DatabaseApplicationCommandsCache internal constructor(
     private val guild: Guild?,
-    private val database: InternalDatabase,
+    private val database: Database,
     private val applicationId: Long,
 ) : ApplicationCommandsCache {
 
@@ -14,7 +14,7 @@ internal class DatabaseApplicationCommandsCache internal constructor(
         database.preparedStatement(
             """
                 select data, metadata
-                from application_commands_cache
+                from bc_commands_app.application_commands_cache
                 where application_id = ?
                   and guild_id is not distinct from ?
             """.trimIndent(),
@@ -29,7 +29,7 @@ internal class DatabaseApplicationCommandsCache internal constructor(
     override suspend fun write(commandBytes: ByteArray, metadataBytes: ByteArray) {
         database.preparedStatement(
             """
-                insert into application_commands_cache (application_id, guild_id, data, metadata)
+                insert into bc_commands_app.application_commands_cache (application_id, guild_id, data, metadata)
                 values (?, ?, ?, ?)
                 on conflict(application_id, guild_id) do update set data     = excluded.data,
                                                                     metadata = excluded.metadata

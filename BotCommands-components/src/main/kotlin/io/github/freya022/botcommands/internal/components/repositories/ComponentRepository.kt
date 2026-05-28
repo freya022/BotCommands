@@ -21,7 +21,7 @@ import io.github.freya022.botcommands.internal.components.data.timeout.Ephemeral
 import io.github.freya022.botcommands.internal.components.data.timeout.PersistentTimeout
 import io.github.freya022.botcommands.internal.components.handler.EphemeralHandler
 import io.github.freya022.botcommands.internal.components.handler.PersistentHandler
-import io.github.freya022.botcommands.internal.core.db.InternalDatabase
+import io.github.freya022.botcommands.internal.core.db.DatabaseSchemaHelper
 import io.github.freya022.botcommands.internal.core.exceptions.internalErrorMessage
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.freya022.botcommands.internal.utils.throwInternal
@@ -41,7 +41,7 @@ private val logger = KotlinLogging.logger { }
 @BService
 @RequiresComponents
 internal class ComponentRepository(
-    private val database: InternalDatabase,
+    private val database: Database,
     private val componentTimeoutRepository: ComponentTimeoutRepository,
     private val componentHandlerRepository: ComponentHandlerRepository,
     private val componentFilters: ComponentFilters
@@ -59,6 +59,18 @@ internal class ComponentRepository(
 
     init {
         runBlocking {
+            val isSchemaValid = DatabaseSchemaHelper.validateSchemaVersion(
+                logger,
+                database,
+                schemaName = "bc_components",
+                // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
+                latestVersion = "4.0.0-alpha.1", // Change in the latest migration script too
+                featureName = "components",
+                fallbackMessage = ""
+            )
+
+            check(isSchemaValid) { "The components database schema is not up to date, please fix the issued warning" }
+
             database.fetchConnection(readOnly = true).use {
                 val metadata = it.metaData
                 if (metadata.databaseProductName == "PostgreSQL") {
@@ -90,7 +102,7 @@ internal class ComponentRepository(
 
     suspend fun getPersistentComponentTimeouts(): List<PersistentComponentTimeout> {
         return database.preparedStatement(
-            "select component_id, expires_at from bc_component where lifetime_type = ? and expires_at is not null",
+            "select component_id, expires_at from bc_components.bc_component where lifetime_type = ? and expires_at is not null",
             readOnly = true
         ) {
             executeQuery(LifetimeType.PERSISTENT.key).map {
@@ -103,15 +115,15 @@ internal class ComponentRepository(
     }
 
     suspend fun removeEphemeralComponents(): Int = database.transactional {
-        preparedStatement("truncate table bc_ephemeral_timeout") {
+        preparedStatement("truncate table bc_components.bc_ephemeral_timeout") {
             executeUpdate()
         }
 
-        preparedStatement("truncate table bc_ephemeral_handler") {
+        preparedStatement("truncate table bc_components.bc_ephemeral_handler") {
             executeUpdate()
         }
 
-        val ids: List<Int> = preparedStatement("select component_id from bc_component where lifetime_type = ?") {
+        val ids: List<Int> = preparedStatement("select component_id from bc_components.bc_component where lifetime_type = ?") {
             executeQuery(LifetimeType.EPHEMERAL.key).map { it.getInt("component_id") }
         }
 
@@ -126,7 +138,7 @@ internal class ComponentRepository(
             val componentId: Int = insertBaseComponent(builder, builder.singleUse, builder.rateLimitReference, getFilterNames(builder.filters))
 
             // Add constraints
-            preparedStatement("insert into bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
+            preparedStatement("insert into bc_components.bc_component_constraints (component_id, users, roles, permissions) VALUES (?, ?, ?, ?)") {
                 executeUpdate(
                     componentId,
                     builder.constraints.allowedUsers.toArray(),
@@ -158,9 +170,9 @@ internal class ComponentRepository(
         preparedStatement(
             """
             select lifetime_type, component_type, expires_at, reset_timeout_on_use_duration_ms, one_use, users, roles, permissions, group_id, rate_limit_group, rate_limit_discriminator, filters
-            from bc_component component
-                     left join bc_component_constraints constraints using (component_id)
-                     left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
+            from bc_components.bc_component component
+                     left join bc_components.bc_component_constraints constraints using (component_id)
+                     left join bc_components.bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
             where component.component_id = ?""".trimIndent()
         ) {
             val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
@@ -252,7 +264,7 @@ internal class ComponentRepository(
         val componentIds: List<Int> = transaction.preparedStatement(
             """
                 select component_id
-                from bc_component_component_group
+                from bc_components.bc_component_component_group
                 where group_id = ?
             """.trimIndent()
         ) {
@@ -270,7 +282,7 @@ internal class ComponentRepository(
 
         // Associate group id to its components, and group id to itself
         suspend fun insertComponentGroupAssociation(componentId: Int) {
-            preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
+            preparedStatement("insert into bc_components.bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
         }
@@ -281,7 +293,7 @@ internal class ComponentRepository(
         val hasTimeouts: Boolean = preparedStatement(
             """
                 select count(*) > 0
-                from (select component_id from bc_component where expires_at is not null) as timeouted_components
+                from (select component_id from bc_components.bc_component where expires_at is not null) as timeouted_components
                 where component_id = any (?);
             """.trimIndent()
         ) {
@@ -316,7 +328,7 @@ internal class ComponentRepository(
         }
 
         return transaction.preparedStatement(
-            "insert into bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, rate_limit_discriminator, filters) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "insert into bc_components.bc_component (component_type, lifetime_type, expires_at, reset_timeout_on_use_duration_ms, one_use, rate_limit_group, rate_limit_discriminator, filters) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             columnNames = arrayOf("component_id")
         ) {
             executeReturningUpdate(builder.componentType.key, builder.lifetimeType.key, expiresAt?.toSqlTimestamp(), resetTimeoutOnUseDurationMs, singleUse, rateLimitReference?.group, rateLimitReference?.discriminator, filterNames)
@@ -342,18 +354,18 @@ internal class ComponentRepository(
         val deletedComponents: List<DeletedComponent> = preparedStatement(
             """
                 select c.component_id, eh.handler_id as component_handler_id, et.handler_id as timeout_handler_id
-                from bc_component c
-                         left join bc_ephemeral_handler eh using (component_id)
-                         left join bc_ephemeral_timeout et using (component_id)
+                from bc_components.bc_component c
+                         left join bc_components.bc_ephemeral_handler eh using (component_id)
+                         left join bc_components.bc_ephemeral_timeout et using (component_id)
                 where c.component_id = any (?) -- Delete this component
                    or c.component_id = any
                       (select component_id -- (This component is a group) Delete all components from the same group
-                       from bc_component_component_group
+                       from bc_components.bc_component_component_group
                        where group_id = any (?))
                    or c.component_id = any
                       (select g.component_id -- (This component is not a group) Find all components from the same group and delete them
-                       from bc_component_component_group c
-                                join bc_component_component_group g on c.group_id = g.group_id
+                       from bc_components.bc_component_component_group c
+                                join bc_components.bc_component_component_group g on c.group_id = g.group_id
                        where c.component_id = any (?))
             """.trimIndent()
         ) {
@@ -362,7 +374,7 @@ internal class ComponentRepository(
         }
         val deletedComponentIds = deletedComponents.map { it.componentId }
 
-        preparedStatement("delete from bc_component where component_id = any (?)") {
+        preparedStatement("delete from bc_components.bc_component where component_id = any (?)") {
             executeUpdate(deletedComponentIds.toTypedArray())
         }
 
@@ -374,7 +386,7 @@ internal class ComponentRepository(
     internal suspend fun resetExpiration(componentId: Int): Instant? = database.transactional {
         preparedStatement(
             """
-                update bc_component
+                update bc_components.bc_component
                 set expires_at = now() + (reset_timeout_on_use_duration_ms || 'milliseconds')::interval
                 where component_id = ?
                 returning expires_at
