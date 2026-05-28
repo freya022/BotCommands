@@ -46,6 +46,9 @@ CREATE TABLE schema_version
 INSERT INTO schema_version
 VALUES (TRUE, '4.0.0-alpha.1');
 
+ALTER TABLE bc.bc_component
+    SET SCHEMA bc_components;
+
 ALTER TABLE bc.bc_component_component_group
     SET SCHEMA bc_components;
 
