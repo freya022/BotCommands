@@ -202,7 +202,7 @@ class JavaInteropTest {
 
     private val KType.jvmErasureOrNull: KClass<*>?
         get() {
-            classifier ?: return null
+            if (classifier == null) return null
             return jvmErasure
         }
 

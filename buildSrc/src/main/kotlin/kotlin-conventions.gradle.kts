@@ -14,7 +14,8 @@ kotlin {
         freeCompilerArgs.addAll(
             "-Xjsr305=strict",
             "-Xconsistent-data-class-copy-visibility",
-            "-Xwarning-level=PLATFORM_CLASS_MAPPED_TO_KOTLIN:disabled"
+            "-Xwarning-level=PLATFORM_CLASS_MAPPED_TO_KOTLIN:disabled",
+            "-Xreturn-value-checker=check",
         )
     }
 }

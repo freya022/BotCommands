@@ -35,8 +35,8 @@ abstract class AbstractMessagesTests : AbstractIntegrationTest() {
 
     protected fun <F : KFunction<MessageCreateData>> methodCall(
         callableRef: F,
-        executor: F.() -> Unit,
+        executor: F.() -> MessageCreateData,
     ): Pair<String, () -> Unit> {
-        return callableRef.name to { executor(callableRef) }
+        return callableRef.name to { val _ = executor(callableRef) }
     }
 }
