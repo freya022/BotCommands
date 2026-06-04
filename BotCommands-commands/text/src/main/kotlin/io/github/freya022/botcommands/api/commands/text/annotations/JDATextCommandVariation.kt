@@ -16,6 +16,8 @@ import net.dv8tion.jda.internal.utils.Checks
  * Declares this function as a text command,
  * additional properties can be set with [@TextCommandData][TextCommandData].
  *
+ * All text command functions sharing the same [path] must be in the same class.
+ *
  * ### Additional annotations
  * Additional data can be set by using [@TextCommandData][TextCommandData] once **per top-level name**,
  * by specifying their [target path][TextCommandData.path].
