@@ -32,6 +32,6 @@ class MessageContextGetJson {
 
         val messageObject = DataPath.getObject(dataObject, "d.data.resolved.messages").getObject(message.id)
         val upload = FileUpload.fromData(messageObject.toPrettyString().encodeToByteArray(), "message-${message.id}.json")
-        event.reply_(files = listOf(upload), ephemeral = true).await()
+        event.reply_(files = [upload], ephemeral = true).await()
     }
 }

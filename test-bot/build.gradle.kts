@@ -63,7 +63,7 @@ tasks.withType<Test> {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
+            "-Xcollection-literals",
         )
     }
 }

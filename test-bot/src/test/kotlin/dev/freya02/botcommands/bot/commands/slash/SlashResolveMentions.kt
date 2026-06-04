@@ -36,7 +36,7 @@ class SlashResolveMentions(private val buttons: Buttons) {
         }
         event.reply_(
             "${forumChannel.asMention} ${threadChannel.asMention} ${archivedThreadChannel.asMention}",
-            components = listOf(row(button1, button2)),
+            components = [row(button1, button2)],
             ephemeral = true
         ).await()
     }
