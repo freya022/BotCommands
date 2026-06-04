@@ -57,9 +57,20 @@ internal class TextCommandAutoBuilder(
 
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
         // This may be empty in case this just holds subcommands
-        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
+        private val _variations: MutableList<TextFunctionMetadata> = arrayListOf()
+        val variations: List<TextFunctionMetadata> get() = _variations
 
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
+
+        fun addVariation(metadata: TextFunctionMetadata) {
+            // Text command variations are required to all be from the same class
+            _variations.firstOrNull()?.let {
+                check(it.declaringClass == metadata.declaringClass) {
+                    "All variations of text command '${metadata.path}' must be in the same class"
+                }
+            }
+            _variations.add(metadata)
+        }
     }
 
     override val optionAnnotation: KClass<out Annotation> = TextOption::class
@@ -90,7 +101,7 @@ internal class TextCommandAutoBuilder(
                 }
             }
 
-            container.variations.add(metadata)
+            container.addVariation(metadata)
         }
 
         // Assign user-generated extra data
