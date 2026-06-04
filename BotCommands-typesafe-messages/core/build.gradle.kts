@@ -35,9 +35,6 @@ setMainJvmTarget(target = 24)
 kotlin {
     compilerOptions {
         optIn.add("dev.freya02.botcommands.typesafe.messages.api.annotations.ExperimentalTypesafeMessagesApi")
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
     }
 }
 
