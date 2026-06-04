@@ -2,7 +2,6 @@ package io.github.freya022.botcommands.internal.commands.application.autobuilder
 
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
-import io.github.freya022.botcommands.api.commands.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.application.ApplicationCommandFilter
 import io.github.freya022.botcommands.api.commands.application.CommandScope
 import io.github.freya022.botcommands.api.commands.application.annotations.DeclarationFilter
@@ -141,10 +140,6 @@ internal abstract class ApplicationCommandAutoBuilder<T : RootAnnotatedApplicati
                 }
             }
             .map { context.getService(it) as ApplicationCommandFilter }
-
-        if (func.hasAnnotationRecursive<NSFW>()) {
-            throwArgument(func, "${annotationRef<NSFW>()} can only be used on text commands, use the #nsfw method on your annotation instead")
-        }
     }
 
     private enum class TestState {

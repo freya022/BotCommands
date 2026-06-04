@@ -1,12 +1,12 @@
 package io.github.freya022.botcommands.api.commands.text.builder
 
-import io.github.freya022.botcommands.api.commands.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
 import io.github.freya022.botcommands.api.commands.text.BaseCommandEvent
 import io.github.freya022.botcommands.api.commands.text.CommandEvent
 import io.github.freya022.botcommands.api.commands.text.IHelpCommand
 import io.github.freya022.botcommands.api.commands.text.TextCommandHelpConsumer
 import io.github.freya022.botcommands.api.commands.text.annotations.Hidden
+import io.github.freya022.botcommands.api.commands.text.annotations.NSFW
 import io.github.freya022.botcommands.api.commands.text.annotations.RequireOwner
 import io.github.freya022.botcommands.api.commands.text.annotations.TextCommandData
 import io.github.freya022.botcommands.api.core.BotOwners

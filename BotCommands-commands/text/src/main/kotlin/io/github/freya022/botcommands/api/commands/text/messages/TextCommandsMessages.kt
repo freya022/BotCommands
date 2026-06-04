@@ -65,7 +65,7 @@ interface TextCommandsMessages {
     fun closedDirectMessages(event: MessageReceivedEvent): MessageCreateData
 
     /**
-     * @return Message to display when a command is used in a NSFW [IAgeRestrictedChannel] (see [@NSFW][io.github.freya022.botcommands.api.commands.annotations.NSFW])
+     * @return Message to display when a command is used in a NSFW [IAgeRestrictedChannel] (see [@NSFW][io.github.freya022.botcommands.api.commands.text.annotations.NSFW])
      */
     fun nsfwOnly(event: MessageReceivedEvent): MessageCreateData
 }

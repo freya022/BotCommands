@@ -1,4 +1,4 @@
-package io.github.freya022.botcommands.api.commands.annotations
+package io.github.freya022.botcommands.api.commands.text.annotations
 
 /**
  * Marks a text command as being usable in NSFW channels only.
