@@ -62,6 +62,10 @@ import net.dv8tion.jda.internal.utils.Checks
  * ### Permissions
  *
  * Required user/bot permissions can be set with [@UserPermissions][UserPermissions]/[@BotPermissions][BotPermissions].
+ * An owner can also be required using [RequireOwner].
+ *
+ * All 3 annotations apply to the command itself, not only this variation,
+ * in other words, this applies to all commands sharing the same path.
  *
  * ### Execution filtering
  *
@@ -70,9 +74,11 @@ import net.dv8tion.jda.internal.utils.Checks
  *
  * ### Rate limiting
  *
- * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown].
- * The annotations apply to the command itself, not only this variation,
- * in other words, this applies to all commands with the same path.
+ * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown],
+ * you can also apply a custom rate limiter using [@RateLimitReference][RateLimitReference].
+ *
+ * All 3 annotations apply to the command itself, not only this variation,
+ * in other words, this applies to all commands sharing the same path.
  *
  * @see Category @Category
  * @see Hidden @Hidden

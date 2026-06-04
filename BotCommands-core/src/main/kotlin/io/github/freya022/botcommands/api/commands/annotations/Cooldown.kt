@@ -25,6 +25,9 @@ import java.time.temporal.ChronoUnit
  * ### Cooldown cancellation
  * The cooldown can be canceled inside the command with [CancellableRateLimit.cancelRateLimit] on your event.
  *
+ * ### Annotation scope
+ * If applied on a function, it overrides the annotation set on the declaring class.
+ *
  * @see RateLimit @RateLimit
  *
  * @see CommandBuilder.cooldown In-command equivalent

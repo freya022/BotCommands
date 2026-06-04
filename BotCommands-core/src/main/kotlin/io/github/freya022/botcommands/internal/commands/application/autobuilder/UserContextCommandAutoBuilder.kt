@@ -63,7 +63,7 @@ internal class UserContextCommandAutoBuilder(
 
         val annotation = rootCommand.annotation
         manager.userCommand(rootCommand.path.name, func.castFunction()) {
-            fillCommandBuilder(func)
+            fillCommandBuilder(ApplicationCommandUnit(serviceContainer, rootCommand))
             fillApplicationCommandBuilder(func)
 
             contexts = if (forceGuildCommands) {

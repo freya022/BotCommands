@@ -63,7 +63,7 @@ internal class MessageContextCommandAutoBuilder(
 
         val annotation = rootCommand.annotation
         manager.messageCommand(rootCommand.path.name, func.castFunction()) {
-            fillCommandBuilder(func)
+            fillCommandBuilder(ApplicationCommandUnit(serviceContainer, rootCommand))
             fillApplicationCommandBuilder(func)
 
             contexts = if (forceGuildCommands) {

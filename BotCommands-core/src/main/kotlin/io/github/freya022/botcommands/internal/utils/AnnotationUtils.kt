@@ -22,14 +22,6 @@ internal object AnnotationUtils {
         return set
     }
 
-    internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
-        return func.findAllAnnotations<UserPermissions>().flatMapTo(enumSetOf()) { it.permissions }
-    }
-
-    internal fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
-        return func.findAllAnnotations<BotPermissions>().flatMapTo(enumSetOf()) { it.permissions }
-    }
-
     @Suppress("UNCHECKED_CAST")
     internal fun <T : Filter> getFilters(context: BContext, func: KFunction<*>, filterType: KClass<T>): List<T> {
         return func.findAllAnnotations<FilterAnnotation>()
