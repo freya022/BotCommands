@@ -1,27 +1,25 @@
 package io.github.freya022.botcommands.internal.commands.autobuilder
 
 import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.core.DeclarationSite
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.utils.bestName
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
-import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimitReference
 import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
-abstract class CommandAutoBuilder : AnnotationAutoBuilderHelper, RateLimitAutoBuilderHelper {
-    abstract override val serviceContainer: ServiceContainer
+abstract class CommandAutoBuilder {
+    abstract val serviceContainer: ServiceContainer
     protected abstract val optionAnnotation: KClass<out Annotation>
 
-    protected fun CommandBuilder.fillCommandBuilder(functions: List<KFunction<*>>) {
-        declarationSite = functions.first().let(DeclarationSite::fromFunctionSignature)
+    protected fun CommandBuilder.fillCommandBuilder(commandUnit: CommandUnit) {
+        declarationSite = commandUnit.getBestDeclarationSite()
 
-        val rateLimiter = functions.singleValueOfVariants("their rate limit specification", ::readRateLimit)
-        val rateLimitRef = functions.singleAnnotationOfVariants<RateLimitReference>()
+        val rateLimiter = commandUnit.getRateLimiter()
+        val rateLimitRef = commandUnit.getRateLimitRef()
 
         // A single one of them can be used - One of them needs to be null
         check(rateLimitRef == null || rateLimiter == null) {
@@ -38,19 +36,9 @@ abstract class CommandAutoBuilder : AnnotationAutoBuilderHelper, RateLimitAutoBu
             rateLimitReference(rateLimitRef.group)
         }
 
-        functions
-            .singleValueOfVariants("user permission") { f ->
-                getUserPermissions(f).takeIf { it.isNotEmpty() }
-            }
-            ?.let { userPermissions = it }
-        functions
-            .singleValueOfVariants("bot permissions") { f ->
-                getBotPermissions(f).takeIf { it.isNotEmpty() }
-            }
-            ?.let { botPermissions = it }
+        userPermissions = commandUnit.getUserPermissions()
+        botPermissions = commandUnit.getBotPermissions()
     }
-
-    protected fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) = fillCommandBuilder(listOf(func))
 
     protected fun requireServiceOptionOrOptional(func: KFunction<*>, parameterAdapter: ParameterAdapter, commandAnnotation: KClass<out Annotation>) {
         if (parameterAdapter.isOptionalOrNullable) return

@@ -19,6 +19,7 @@ import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.commands.application.SkipLogger
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.ApplicationFunctionMetadata
 import io.github.freya022.botcommands.internal.commands.application.autobuilder.metadata.RootAnnotatedApplicationCommand
+import io.github.freya022.botcommands.internal.commands.autobuilder.AnnotationAutoBuilderHelper
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import io.github.freya022.botcommands.internal.utils.*
@@ -133,7 +134,7 @@ internal abstract class ApplicationCommandAutoBuilder<T : RootAnnotatedApplicati
     }
 
     protected fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>) {
-        filters += getFilterTypes(func)
+        filters += AnnotationAutoBuilderHelper.getFilterTypes(func)
             .onEach {
                 require(it.isSubclassOf<ApplicationCommandFilter>()) {
                     "Filter ${it.simpleNestedName} must implement ${classRef<ApplicationCommandFilter>()}"

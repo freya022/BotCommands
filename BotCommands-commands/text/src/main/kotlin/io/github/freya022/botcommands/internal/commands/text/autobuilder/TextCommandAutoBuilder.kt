@@ -22,20 +22,17 @@ import io.github.freya022.botcommands.api.core.reflect.wrap
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
-import io.github.freya022.botcommands.api.core.utils.joinAsList
-import io.github.freya022.botcommands.api.core.utils.nullIfBlank
-import io.github.freya022.botcommands.api.core.utils.simpleNestedName
+import io.github.freya022.botcommands.api.core.utils.*
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
-import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
+import io.github.freya022.botcommands.internal.commands.autobuilder.AnnotationAutoBuilderHelper
 import io.github.freya022.botcommands.internal.commands.autobuilder.CommandAutoBuilder
 import io.github.freya022.botcommands.internal.commands.autobuilder.castFunction
 import io.github.freya022.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
-import io.github.freya022.botcommands.internal.commands.autobuilder.singlePresentAnnotationOfVariants
+import io.github.freya022.botcommands.internal.commands.autobuilder.utils.ParameterAdapter
 import io.github.freya022.botcommands.internal.commands.components
 import io.github.freya022.botcommands.internal.commands.text.TextCommandComparator
 import io.github.freya022.botcommands.internal.commands.text.autobuilder.metadata.TextFunctionMetadata
+import io.github.freya022.botcommands.internal.commands.text.autobuilder.utils.TextCommandVariationContainer
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.parameters.ResolverContainer
@@ -61,19 +58,12 @@ internal class TextCommandAutoBuilder(
 
         val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
         // This may be empty in case this just holds subcommands
-        private val _variations: MutableList<TextFunctionMetadata> = arrayListOf()
-        val variations: List<TextFunctionMetadata> get() = _variations
+        val variations = TextCommandVariationContainer()
 
         val metadata: TextFunctionMetadata? get() = variations.firstOrNull()
 
         fun addVariation(metadata: TextFunctionMetadata) {
-            // Text command variations are required to all be from the same class
-            _variations.firstOrNull()?.let {
-                check(it.declaringClass == metadata.declaringClass) {
-                    "All variations of text command '${metadata.path}' must be in the same class"
-                }
-            }
-            _variations.add(metadata)
+            variations.addVariation(metadata)
         }
     }
 
@@ -192,6 +182,7 @@ internal class TextCommandAutoBuilder(
     private fun TextCommandBuilder.processVariations(container: TextCommandContainer) {
         container
             .variations
+            .asList
             .sortedWith(TextCommandComparator(context)) //Sort variations as to put most complex variations first, and fallback last
             .forEach {
                 variation(it.func.castFunction()) {
@@ -208,7 +199,7 @@ internal class TextCommandAutoBuilder(
         declarationSite = DeclarationSite.fromFunctionSignature(metadata.func)
         processOptions(metadata)
 
-        filters += getFilterTypes(metadata.func)
+        filters += AnnotationAutoBuilderHelper.getFilterTypes(metadata.func)
             .onEach {
                 require(it.isSubclassOf<TextCommandFilter>()) {
                     "Filter ${it.simpleNestedName} must implement ${classRef<TextCommandFilter>()}"
@@ -226,16 +217,16 @@ internal class TextCommandAutoBuilder(
 
         // Any variation could contain an annotation we're searching for.
         // But only one annotation may be taken for the given command
-        val variationFunctions = container.variations.map { it.func }
-        fillCommandBuilder(variationFunctions)
+        val variations = container.variations
+        fillCommandBuilder(TextCommandUnit(serviceContainer, variations))
 
         description = container.extraData.description.nullIfBlank()
         aliases += container.extraData.aliases
 
-        hidden = variationFunctions.singlePresentAnnotationOfVariants<Hidden>()
-        ownerRequired = variationFunctions.singlePresentAnnotationOfVariants<RequireOwner>()
+        hidden = variations.hasAnyAnnotationOf<Hidden>()
+        ownerRequired = variations.hasAnyAnnotationOf<RequireOwner>()
 
-        nsfw = variationFunctions.singlePresentAnnotationOfVariants<NSFW>()
+        nsfw = variations.hasAnyAnnotationOf<NSFW>()
 
         if (instance is TextCommandHelpConsumer) {
             detailedDescription = instance::accept

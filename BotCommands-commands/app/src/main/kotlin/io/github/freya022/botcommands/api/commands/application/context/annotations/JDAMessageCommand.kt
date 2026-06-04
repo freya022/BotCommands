@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.localization.context.AppLocalizationCo
 import io.github.freya022.botcommands.api.parameters.resolvers.ICustomResolver
 import io.github.freya022.botcommands.api.ratelimit.annotations.Cooldown
 import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimit
+import io.github.freya022.botcommands.api.ratelimit.annotations.RateLimitReference
 import net.dv8tion.jda.api.interactions.IntegrationType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -57,7 +58,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  *
  * ### Rate limiting
  *
- * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown].
+ * See [@RateLimit][RateLimit] / [@Cooldown][Cooldown],
+ * you can also apply a custom rate limiter using [@RateLimitReference][RateLimitReference].
  *
  * @see GlobalMessageEvent.getTarget
  *

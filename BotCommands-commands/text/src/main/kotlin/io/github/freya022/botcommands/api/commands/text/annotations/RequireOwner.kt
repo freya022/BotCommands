@@ -10,8 +10,9 @@ import io.github.freya022.botcommands.api.core.BotOwners
  * but will still be responded to if a user tries to use it,
  * though they will be rejected.
  *
- * **Note:** This applies to the command itself, not only this variation,
- * in other words, this applies to all commands with the same path.
+ * ### Annotation scope
+ * This annotation applies to the command itself, not just on a single variation,
+ * in other words, it applies to all commands sharing the same path.
  *
  * @see TextCommandBuilder.ownerRequired DSL equivalent
  */

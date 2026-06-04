@@ -101,6 +101,9 @@ annotation class Refill(
  * public void onSlashRateLimit(...) { ... }
  * ```
  *
+ * ### Annotation scope
+ * If applied on a function, it overrides the annotation set on the declaring class.
+ *
  * @see RateLimitScope
  * @see Bandwidth @Bandwidth
  * @see Bucket
@@ -131,10 +134,10 @@ annotation class RateLimit(
 /**
  * Uses an existing rate limiter for this command handler.
  *
- * **Text commands note:** This applies to the command itself, not only this variation,
- * in other words, this applies to all commands with the same path.
- *
  * See [RateLimitProvider] for examples.
+ *
+ * ### Annotation scope
+ * If applied on a function, it overrides the annotation set on the declaring class.
  *
  * @see RateLimitProvider
  */

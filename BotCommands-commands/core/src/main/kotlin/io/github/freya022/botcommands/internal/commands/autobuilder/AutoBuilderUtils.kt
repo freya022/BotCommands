@@ -1,10 +1,6 @@
 package io.github.freya022.botcommands.internal.commands.autobuilder
 
-import io.github.freya022.botcommands.api.commands.builder.CommandBuilder
-import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
-import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.internal.commands.autobuilder.metadata.MetadataFunctionHolder
-import io.github.freya022.botcommands.internal.utils.annotationRef
 import io.github.freya022.botcommands.internal.utils.rethrow
 import io.github.freya022.botcommands.internal.utils.shortSignature
 import io.github.freya022.botcommands.internal.utils.unwrap
@@ -27,28 +23,6 @@ inline fun <T : MetadataFunctionHolder> Iterable<T>.forEachWithDelayedExceptions
     }
 
     ex?.rethrow("Exception(s) occurred while registering annotated commands")
-}
-
-context(_: CommandBuilder)
-inline fun <reified A : Annotation> Iterable<KFunction<*>>.singlePresentAnnotationOfVariants(): Boolean {
-    return singleAnnotationOfVariants<A>() != null
-}
-
-context(_: CommandBuilder)
-inline fun <reified A : Annotation> Iterable<KFunction<*>>.singleAnnotationOfVariants(): A? {
-    return singleValueOfVariants(annotationRef<A>()) { it.findAnnotationRecursive<A>() }
-}
-
-context(builder: CommandBuilder)
-fun <V : Any> Iterable<KFunction<*>>.singleValueOfVariants(desc: String, associationBlock: (KFunction<*>) -> V?): V? {
-    val allValues = this.associateWith(associationBlock)
-
-    val nonNullMap = allValues.filterValues { it != null }
-    check(nonNullMap.size <= 1) {
-        val refs = nonNullMap.map { it.key }.joinAsList { it.shortSignature }
-        "Command '${builder.path}' should have $desc defined at most once:\n$refs"
-    }
-    return nonNullMap.values.firstOrNull()
 }
 
 @Suppress("UNCHECKED_CAST")

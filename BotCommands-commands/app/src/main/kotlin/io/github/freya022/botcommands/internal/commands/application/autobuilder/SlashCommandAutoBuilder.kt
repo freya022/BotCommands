@@ -302,7 +302,7 @@ internal class SlashCommandAutoBuilder(
     }
 
     private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
-        fillCommandBuilder(metadata.func)
+        fillCommandBuilder(ApplicationCommandUnit(serviceContainer, metadata))
         fillApplicationCommandBuilder(metadata.func)
     }
 
