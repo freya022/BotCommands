@@ -51,7 +51,7 @@ internal class UserContextCommandAutoBuilder(
             UserContextFunctionMetadata(it, annotation, path, commandId)
         }
 
-    context(_: SkipLogger)
+    context(logger: SkipLogger)
     override fun declareTopLevel(
         manager: AbstractApplicationCommandManager,
         rootCommand: UserContextFunctionMetadata,

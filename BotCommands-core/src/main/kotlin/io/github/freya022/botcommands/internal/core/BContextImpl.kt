@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Clock
@@ -294,7 +295,7 @@ internal class BContextImpl internal constructor(
     }
 
     private fun CoroutineScope.shutdownExecutor() {
-        val executor = coroutineContext[ExecutorCoroutineDispatcher]?.executor as? ExecutorService
+        val executor = (coroutineContext[ContinuationInterceptor] as? ExecutorCoroutineDispatcher)?.executor as? ExecutorService
         if (forceShutdown) {
             cancel("Cancelled by shutdown")
             executor?.shutdownNow()

@@ -202,7 +202,7 @@ internal class SlashCommandAutoBuilder(
         this.metadata = topLevelMetadata + groupedBuilders.mapValues { (_, builder) -> builder.build() }
     }
 
-    context(_: SkipLogger)
+    context(logger: SkipLogger)
     override fun declareTopLevel(manager: AbstractApplicationCommandManager, rootCommand: SlashCommandMetadata) {
         val metadata = rootCommand.metadata
         val annotation = metadata.annotation

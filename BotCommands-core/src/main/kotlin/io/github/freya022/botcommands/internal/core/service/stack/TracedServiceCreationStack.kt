@@ -28,7 +28,7 @@ internal class TracedServiceCreationStack : ServiceCreationStack {
 
         abstract fun onValue(value: V)
 
-        context(_: StringBuilder)
+        context(builder: StringBuilder)
         abstract fun print(indent: Int = 0)
 
         // For circular dependency string
