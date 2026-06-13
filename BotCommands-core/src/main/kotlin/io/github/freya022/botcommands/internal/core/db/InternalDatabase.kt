@@ -23,6 +23,9 @@ internal class InternalDatabase internal constructor(private val database: Datab
                 @Suppress("ConvertTryFinallyToUseCall")
                 try {
                     schema = defaultSchema
+                    if (!autoCommit) {
+                        commit()
+                    }
                 } finally {
                     connection.close()
                 }
