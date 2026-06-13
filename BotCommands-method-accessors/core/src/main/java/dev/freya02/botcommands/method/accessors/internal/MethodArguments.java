@@ -6,7 +6,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Arrays;
 
 @NullMarked
-public class MethodArguments implements Cloneable {
+public class MethodArguments {
 
     public static final Object NO_VALUE = new Object();
 
@@ -20,15 +20,14 @@ public class MethodArguments implements Cloneable {
         this.args = args;
     }
 
-    @Override
-    public MethodArguments clone() {
-        try {
-            final MethodArguments clone = (MethodArguments) super.clone();
-            clone.cursor = 0;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+    private MethodArguments(@Nullable Object[] args) {
+        this.args = args;
+    }
+
+    public MethodArguments copy() {
+        var clone = new MethodArguments(args.clone());
+        clone.cursor = 0;
+        return clone;
     }
 
     public void push(@Nullable Object value) {
