@@ -23,7 +23,7 @@ internal class EventHandlerFunction(
 
     // Since the arguments are the same everytime except for the event,
     // clone and only change the event on each invocation
-    internal fun cloneBaseArgs(): MethodArguments = baseArgs.clone()
+    internal fun cloneBaseArgs(): MethodArguments = baseArgs.copy()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
