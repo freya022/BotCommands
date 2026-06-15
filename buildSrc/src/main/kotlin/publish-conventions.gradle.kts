@@ -6,6 +6,8 @@ plugins {
     `java-library`
     signing
     id("com.vanniktech.maven.publish")
+    // Better run the generator and have it run unnecessarily than have bugs when it should had been run
+    id("class-list-generator-conventions")
 }
 
 val environment = project.extensions.create<PublishedProjectEnvironmentConfig>("publishedProjectEnvironment")

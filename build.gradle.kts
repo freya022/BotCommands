@@ -58,6 +58,10 @@ dependencies {
     dokka(projects.botCommandsRestarter)
 }
 
+tasks.generateClassList {
+    enabled = false
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

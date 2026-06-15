@@ -13,3 +13,9 @@ includeBuild("../spring-configuration-metadata-generator") {
         substitute(module("dev.freya02:spring-configuration-metadata-generator")).using(project(":"))
     }
 }
+
+includeBuild("../class-list-generator") {
+    dependencySubstitution {
+        substitute(module("dev.freya02:class-list-generator")).using(project(":"))
+    }
+}

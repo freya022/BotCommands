@@ -17,6 +17,7 @@ import io.github.freya022.botcommands.internal.core.service.BotCommandsBootstrap
 import io.github.freya022.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.ClassMetadata
 import io.github.freya022.botcommands.internal.utils.ReflectionMetadata.MethodMetadata
+import io.github.freya022.botcommands.internal.utils.ReflectionMetadataScanner.Companion.filterClasses
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.function
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.lang.reflect.Executable
@@ -31,6 +32,92 @@ import kotlin.streams.asSequence
 private typealias IsNullableAnnotated = Boolean
 
 private val logger = KotlinLogging.logger { }
+
+private interface LibClassesStrategy {
+    fun configureClassGraph(classGraph: ClassGraph)
+
+    fun partitionClasses(scanResult: ScanResult): Pair<List<ClassInfo>, List<ClassInfo>>
+
+    fun filterLibClasses(libClasses: Collection<ClassInfo>): Collection<ClassInfo>
+}
+
+private class DefaultLibClassesStrategy(private val bootstrap: BotCommandsBootstrap) : LibClassesStrategy {
+
+    private val libPackages = ReflectionMetadataScanner::class.java.classLoader
+        .resources("META-INF/bc.packages")
+        .asSequence()
+        .flatMap { it.readText().trim().lineSequence() }
+        .toList()
+
+    override fun configureClassGraph(classGraph: ClassGraph) {
+        classGraph.acceptPackages(*libPackages.toTypedArray())
+    }
+
+    override fun partitionClasses(scanResult: ScanResult): Pair<List<ClassInfo>, List<ClassInfo>> {
+        return scanResult.allClasses.partition(::isFromLib)
+    }
+
+    private fun isFromLib(classInfo: ClassInfo): Boolean {
+        val pkgName = classInfo.packageName
+        return libPackages.any { pkgName.startsWith(it) }
+    }
+
+    override fun filterLibClasses(libClasses: Collection<ClassInfo>): Collection<ClassInfo> {
+        return libClasses.filterLibraryClasses().filterClasses(bootstrap)
+    }
+
+    private fun Collection<ClassInfo>.filterLibraryClasses(): List<ClassInfo> {
+        // Get types referenced by factories so we get metadata from those as well
+        val referencedTypes = asSequence()
+            .flatMap { it.methodInfo }
+            .filter { bootstrap.isServiceFactory(it) }
+            .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
+
+        fun ClassInfo.isServiceOrHasFactories(): Boolean {
+            return bootstrap.isService(this) || methodInfo.any { bootstrap.isServiceFactory(it) }
+        }
+
+        return filter { classInfo ->
+            if (classInfo.isServiceOrHasFactories()) return@filter true
+
+            // Get metadata from all classes that extend a referenced type
+            // As we can't know exactly what object a factory could return
+            val superclasses = (classInfo.superclasses + classInfo.interfaces + classInfo).mapTo(hashSetOf()) { it.name }
+            if (superclasses.containsAny(referencedTypes)) return@filter true
+
+            if (classInfo.outerClasses.any { it.isServiceOrHasFactories() }) return@filter true
+            if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
+            if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
+
+            return@filter false
+        }
+    }
+
+    private fun ClassInfoList.containsAny(vararg classes: Class<*>): Boolean = classes.any { containsName(it.name) }
+}
+
+private class PreprocessedLibClassesStrategy : LibClassesStrategy {
+
+    private val libClasses = ReflectionMetadataScanner::class.java.classLoader
+        .resources("META-INF/bc.classes")
+        .asSequence()
+        .flatMap { it.readText().lineSequence() }
+        .filter { it.isNotBlank() }
+        .toHashSet()
+
+    override fun configureClassGraph(classGraph: ClassGraph) {
+        classGraph.acceptClasses(*libClasses.toTypedArray())
+    }
+
+    override fun partitionClasses(scanResult: ScanResult): Pair<List<ClassInfo>, List<ClassInfo>> {
+        return scanResult.allClasses.partition { it.name in libClasses }
+    }
+
+    override fun filterLibClasses(libClasses: Collection<ClassInfo>): Collection<ClassInfo> {
+        // Class list is already filtered
+        return libClasses
+    }
+}
 
 internal class ReflectionMetadata(
     private val classMetadataMap: Map<Class<*>, ClassMetadata>,
@@ -111,14 +198,12 @@ private class ReflectionMetadataScanner private constructor(
         if (classes.isNotEmpty())
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
-        val libPackages = ReflectionMetadataScanner::class.java.classLoader
-            .resources("META-INF/bc.packages")
-            .asSequence()
-            .flatMap { it.readText().trim().lineSequence() }
-            .toList()
+        val classGraphStrategy: LibClassesStrategy = DefaultLibClassesStrategy(bootstrap)
+        // TODO add config to switch to preprocessed
+//        val classGraphStrategy: LibClassesStrategy = PreprocessedLibClassesStrategy()
 
         ClassGraph()
-            .acceptPackages(*libPackages.toTypedArray())
+            .also(classGraphStrategy::configureClassGraph)
             .acceptPackages(*packages.toTypedArray())
             .acceptClasses(*classes.mapToArray { it.name })
             .enableClassInfo()
@@ -127,10 +212,9 @@ private class ReflectionMetadataScanner private constructor(
             .disableModuleScanning()
             .scan()
             .use { scan ->
-                val (libClasses, userClasses) = scan.allClasses.partition { it.isFromLib(libPackages) }
+                val (libClasses, userClasses) = classGraphStrategy.partitionClasses(scan)
                 libClasses
-                    .filterLibraryClasses()
-                    .filterClasses()
+                    .let(classGraphStrategy::filterLibClasses)
                     .processClasses()
 
                 userClasses
@@ -149,65 +233,6 @@ private class ReflectionMetadataScanner private constructor(
                 val postProcessData = ClassPathProcessor.PostProcessData(bootstrap.serviceContainer)
                 classPathProcessors.forEach { it.postProcess(postProcessData) }
             }
-    }
-
-    private fun ClassInfo.isFromLib(libPackages: List<String>): Boolean {
-        val pkgName = packageName
-        return libPackages.any { pkgName.startsWith(it) }
-    }
-
-    private fun List<ClassInfo>.filterLibraryClasses(): List<ClassInfo> {
-        // Get types referenced by factories so we get metadata from those as well
-        val referencedTypes = asSequence()
-            .flatMap { it.methodInfo }
-            .filter { bootstrap.isServiceFactory(it) }
-            .mapTo(hashSetOf()) { it.typeDescriptor.resultType.toString() }
-
-        fun ClassInfo.isServiceOrHasFactories(): Boolean {
-            return bootstrap.isService(this) || methodInfo.any { bootstrap.isServiceFactory(it) }
-        }
-
-        return filter { classInfo ->
-            if (classInfo.isServiceOrHasFactories()) return@filter true
-
-            // Get metadata from all classes that extend a referenced type
-            // As we can't know exactly what object a factory could return
-            val superclasses = (classInfo.superclasses + classInfo.interfaces + classInfo).mapTo(hashSetOf()) { it.name }
-            if (superclasses.containsAny(referencedTypes)) return@filter true
-
-            if (classInfo.outerClasses.any { it.isServiceOrHasFactories() }) return@filter true
-            if (classInfo.hasAnnotation(Condition::class.java)) return@filter true
-            if (classInfo.interfaces.containsAny(CustomConditionChecker::class.java, ConditionalServiceChecker::class.java)) return@filter true
-
-            return@filter false
-        }
-    }
-
-    private fun ClassInfoList.containsAny(vararg classes: Class<*>): Boolean = classes.any { containsName(it.name) }
-
-    private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-    private fun List<ClassInfo>.filterClasses(): List<ClassInfo> = filter {
-        it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
-            //Only keep classes, not others such as file facades
-            val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
-            if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                it.checkFacadeFactories()
-                return@filter false
-            } else if (kind != KotlinClassHeader.Kind.CLASS) {
-                return@filter false
-            }
-        }
-
-        if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-        return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
-    }
-
-    private fun ClassInfo.checkFacadeFactories() {
-        this.declaredMethodInfo.forEach { methodInfo ->
-            check(!bootstrap.isServiceFactory(methodInfo)) {
-                "Top-level service factories are not supported: ${methodInfo.shortSignature}"
-            }
-        }
     }
 
     private fun Collection<ClassInfo>.processClasses(): Unit = forEach { classInfo ->
@@ -307,6 +332,32 @@ private class ReflectionMetadataScanner private constructor(
         get() = parameters.any { it.type == Continuation::class.java }
 
     companion object {
+        private val lowercaseInnerClassRegex = Regex("\\$[a-z]")
+
+        fun List<ClassInfo>.filterClasses(bootstrap: BotCommandsBootstrap): List<ClassInfo> = filter {
+            it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
+                //Only keep classes, not others such as file facades
+                val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
+                if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
+                    it.checkFacadeFactories(bootstrap)
+                    return@filter false
+                } else if (kind != KotlinClassHeader.Kind.CLASS) {
+                    return@filter false
+                }
+            }
+
+            if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
+            return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
+        }
+
+        fun ClassInfo.checkFacadeFactories(bootstrap: BotCommandsBootstrap) {
+            this.declaredMethodInfo.forEach { methodInfo ->
+                check(!bootstrap.isServiceFactory(methodInfo)) {
+                    "Top-level service factories are not supported: ${methodInfo.shortSignature}"
+                }
+            }
+        }
+
         fun scan(
             config: BConfig,
             bootstrap: BotCommandsBootstrap,
