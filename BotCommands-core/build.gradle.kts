@@ -20,6 +20,14 @@ registerSourceSet(name = "kotlinDocExamples")
 
 val byteBuddyAgent: Configuration by configurations.creating
 
+val embedded: Configuration by configurations.creating {
+    isTransitive = false
+}
+
+configurations.compileOnly {
+    extendsFrom(embedded)
+}
+
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
@@ -30,6 +38,8 @@ dependencies {
     // Logging
     api(libs.slf4j.api)
     implementation(libs.kotlin.logging)
+
+    embedded("dev.freya02:reflection-metadata-commons")
 
     // JDA
     compileOnly(libs.jda)
@@ -110,6 +120,30 @@ dependencies {
     testImplementation(projects.botCommandsLocalization)
 
     testImplementation(libs.kotlin.metadata)
+
+    testCompileOnly("dev.freya02:reflection-metadata-commons")
+}
+
+val embeddedDepsDir = layout.buildDirectory.dir("generated/bins/reflection-metadata-commons")
+
+val copyEmbeddedDependencies by tasks.registering(Copy::class) {
+    description = "Copies contents of embedded dependencies"
+
+    for (file in embedded.files) {
+        from(zipTree(file)) {
+            duplicatesStrategy = DuplicatesStrategy.FAIL
+
+            exclude("META-INF/MANIFEST.MF")
+            exclude("META-INF/*.kotlin_module")
+        }
+    }
+    into(embeddedDepsDir)
+}
+
+sourceSets {
+    main {
+        output.dir(copyEmbeddedDependencies)
+    }
 }
 
 tasks.withType<Test> {
