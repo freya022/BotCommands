@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.internal.core.config
 
+import io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi
 import io.github.freya022.botcommands.api.core.config.*
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -11,6 +12,7 @@ internal class BotCommandsCoreConfiguration(
     override val predefinedOwnerIds: Set<Long> = emptySet(),
     override val packages: Set<String> = emptySet(),
     override val classes: Set<Class<*>> = emptySet(),
+    override val usePreprocessedLibClassList: Boolean = false,
     override val disableExceptionsInDMs: Boolean = false,
     override val enableOwnerBypass: Boolean = false,
     override val ignoredIntents: Set<GatewayIntent> = emptySet(),
@@ -23,6 +25,8 @@ internal fun BConfigBuilder.applyConfig(configuration: BotCommandsCoreConfigurat
     predefinedOwnerIds += configuration.predefinedOwnerIds
     packages += configuration.packages
     classes += configuration.classes
+    @OptIn(ExperimentalCoreApi::class)
+    usePreprocessedLibClassList = configuration.usePreprocessedLibClassList
     disableExceptionsInDMs = configuration.disableExceptionsInDMs
     enableOwnerBypass = configuration.enableOwnerBypass
     ignoredIntents += configuration.ignoredIntents
