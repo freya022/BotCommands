@@ -175,12 +175,14 @@ private class ReflectionMetadataScanner private constructor(
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
         val helper = ReflectionMetadataScannerHelper(bootstrap::isService, bootstrap::isServiceFactory)
-        val classGraphStrategy: LibClassesStrategy = DefaultLibClassesStrategy(helper, bootstrap)
-        // TODO add config to switch to preprocessed
-//        val classGraphStrategy: LibClassesStrategy = PreprocessedLibClassesStrategy()
+        val libClassesStrategy: LibClassesStrategy = if (config.usePreprocessedLibClassList) {
+            PreprocessedLibClassesStrategy()
+        } else {
+            DefaultLibClassesStrategy(helper, bootstrap)
+        }
 
         ClassGraph()
-            .also(classGraphStrategy::configureClassGraph)
+            .also(libClassesStrategy::configureClassGraph)
             .acceptPackages(*packages.toTypedArray())
             .acceptClasses(*classes.mapToArray { it.name })
             .enableClassInfo()
@@ -189,9 +191,9 @@ private class ReflectionMetadataScanner private constructor(
             .disableModuleScanning()
             .scan()
             .use { scan ->
-                val (libClasses, userClasses) = classGraphStrategy.partitionClasses(scan)
+                val (libClasses, userClasses) = libClassesStrategy.partitionClasses(scan)
                 libClasses
-                    .let(classGraphStrategy::filterLibClasses)
+                    .let(libClassesStrategy::filterLibClasses)
                     .processClasses()
 
                 userClasses
