@@ -7,3 +7,9 @@ dependencyResolutionManagement {
         }
     }
 }
+
+includeBuild("../reflection-metadata-commons") {
+    dependencySubstitution {
+        substitute(module("dev.freya02:reflection-metadata-commons")).using(project(":"))
+    }
+}
