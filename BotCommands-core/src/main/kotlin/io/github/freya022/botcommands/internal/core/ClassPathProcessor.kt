@@ -24,6 +24,9 @@ interface ClassPathProcessor {
     ) {
         // No need for a field here, the call is already cached
         val kClass: KClass<*> get() = clazz.kotlin
+        val isProbablyObject: Boolean
+            // Can't check field from ClassGraph object as it is private
+            get() = classInfo.sourceFile?.endsWith("kt") == true && clazz.declaredFields.any { it.name == "INSTANCE" }
     }
 
     class MethodData internal constructor(

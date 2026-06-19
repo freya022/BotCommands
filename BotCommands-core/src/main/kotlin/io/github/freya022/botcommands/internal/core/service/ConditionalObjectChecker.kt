@@ -11,8 +11,7 @@ internal class ConditionalObjectChecker : ClassPathProcessor {
 
     override fun processClass(data: ClassPathProcessor.ClassData) {
         if (!data.isService) return
-        val kClass = data.kClass
-        if (!kClass.isObject) return
+        if (!data.isProbablyObject) return
 
         // Taking all (including inherited) annotations using ClassGraph would have been faster and cleaner,
         // but this allows for a much more precise error message, as to which annotation provoked this error

@@ -33,7 +33,7 @@ internal class ServiceProviders : ClassPathProcessor {
         if (!data.isService) return
         if (data.classInfo.isAnnotation) return
 
-        if (data.kClass.isObject) {
+        if (data.isProbablyObject) {
             putServiceProvider(ObjectServiceProvider(data.kClass))
         } else {
             putServiceProvider(ClassServiceProvider(data.kClass))
