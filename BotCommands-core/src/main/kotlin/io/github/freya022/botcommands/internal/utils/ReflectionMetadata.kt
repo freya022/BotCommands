@@ -210,21 +210,19 @@ private class ReflectionMetadataScanner private constructor(
         }
     }
 
-    private fun List<ClassInfo>.processClasses(): List<ClassInfo> {
-        return onEach { classInfo ->
-            try {
-                val clazz = tryGetClass(classInfo) ?: return@onEach
-                val isService = bootstrap.isService(classInfo)
-                val classData = ClassPathProcessor.ClassData(bootstrap.serviceContainer, classInfo, clazz, isService)
+    private fun Collection<ClassInfo>.processClasses(): Unit = forEach { classInfo ->
+        try {
+            val clazz = tryGetClass(classInfo) ?: return@forEach
+            val isService = bootstrap.isService(classInfo)
+            val classData = ClassPathProcessor.ClassData(bootstrap.serviceContainer, classInfo, clazz, isService)
 
-                processMethods(classData)
+            processMethods(classData)
 
-                classMetadataMap[clazz] = ClassMetadata(classInfo.sourceFile)
+            classMetadataMap[clazz] = ClassMetadata(classInfo.sourceFile)
 
-                classPathProcessors.forEach { it.processClass(classData) }
-            } catch (e: Throwable) {
-                e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
-            }
+            classPathProcessors.forEach { it.processClass(classData) }
+        } catch (e: Throwable) {
+            e.rethrow("An exception occurred while scanning class: ${classInfo.name}")
         }
     }
 
