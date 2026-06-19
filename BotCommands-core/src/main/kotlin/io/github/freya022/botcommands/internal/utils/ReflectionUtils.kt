@@ -6,8 +6,7 @@ import io.github.freya022.botcommands.api.core.utils.javaMethodOrConstructor
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.allSupertypes
@@ -18,30 +17,22 @@ import kotlin.reflect.jvm.*
 import kotlin.reflect.jvm.internal.impl.descriptors.ClassKind
 
 object ReflectionUtils {
-    private val lock = ReentrantLock()
-    private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
+    private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = ConcurrentHashMap()
 
     @Suppress("UNCHECKED_CAST")
     fun <R> KFunction<R>.reflectReference(): KFunction<R> {
-        reflectedMap[this]?.let { return it as KFunction<R> }
+        if (this !is CallableReference)
+            return this
 
-        //Still allow internal modifiers as they should be reflectively accessible
-        if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
-            //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
-            throwArgument("$this : Function needs to be public")
-        }
+        return reflectedMap.computeIfAbsent(this) {
+            //Still allow internal modifiers as they should be reflectively accessible
+            if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
+                //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
+                throwArgument("$this : Function needs to be public")
+            }
 
-        return lock.withLock {
-            reflectedMap.computeIfAbsent(this) {
-                when (this) { //Try to match the original function
-                    // This used to give CallableReference#owner,
-                    // this function takes the owner if there is no receiver,
-                    // i.e., it is functionally the same or better.
-                    is CallableReference -> resolveBestReference()
-                    else -> this
-                }
-            } as KFunction<R>
-        }
+            resolveBestReference()
+        } as KFunction<R>
     }
 
     /**
