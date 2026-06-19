@@ -16,7 +16,6 @@ import java.lang.reflect.Method
 import java.lang.reflect.Type
 import java.time.Duration as JavaDuration
 import java.util.concurrent.TimeUnit
-import kotlin.metadata.jvm.KotlinClassMetadata
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
@@ -75,13 +74,16 @@ class JavaInteropTest {
     }
 
     private fun ClassInfo.isKotlinExplicitClass(): Boolean {
-        val metadataInfo = this.annotationInfo.directOnly().get(Metadata::class.java.name)
-            ?: return false
-        val metadata = metadataInfo.loadClassAndInstantiate() as Metadata
-        return when (KotlinClassMetadata.readStrict(metadata)) {
-            is KotlinClassMetadata.Class -> true
-            else -> false
+        val annotationInfo = this.annotationInfo.directOnly()["kotlin.Metadata"]
+        annotationInfo?.let { annotationInfo ->
+            //Only keep classes, not others such as file facades
+            val kind = annotationInfo.parameterValues["k"].value as Int
+            if (kind == 1) { // Class
+                return true
+            }
         }
+
+        return false
     }
 
     private fun MethodInfo.isOverriding(): Boolean {
