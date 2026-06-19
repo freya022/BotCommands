@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.reflection
 
-import dev.freya02.bc.reflection.metadata.ReflectionMetadataScannerHelper
+import dev.freya02.bc.internal.reflection.classpath.ClasspathScannerHelper
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -14,6 +14,6 @@ object ReflectionMetadataScannerHelperTests {
 
     @JvmStatic
     fun classNamesToCheck(): List<String> {
-        return ReflectionMetadataScannerHelper.classNamesToCheck
+        return ClasspathScannerHelper.classNamesToCheck
     }
 }

@@ -39,7 +39,7 @@ dependencies {
     api(libs.slf4j.api)
     implementation(libs.kotlin.logging)
 
-    embedded("dev.freya02:reflection-metadata-commons")
+    embedded("dev.freya02:classpath-scanner-commons")
 
     // JDA
     compileOnly(libs.jda)
@@ -121,10 +121,10 @@ dependencies {
 
     testImplementation(libs.kotlin.metadata)
 
-    testCompileOnly("dev.freya02:reflection-metadata-commons")
+    testCompileOnly("dev.freya02:classpath-scanner-commons")
 }
 
-val embeddedDepsDir = layout.buildDirectory.dir("generated/bins/reflection-metadata-commons")
+val embeddedDepsDir = layout.buildDirectory.dir("generated/bins/classpath-scanner-commons")
 
 val copyEmbeddedDependencies by tasks.registering(Copy::class) {
     description = "Copies contents of embedded dependencies"

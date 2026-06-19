@@ -1,7 +1,7 @@
 package dev.freya02.bc.classlist.generator
 
-import dev.freya02.bc.reflection.metadata.ReflectionMetadataScannerHelper
-import dev.freya02.bc.reflection.metadata.ReflectionMetadataScannerHelper.Companion.BSERVICE_ANNOTATION
+import dev.freya02.bc.internal.reflection.classpath.ClasspathScannerHelper
+import dev.freya02.bc.internal.reflection.classpath.ClasspathScannerHelper.Companion.BSERVICE_ANNOTATION
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
@@ -27,7 +27,7 @@ object ClassListGenerator {
             .map { it.replace('/', '.').removeSuffix(".class") }
             .toList()
 
-        val helper = ReflectionMetadataScannerHelper(::isService, ::isServiceFactory)
+        val helper = ClasspathScannerHelper(::isService, ::isServiceFactory)
 
         ClassGraph()
             // Classpath includes compiled project classes + dependencies (required for CG to discover all meta-annotations)
@@ -39,7 +39,7 @@ object ClassListGenerator {
             .enableAnnotationInfo()
             .disableModuleScanning()
             .scan().use { scanResult ->
-                return ReflectionMetadataScannerHelper
+                return ClasspathScannerHelper
                     .filterClasses(scanResult.allClasses, onFileFacade = { /* noop */ })
                     .let(helper::filterLibraryClasses)
                     .joinToString("\n") { it.name }

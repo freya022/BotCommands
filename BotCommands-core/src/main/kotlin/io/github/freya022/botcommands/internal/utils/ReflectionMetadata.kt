@@ -1,6 +1,6 @@
 package io.github.freya022.botcommands.internal.utils
 
-import dev.freya02.bc.reflection.metadata.ReflectionMetadataScannerHelper
+import dev.freya02.bc.internal.reflection.classpath.ClasspathScannerHelper
 import io.github.classgraph.*
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
@@ -41,7 +41,7 @@ private interface LibClassesStrategy {
 }
 
 private class DefaultLibClassesStrategy(
-    private val helper: ReflectionMetadataScannerHelper,
+    private val helper: ClasspathScannerHelper,
     private val bootstrap: BotCommandsBootstrap,
 ) : LibClassesStrategy {
 
@@ -65,7 +65,7 @@ private class DefaultLibClassesStrategy(
     }
 
     override fun filterLibClasses(libClasses: Collection<ClassInfo>): Collection<ClassInfo> {
-        return ReflectionMetadataScannerHelper.filterClasses(
+        return ClasspathScannerHelper.filterClasses(
             helper.filterLibraryClasses(libClasses),
             onFileFacade = { ReflectionMetadataScanner.checkFacadeFactories(it, bootstrap) }
         )
@@ -174,7 +174,7 @@ private class ReflectionMetadataScanner private constructor(
         if (classes.isNotEmpty())
             logger.debug { "Scanning classes: ${classes.joinToString { it.simpleNestedName }}" }
 
-        val helper = ReflectionMetadataScannerHelper(bootstrap::isService, bootstrap::isServiceFactory)
+        val helper = ClasspathScannerHelper(bootstrap::isService, bootstrap::isServiceFactory)
         val libClassesStrategy: LibClassesStrategy = if (config.usePreprocessedLibClassList) {
             PreprocessedLibClassesStrategy()
         } else {
@@ -198,7 +198,7 @@ private class ReflectionMetadataScanner private constructor(
 
                 userClasses
                     .let {
-                        ReflectionMetadataScannerHelper.filterClasses(
+                        ClasspathScannerHelper.filterClasses(
                             it,
                             onFileFacade = { c -> checkFacadeFactories(c, bootstrap) },
                         )
