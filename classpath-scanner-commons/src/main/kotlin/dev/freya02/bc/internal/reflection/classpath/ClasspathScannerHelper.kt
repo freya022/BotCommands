@@ -1,9 +1,9 @@
-package dev.freya02.bc.reflection.metadata
+package dev.freya02.bc.internal.reflection.classpath
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 
-class ReflectionMetadataScannerHelper(
+class ClasspathScannerHelper(
     private val isService: (ClassInfo) -> Boolean,
     private val isServiceFactory: (MethodInfo) -> Boolean,
 ) {

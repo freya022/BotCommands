@@ -1,4 +1,4 @@
-rootProject.name = "reflection-metadata-commons"
+rootProject.name = "classpath-scanner-commons"
 
 dependencyResolutionManagement {
     versionCatalogs {

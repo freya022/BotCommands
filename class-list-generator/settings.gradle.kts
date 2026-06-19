@@ -8,8 +8,8 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("../reflection-metadata-commons") {
+includeBuild("../classpath-scanner-commons") {
     dependencySubstitution {
-        substitute(module("dev.freya02:reflection-metadata-commons")).using(project(":"))
+        substitute(module("dev.freya02:classpath-scanner-commons")).using(project(":"))
     }
 }
