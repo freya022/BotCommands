@@ -8,25 +8,27 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
 import java.io.File
 
+@CacheableTask
 abstract class GenerateClassListTask : DefaultTask() {
 
-    // Only for Gradle caching purposes
+    // For Gradle caching purposes and implicit dependency on compile tasks
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val classes: ConfigurableFileCollection
 
-    @get:Input
-    abstract val buildDirs: ListProperty<String>
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val buildDirs: ConfigurableFileCollection
 
-    @get:Input
-    abstract val classpath: ListProperty<String>
+    @get:Classpath
+    abstract val classpath: ConfigurableFileCollection
 
     @get:OutputDirectory
     abstract val outputRoot: DirectoryProperty
 
     @TaskAction
     fun generate() {
-        val classList = ClassListGenerator.generate(buildDirs.get().map(::File), classpath.get().map(::File))
+        val classList = ClassListGenerator.generate(buildDirs.files, classpath.files)
         if (classList.isBlank()) {
             return
         }

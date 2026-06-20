@@ -12,7 +12,7 @@ object ClassListGenerator {
     private const val COMPONENT_ANNOTATION_NAME = "org.springframework.stereotype.Component"
     private const val BEAN_ANNOTATION_NAME = "org.springframework.context.annotation.Bean"
 
-    fun generate(buildDirs: List<File>, classpath: List<File>): String {
+    fun generate(buildDirs: Collection<File>, classpath: Collection<File>): String {
         // We've set CG's classpath to the entire "compileClasspath" configuration,
         //   but we only need to make a filtered class list of the current project,
         //   so we can tell CG to only look at classes that we can find in the project's file tree
