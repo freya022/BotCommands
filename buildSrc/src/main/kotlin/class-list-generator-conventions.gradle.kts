@@ -9,15 +9,15 @@ val compileJava by tasks.getting(JavaCompile::class)
 val compileKotlin by tasks.getting(KotlinCompile::class)
 
 val generateClassList by tasks.registering(GenerateClassListTask::class) {
-    buildDirs = listOf(
-        layout.buildDirectory.dir("classes/java/main").get().asFile.path,
-        layout.buildDirectory.dir("classes/kotlin/main").get().asFile.path,
+    buildDirs.from(
+        layout.buildDirectory.dir("classes/java/main"),
+        layout.buildDirectory.dir("classes/kotlin/main"),
     )
     // This is necessary as meta-annotations from dependencies cannot be resolved without them on the classpath
-    classpath = configurations.compileClasspath.get().files.map { it.path }
+    classpath.from(configurations.compileClasspath)
 
     // Only regenerate list if classes changes
-    classes.from(compileJava.outputs.files, compileKotlin.outputs.files)
+    classes.from(compileJava.outputs, compileKotlin.outputs)
 
     outputRoot = layout.buildDirectory.dir("generated/sources/lib-class-list/main/resources")
 }
