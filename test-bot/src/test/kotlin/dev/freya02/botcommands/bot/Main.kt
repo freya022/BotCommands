@@ -43,6 +43,7 @@ object Main {
                 // which requires some compile-only classes
                 @OptIn(ExperimentalCoreApi::class)
                 usePreprocessedLibClassList = Random.nextBoolean()
+
                 disableExceptionsInDMs = true
 
                 addSearchPath("dev.freya02.botcommands.bot")
