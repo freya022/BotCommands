@@ -86,8 +86,19 @@ interface BConfigProps {
     val classes: Set<Class<*>>
 
     /**
-     * Instructs the reflection metadata scanner to use a predefined list of library classes.
+     * Instructs the classpath scanner to use a predefined list of library classes.
+     * This speeds up startup, but may log a few false positive exceptions,
+     * which do not affect the functionality of your application.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.core.usePreprocessedLibClassList`
      */
+    @get:ConfigurationValue(
+        path = "botcommands.core.usePreprocessedLibClassList",
+        description = "Instructs the classpath scanner to use a predefined list of library classes. This speeds up startup, but may log a few false positive exceptions, which do not affect the functionality of your application.",
+        defaultValue = "false",
+    )
     val usePreprocessedLibClassList: Boolean
 
     /**
