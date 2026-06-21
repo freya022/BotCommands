@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.ReceiverConsumer
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.BotOwners
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi
 import io.github.freya022.botcommands.api.core.requests.PriorityGlobalRestRateLimiter
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.api.core.utils.enumSetOf
@@ -83,6 +84,22 @@ interface BConfigProps {
         type = "java.util.Set<java.lang.Class<?>>",
     )
     val classes: Set<Class<*>>
+
+    /**
+     * Instructs the classpath scanner to use a predefined list of library classes.
+     * This speeds up startup, but may log a few false positive exceptions,
+     * which do not affect the functionality of your application.
+     *
+     * Default: `false`
+     *
+     * Spring property: `botcommands.core.usePreprocessedLibClassList`
+     */
+    @get:ConfigurationValue(
+        path = "botcommands.core.usePreprocessedLibClassList",
+        description = "Instructs the classpath scanner to use a predefined list of library classes. This speeds up startup, but may log a few false positive exceptions, which do not affect the functionality of your application.",
+        defaultValue = "false",
+    )
+    val usePreprocessedLibClassList: Boolean
 
     /**
      * Disables sending exceptions to the bot owners.
@@ -179,6 +196,9 @@ class BConfigBuilder : BConfigProps {
 
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()
+
+    @ExperimentalCoreApi
+    override var usePreprocessedLibClassList: Boolean = false
 
     override val predefinedOwnerIds: MutableSet<Long> = HashSet()
 
@@ -324,6 +344,7 @@ class BConfigBuilder : BConfigProps {
             override val predefinedOwnerIds = this@BConfigBuilder.predefinedOwnerIds.toImmutableSet()
             override val packages = this@BConfigBuilder.packages.toImmutableSet()
             override val classes = this@BConfigBuilder.classes.toImmutableSet()
+            override val usePreprocessedLibClassList = this@BConfigBuilder.usePreprocessedLibClassList
             override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
             override val enableOwnerBypass = this@BConfigBuilder.enableOwnerBypass
             override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
