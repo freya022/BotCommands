@@ -111,7 +111,8 @@ object ModalInputResolverTests {
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
             arguments("TextInput String", 0, TEXT_INPUT, ModalMapping::getAsString, STRING, STRING),
-            arguments("TextInput empty as null", 18, TEXT_INPUT, ModalMapping::getAsString, "", null),
+            arguments("TextInput String in nullable parameter", 26, TEXT_INPUT, ModalMapping::getAsOptionalString, STRING, STRING),
+            arguments("TextInput empty as null", 18, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
             arguments("TextInput empty as empty", 19, TEXT_INPUT, ModalMapping::getAsString, "", ""),
             arguments("Select menu string", 16, STRING_SELECT, ModalMapping::getAsStringList, strings, STRING),
             arguments("Select menu strings", 1, STRING_SELECT, ModalMapping::getAsStringList, strings, strings),
@@ -170,5 +171,6 @@ object ModalInputResolverTests {
         @Suppress("unused") checkboxGroupNoneAsNull: String?,
         @Suppress("unused") radioGroupSingle: String,
         @Suppress("unused") radioGroupNoneAsNull: String?,
+        @Suppress("unused") textInputNullable: String?,
     ) {}
 }
