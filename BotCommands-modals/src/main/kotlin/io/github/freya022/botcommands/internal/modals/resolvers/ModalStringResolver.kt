@@ -33,7 +33,12 @@ internal class ModalStringResolver :
                 }
                 values.firstOrNull()
             }
-            Component.Type.TEXT_INPUT -> modalMapping.asString.takeIf { option.isRequired }
+            Component.Type.TEXT_INPUT -> when {
+                // When non-null and required, empty inputs pass empty strings
+                option.isRequired -> modalMapping.asString
+                // When null or optional, empty inputs pass null (which is also the same as missing parameter)
+                else -> modalMapping.asOptionalString
+            }
             Component.Type.RADIO_GROUP -> modalMapping.asOptionalString
             else -> error("Cannot get a String from a ${modalMapping.type} input")
         }
