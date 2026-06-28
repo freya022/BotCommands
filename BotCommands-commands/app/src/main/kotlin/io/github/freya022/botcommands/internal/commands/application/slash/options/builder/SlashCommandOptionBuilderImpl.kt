@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.toImmutableList
 import io.github.freya022.botcommands.internal.commands.application.options.builder.ApplicationCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoContainer
 import io.github.freya022.botcommands.internal.commands.application.slash.autocomplete.AutocompleteInfoImpl
@@ -45,7 +46,7 @@ internal class SlashCommandOptionBuilderImpl internal constructor(
             require(choices == null || choices.isNotEmpty()) {
                 "List cannot be empty"
             }
-            field = choices
+            field = choices?.toImmutableList()
         }
 
     override var valueRange: ValueRange? = null
