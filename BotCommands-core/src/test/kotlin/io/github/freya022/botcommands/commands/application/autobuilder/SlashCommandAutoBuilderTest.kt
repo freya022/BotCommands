@@ -268,7 +268,6 @@ class SlashCommandAutoBuilderTest {
             autoBuilder.declareGuildApplicationCommands(manager)
 
             verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
-            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
         }
 
         @Test
@@ -287,7 +286,6 @@ class SlashCommandAutoBuilderTest {
             }
             autoBuilder.declareGuildApplicationCommands(manager)
 
-            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
             verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
         }
 
@@ -309,7 +307,6 @@ class SlashCommandAutoBuilderTest {
 
             autoBuilder.declareGuildApplicationCommands(manager)
 
-            verify(exactly = 0) { manager.slashCommand(any(), any(), any()) }
             verify(exactly = 1) { context(any<SkipLogger>()) { autoBuilder.checkDeclarationFilter(manager, any()) } }
         }
 
@@ -336,7 +333,7 @@ class SlashCommandAutoBuilderTest {
             }
 
             val manager = mockk<GuildApplicationCommandManager>{
-                every { slashCommand(any(), any(), any()) } answers {
+                every { ofSubcommands(any(), any()) } answers {
                     builder.apply(lastArg())
                     return@answers
                 }

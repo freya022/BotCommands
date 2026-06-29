@@ -62,6 +62,7 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
 
     /**
      * Declares the supplied function as a slash command.
+     * For subcommands and subcommand groups, use [ofSubcommands] instead.
      *
      * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
      * on which paths are allowed.
@@ -83,6 +84,26 @@ sealed class AbstractApplicationCommandManager(val context: BContext) {
             .apply(builder)
             .build()
             .also(slashCommandMap::putNewCommand)
+    }
+
+    /**
+     * Declares a top-level, non-executable slash command. This is used for subcommands and/or subcommand groups.
+     *
+     * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands.subcommands-and-subcommand-groups)
+     * on which paths are allowed.
+     *
+     * The default allowed [interaction contexts][InteractionContextType] and [integration types][IntegrationType]
+     * can be redefined in the corresponding command manager.
+     *
+     * ### Requirements
+     * The first parameter must be:
+     * - [GuildSlashEvent] if the interaction context only contains [InteractionContextType.GUILD].
+     * - [GlobalSlashEvent] in other cases.
+     *
+     * @see JDASlashCommand @JDASlashCommand
+     */
+    fun ofSubcommands(name: String, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+        return slashCommand(name, function = null, builder)
     }
 
     /**

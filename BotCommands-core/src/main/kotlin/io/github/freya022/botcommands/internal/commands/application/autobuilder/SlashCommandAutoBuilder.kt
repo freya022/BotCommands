@@ -253,7 +253,7 @@ internal class SlashCommandAutoBuilder(
             if (filteredSubcommands.isEmpty() && filteredSubcommandGroups.isEmpty())
                 return
 
-            manager.slashCommand(name, function = null) {
+            manager.ofSubcommands(name) {
                 configureTopLevelCommons()
 
                 addSubcommands(manager, filteredSubcommands)
