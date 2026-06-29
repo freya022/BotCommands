@@ -91,7 +91,7 @@ class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvid
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("my_command", function = null) {
+        manager.ofSubcommands("my_command") {
             for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
                 subcommand(subname, localFunction) {
                     description = "mah desc"

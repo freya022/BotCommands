@@ -98,7 +98,7 @@ class SlashEntity(private val buttons: Buttons, private val modals: Modals, priv
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("entities", function = null) {
+        manager.ofSubcommands("entities") {
             contexts = enumSetOf(InteractionContextType.GUILD)
             integrationTypes = IntegrationType.ALL
 

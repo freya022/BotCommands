@@ -27,7 +27,7 @@ class SlashSubWithGroup : GlobalApplicationCommandProvider {
     }
 
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("tag", function = null) {
+        manager.ofSubcommands("tag") {
             subcommand("send", ::onSlashSubWithGroup)
 
             subcommandGroup("manage") {
