@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.modals
 
+import dev.freya02.botcommands.jda.ktx.components.InlineComponentDSL
 import dev.freya02.botcommands.jda.ktx.components.InlineLabel
 import dev.freya02.botcommands.jda.ktx.components.InlineTextDisplay
 import dev.freya02.botcommands.jda.ktx.components.Label
@@ -162,6 +163,7 @@ abstract class ModalBuilder protected constructor(
 }
 
 @ModalDSL
+@InlineComponentDSL
 class InlineModal(val builder: ModalBuilder) {
 
     val components: MutableList<ModalTopLevelComponent> = arrayListOf()
