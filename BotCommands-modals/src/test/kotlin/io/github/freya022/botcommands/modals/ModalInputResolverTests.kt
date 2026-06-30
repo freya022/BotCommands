@@ -54,13 +54,20 @@ object ModalInputResolverTests {
         every { channels } returns this@ModalInputResolverTests.channels
         every { getMentions() } returns this@ModalInputResolverTests.roles
     }
+    private val emptyMentions = mockk<Mentions> {
+        every { users } returns emptyList()
+        every { members } returns emptyList()
+        every { roles } returns emptyList()
+        every { channels } returns emptyList()
+        every { getMentions() } returns emptyList()
+    }
     private val attachments = listOf<Message.Attachment>(mockk {
         every { close() } just runs
     })
 
     @MethodSource("modalInputs")
     @ParameterizedTest
-    suspend fun <R> `Modal input parameter can be resolved`(index: Int, type: Component.Type, getter: (ModalMapping) -> R, value: R, expected: Any?) {
+    suspend fun <R> `Modal input parameter can be resolved`(parameterName: String, type: Component.Type, getter: (ModalMapping) -> R, value: R, expected: Any?) {
         val serviceContainer = mockk<ServiceContainer> {
             every { getServiceNamesForAnnotation(Resolver::class) } returns listOf(
                 "modalMentionsResolver",
@@ -87,7 +94,7 @@ object ModalInputResolverTests {
         }
         val resolvers = ResolverContainer(serviceContainer, listOf(ModalIMentionableResolverFactory()), listOf())
 
-        val parameter = ::userFunc.valueParameters[index]
+        val parameter = ::userFunc.valueParameters.single { it.name == parameterName }
         val request = TypedResolverRequest(ModalParameterResolver::class.java, ParameterWrapper(parameter))
 
         val resolver = resolvers.getResolver(request)
@@ -110,67 +117,289 @@ object ModalInputResolverTests {
     @JvmStatic
     fun modalInputs(): List<Arguments> {
         val listOf = listOf(
-            arguments("TextInput String", 0, TEXT_INPUT, ModalMapping::getAsString, STRING, STRING),
-            arguments("TextInput String in nullable parameter", 26, TEXT_INPUT, ModalMapping::getAsOptionalString, STRING, STRING),
-            arguments("TextInput empty as null", 18, TEXT_INPUT, ModalMapping::getAsOptionalString, null, null),
-            arguments("TextInput empty as empty", 19, TEXT_INPUT, ModalMapping::getAsString, "", ""),
-            arguments("Select menu string", 16, STRING_SELECT, ModalMapping::getAsStringList, strings, STRING),
-            arguments("Select menu strings", 1, STRING_SELECT, ModalMapping::getAsStringList, strings, strings),
-            arguments("Select menu mentionable", 2, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, role),
-            arguments("Select menu mentionables", 3, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, roles),
-            arguments("Select menu role", 4, ROLE_SELECT, ModalMapping::getAsMentions, mentions, role),
-            arguments("Select menu roles", 5, ROLE_SELECT, ModalMapping::getAsMentions, mentions, roles),
-            arguments("Select menu user", 6, USER_SELECT, ModalMapping::getAsMentions, mentions, user),
-            arguments("Select menu users", 7, USER_SELECT, ModalMapping::getAsMentions, mentions, users),
-            arguments("Select menu input user", 8, USER_SELECT, ModalMapping::getAsMentions, mentions, inputUser),
-            arguments("Select menu input users", 9, USER_SELECT, ModalMapping::getAsMentions, mentions, inputUsers),
-            arguments("Select menu member", 10, USER_SELECT, ModalMapping::getAsMentions, mentions, member),
-            arguments("Select menu members", 11, USER_SELECT, ModalMapping::getAsMentions, mentions, members),
-            arguments("Select menu channel", 12, CHANNEL_SELECT, ModalMapping::getAsMentions, mentions, channel),
-            arguments("Select menu channels", 13, CHANNEL_SELECT, ModalMapping::getAsMentions, mentions, channels),
-            arguments("Select menu mentions", 14, MENTIONABLE_SELECT, ModalMapping::getAsMentions, mentions, mentions),
-            arguments("Attachment", 17, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments.first()),
-            arguments("Attachments", 15, FILE_UPLOAD, ModalMapping::getAsAttachmentList, attachments, attachments),
-            arguments("Checkbox", 20, CHECKBOX, ModalMapping::getAsBoolean, value = true, expected = true),
-            arguments("Checkbox group single", 21, CHECKBOX_GROUP, ModalMapping::getAsStringList, strings, STRING),
-            arguments("Checkbox group list", 22, CHECKBOX_GROUP, ModalMapping::getAsStringList, strings, strings),
-            arguments("Checkbox group none as null", 23, CHECKBOX_GROUP, ModalMapping::getAsStringList, emptyList(), null),
-            arguments("Radio group single", 24, RADIO_GROUP, ModalMapping::getAsOptionalString, STRING, STRING),
-            arguments("Radio group none as null", 25, RADIO_GROUP, ModalMapping::getAsOptionalString, null, null),
+            arguments(
+                type = TEXT_INPUT,
+                name = "<string> -> <string>",
+                getter = ModalMapping::getAsString to STRING,
+                parameterName = "string",
+                expectedParameterValue = STRING
+            ),
+            arguments(
+                type = TEXT_INPUT,
+                name = "<string> -> <string> (nullable)",
+                getter = ModalMapping::getAsOptionalString to STRING,
+                parameterName = "nullableString",
+                expectedParameterValue = STRING,
+            ),
+            arguments(
+                type = TEXT_INPUT,
+                name = "<empty> -> null",
+                getter = ModalMapping::getAsOptionalString to null,
+                parameterName = "nullableString",
+                expectedParameterValue = null
+            ),
+            arguments(
+                type = TEXT_INPUT,
+                name = "<empty> -> <empty>",
+                getter = ModalMapping::getAsString to "",
+                parameterName = "string",
+                expectedParameterValue = ""
+            ),
+
+            arguments(
+                type = STRING_SELECT,
+                name = "<list with single value> -> <value>",
+                getter = ModalMapping::getAsStringList to strings,
+                parameterName = "string",
+                expectedParameterValue = STRING
+            ),
+            arguments(
+                type = STRING_SELECT,
+                name = "<list> -> <list>",
+                getter = ModalMapping::getAsStringList to strings,
+                parameterName = "stringList",
+                expectedParameterValue = strings
+            ),
+            arguments(
+                type = STRING_SELECT,
+                name = "<empty list> -> null",
+                getter = ModalMapping::getAsStringList to emptyList(),
+                parameterName = "nullableString",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = MENTIONABLE_SELECT,
+                name = "<mentions with single value> -> <mentionable>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "mentionable",
+                expectedParameterValue = role
+            ),
+            arguments(
+                type = MENTIONABLE_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "mentionableList",
+                expectedParameterValue = roles
+            ),
+            arguments(
+                type = MENTIONABLE_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "mentionable",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = ROLE_SELECT,
+                name = "<mentions with single value> -> <role>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "role",
+                expectedParameterValue = role
+            ),
+            arguments(
+                type = ROLE_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "roleList",
+                expectedParameterValue = roles
+            ),
+            arguments(
+                type = ROLE_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "role",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions with single value> -> <user>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "user",
+                expectedParameterValue = user
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "userList",
+                expectedParameterValue = users
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "user",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions with single value> -> <input user>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "inputUser",
+                expectedParameterValue = inputUser
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "inputUserList",
+                expectedParameterValue = inputUsers
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "inputUser",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions with single value> -> <member>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "member",
+                expectedParameterValue = member
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "memberList",
+                expectedParameterValue = members
+            ),
+            arguments(
+                type = USER_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "member",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = CHANNEL_SELECT,
+                name = "<mentions with single value> -> <channel>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "channel",
+                expectedParameterValue = channel
+            ),
+            arguments(
+                type = CHANNEL_SELECT,
+                name = "<mentions> -> <list>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "channelList",
+                expectedParameterValue = channels
+            ),
+            arguments(
+                type = CHANNEL_SELECT,
+                name = "<empty mentions> -> null",
+                getter = ModalMapping::getAsMentions to emptyMentions,
+                parameterName = "channel",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = MENTIONABLE_SELECT,
+                name = "<mentions> -> <mentions>",
+                getter = ModalMapping::getAsMentions to mentions,
+                parameterName = "mentions",
+                expectedParameterValue = mentions
+            ),
+
+            arguments(
+                type = FILE_UPLOAD,
+                name = "<list with single value> -> <value>",
+                getter = ModalMapping::getAsAttachmentList to attachments,
+                parameterName = "attachment",
+                expectedParameterValue = attachments.first()
+            ),
+            arguments(
+                type = FILE_UPLOAD,
+                name = "<list> -> <list>",
+                getter = ModalMapping::getAsAttachmentList to attachments,
+                parameterName = "attachmentList",
+                expectedParameterValue = attachments
+            ),
+            arguments(
+                type = FILE_UPLOAD,
+                name = "<empty list> -> null",
+                getter = ModalMapping::getAsAttachmentList to emptyList(),
+                parameterName = "attachment",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = CHECKBOX,
+                name = "<boolean> -> <boolean>",
+                getter = ModalMapping::getAsBoolean to true,
+                parameterName = "boolean",
+                expectedParameterValue = true
+            ),
+
+            arguments(
+                type = CHECKBOX_GROUP,
+                name = "<list with single value> -> <value>",
+                getter = ModalMapping::getAsStringList to strings,
+                parameterName = "string",
+                expectedParameterValue = STRING
+            ),
+            arguments(
+                type = CHECKBOX_GROUP,
+                name = "<list> -> <list>",
+                getter = ModalMapping::getAsStringList to strings,
+                parameterName = "stringList",
+                expectedParameterValue = strings
+            ),
+            arguments(
+                type = CHECKBOX_GROUP,
+                name = "<empty list> -> null",
+                getter = ModalMapping::getAsStringList to emptyList(),
+                parameterName = "nullableString",
+                expectedParameterValue = null
+            ),
+
+            arguments(
+                type = RADIO_GROUP,
+                name = "<string> -> <string>",
+                getter = ModalMapping::getAsOptionalString to STRING,
+                parameterName = "string",
+                expectedParameterValue = STRING
+            ),
+            arguments(
+                type = RADIO_GROUP,
+                name = "<no selection> -> null",
+                getter = ModalMapping::getAsOptionalString to null,
+                parameterName = "nullableString",
+                expectedParameterValue = null
+            ),
         )
         return listOf
     }
 
-    private fun <R> arguments(name: String, index: Int, type: Component.Type, getter: (ModalMapping) -> R, value: R, expected: Any?) =
-        argumentSet(name, index, type, getter, value, expected)
+    private fun <R> arguments(type: Component.Type, name: String, getter: Pair<(ModalMapping) -> R, R>, parameterName: String, expectedParameterValue: Any?) =
+        argumentSet("[${type.name}] $name", parameterName, type, getter.first, getter.second, expectedParameterValue)
 
     private fun userFunc(
-        @Suppress("unused") textInput: String,
-        @Suppress("unused") selectedStrings: List<String>,
-        @Suppress("unused") selectedMentionable: IMentionable?,
-        @Suppress("unused") selectedMentionables: List<IMentionable>,
-        @Suppress("unused") selectedRole: Role?,
-        @Suppress("unused") selectedRoles: List<Role>,
-        @Suppress("unused") selectedUser: User?,
-        @Suppress("unused") selectedUsers: List<User>,
-        @Suppress("unused") selectedInputUser: InputUser?,
-        @Suppress("unused") selectedInputUsers: List<InputUser>,
-        @Suppress("unused") selectedMember: Member?,
-        @Suppress("unused") selectedMembers: List<Member>,
-        @Suppress("unused") selectedChannel: GuildChannel?,
-        @Suppress("unused") selectedChannels: List<GuildChannel>,
-        @Suppress("unused") selectedMentions: Mentions,
-        @Suppress("unused") attachments: List<Message.Attachment>,
-        @Suppress("unused") selectedString: String,
-        @Suppress("unused") attachment: Message.Attachment,
-        @Suppress("unused") emptyTextInputAsNull: String?,
-        @Suppress("unused") emptyTextInputAsEmpty: String,
-        @Suppress("unused") checkbox: Boolean,
-        @Suppress("unused") checkboxGroupSingle: String,
-        @Suppress("unused") checkboxGroupList: List<String>,
-        @Suppress("unused") checkboxGroupNoneAsNull: String?,
-        @Suppress("unused") radioGroupSingle: String,
-        @Suppress("unused") radioGroupNoneAsNull: String?,
-        @Suppress("unused") textInputNullable: String?,
+        @Suppress("unused") string: String,
+        @Suppress("unused") nullableString: String?,
+        @Suppress("unused") stringList: List<String>,
+        @Suppress("unused") mentionable: IMentionable?,
+        @Suppress("unused") mentionableList: List<IMentionable>,
+        @Suppress("unused") role: Role?,
+        @Suppress("unused") roleList: List<Role>,
+        @Suppress("unused") user: User?,
+        @Suppress("unused") userList: List<User>,
+        @Suppress("unused") inputUser: InputUser?,
+        @Suppress("unused") inputUserList: List<InputUser>,
+        @Suppress("unused") member: Member?,
+        @Suppress("unused") memberList: List<Member>,
+        @Suppress("unused") channel: GuildChannel?,
+        @Suppress("unused") channelList: List<GuildChannel>,
+        @Suppress("unused") mentions: Mentions,
+        @Suppress("unused") attachment: Message.Attachment?,
+        @Suppress("unused") attachmentList: List<Message.Attachment>,
+        @Suppress("unused") boolean: Boolean,
     ) {}
 }
