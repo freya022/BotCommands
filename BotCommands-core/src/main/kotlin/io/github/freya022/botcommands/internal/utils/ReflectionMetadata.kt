@@ -84,7 +84,6 @@ private class ReflectionMetadataScanner private constructor(
     private val bootstrap: BotCommandsBootstrap
 ) {
 
-    @OptIn(ExperimentalReflectionApi::class)
     private val classPathProcessors: List<ClassPathProcessor> = buildList {
         addAll(bootstrap.classPathProcessors)
 
