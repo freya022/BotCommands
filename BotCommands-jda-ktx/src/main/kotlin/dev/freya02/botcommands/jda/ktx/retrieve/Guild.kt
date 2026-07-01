@@ -126,7 +126,7 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
                     throw InvalidChannelTypeException("Invalid channel type, expected a thread, got $channelType")
 
                 if (dataObject.getUnsignedLong("guild_id", 0) != this.idLong) {
-                    throw ParentGuildMismatchException("Thread $id is not from the same guild (expected ${this.id})")
+                    throw ParentGuildMismatchException("Thread is not from the same guild")
                 }
 
                 (jda as JDAImpl).entityBuilder.createThreadChannel(this as GuildImpl, dataObject, this.idLong, false)

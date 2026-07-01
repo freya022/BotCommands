@@ -143,9 +143,9 @@ fun JDA.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
                     val expectedShard = (guildId shr 22) % shardInfo.shardTotal
                     val actualShard = shardInfo.shardId
                     if (expectedShard.toInt() == actualShard) {
-                        throw GuildNotFoundException("Thread $id was found but its guild was not found")
+                        throw GuildNotFoundException("Thread was found but its guild was not found")
                     } else {
-                        throw GuildNotFoundException("Thread $id was found but its guild was not found as it is from a different shard")
+                        throw GuildNotFoundException("Thread was found but its guild was not found as it is from a different shard")
                     }
                 }
 
