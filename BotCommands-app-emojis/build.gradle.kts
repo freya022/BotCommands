@@ -7,7 +7,7 @@ plugins {
     id("spring-configuration-metadata-conventions")
 }
 
-val byteBuddyAgent: Configuration by configurations.creating
+val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------

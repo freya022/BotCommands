@@ -6,7 +6,7 @@ plugins {
     id("dokka-conventions")
 }
 
-val byteBuddyAgent: Configuration by configurations.creating
+val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------

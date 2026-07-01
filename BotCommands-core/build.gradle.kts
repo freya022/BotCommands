@@ -18,7 +18,7 @@ registerSourceSet(name = "examples")
 registerSourceSet(name = "javaDocExamples")
 registerSourceSet(name = "kotlinDocExamples")
 
-val byteBuddyAgent: Configuration by configurations.creating
+val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
@@ -118,7 +118,9 @@ tasks.withType<Test> {
     jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
 }
 
-val generateInfo by tasks.registering(GenerateBCInfoTask::class) {
+val generateInfo = tasks.register<GenerateBCInfoTask>("generateInfo") {
+    description = "Generates the BCInfo data"
+
     doNotTrackState("Can't know when Git hash/branch changes")
     outputs.upToDateWhen { false }
 }

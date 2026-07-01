@@ -14,7 +14,7 @@ plugins {
 registerSourceSet(name = "javaDocExamples")
 registerSourceSet(name = "kotlinDocExamples")
 
-val byteBuddyAgent: Configuration by configurations.creating
+val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------

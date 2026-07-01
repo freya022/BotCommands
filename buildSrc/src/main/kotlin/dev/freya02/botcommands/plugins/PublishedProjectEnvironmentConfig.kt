@@ -22,8 +22,8 @@ abstract class PublishedProjectEnvironmentConfig(
     var isConfigured: Boolean = false
         private set
 
-    val mavenCentralUsername: String? by project
-    val mavenCentralPassword: String? by project
+    val mavenCentralUsername = project.findProperty("mavenCentralUsername") as String?
+    val mavenCentralPassword = project.findProperty("mavenCentralPassword") as String?
     /**
      * 1. Generate a key pair with `gpg --gen-key`, it will ask for a key name and an email address
      * 2. Start editing the key with `gpg --edit-key <key name>`, you should see a `gpg>` prompt
@@ -37,11 +37,11 @@ abstract class PublishedProjectEnvironmentConfig(
      * 8. Set `mavenGpgKeyId` with the subkey id
      * 9. Set `mavenGpgSecretKey` with the secret key using `gpg --export-secret-key --armor <public key>`
      */
-    val mavenGpgKeyId: String? by project
-    val mavenGpgSecretKey: String? by project
+    val mavenGpgKeyId = project.findProperty("mavenGpgKeyId") as String?
+    val mavenGpgSecretKey = project.findProperty("mavenGpgSecretKey") as String?
 
-    val reposiliteUsername: String? by project
-    val reposilitePassword: String? by project
+    val reposiliteUsername = project.findProperty("reposiliteUsername") as String?
+    val reposilitePassword = project.findProperty("reposilitePassword") as String?
 
     val canSign = mavenGpgKeyId != null && mavenGpgSecretKey != null
     val canPublish = mavenCentralUsername != null && mavenCentralPassword != null && canSign
