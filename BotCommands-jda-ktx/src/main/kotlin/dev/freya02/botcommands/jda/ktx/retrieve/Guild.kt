@@ -112,7 +112,7 @@ suspend fun Guild.retrieveVanityInviteOrNull(): VanityInvite? {
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
  *
- * @see retrieveThreadChannelByIdOrNull
+ * @see Guild.retrieveThreadChannelByIdOrNull
  */
 fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
     return jda.deferredRestAction(
@@ -137,7 +137,7 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
  *
- * @see retrieveThreadChannelByIdOrNull
+ * @see Guild.retrieveThreadChannelByIdOrNull
  */
 fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> {
     return retrieveThreadChannelById(MiscUtil.parseSnowflake(id))
@@ -153,7 +153,7 @@ fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> 
  * - The bot doesn't have access to it
  * - The channel isn't a thread
  *
- * @see retrieveThreadChannelById
+ * @see Guild.retrieveThreadChannelById
  */
 suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_CHANNEL, ErrorResponse.MISSING_ACCESS) {
@@ -175,7 +175,7 @@ suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
  * - The bot doesn't have access to it
  * - The channel isn't a thread
  *
- * @see retrieveThreadChannelById
+ * @see Guild.retrieveThreadChannelById
  */
 suspend fun Guild.retrieveThreadChannelByIdOrNull(id: String): ThreadChannel? {
     return retrieveThreadChannelByIdOrNull(MiscUtil.parseSnowflake(id))
