@@ -5,9 +5,9 @@ plugins {
     id("kotlin-conventions")
 }
 
-val compileKotlin by tasks.getting(KotlinCompile::class)
+val compileKotlin = tasks.getByName<KotlinCompile>("compileKotlin")
 
-val generateSpringConfigurationMetadata by tasks.registering(GenerateSpringConfigurationMetadataTask::class) {
+val generateSpringConfigurationMetadata = tasks.register<GenerateSpringConfigurationMetadataTask>("generateSpringConfigurationMetadata") {
     classesRoot = layout.buildDirectory.dir("classes/kotlin/main").get().asFile.path
 
     // The task should only run for API changes
