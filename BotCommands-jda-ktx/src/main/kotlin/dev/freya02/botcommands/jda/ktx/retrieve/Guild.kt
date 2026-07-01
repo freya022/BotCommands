@@ -106,13 +106,14 @@ suspend fun Guild.retrieveVanityInviteOrNull(): VanityInvite? {
 }
 
 /**
- * Retrieves a thread by ID.
+ * Retrieves a thread belonging to this guild, by ID.
  *
  * The cached threads are checked first, and then a request is made.
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
+ * It may also throw [ParentGuildMismatchException] if the channel isn't from the same guild.
  *
- * @see retrieveThreadChannelByIdOrNull
+ * @see Guild.retrieveThreadChannelByIdOrNull
  */
 fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
     return jda.deferredRestAction(
@@ -124,6 +125,10 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
                 if (!channelType.isThread)
                     throw InvalidChannelTypeException("Invalid channel type, expected a thread, got $channelType")
 
+                if (dataObject.getUnsignedLong("guild_id", 0) != this.idLong) {
+                    throw ParentGuildMismatchException("Thread is not from the same guild")
+                }
+
                 (jda as JDAImpl).entityBuilder.createThreadChannel(this as GuildImpl, dataObject, this.idLong, false)
             }
         }
@@ -131,29 +136,31 @@ fun Guild.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
 }
 
 /**
- * Retrieves a thread by ID.
+ * Retrieves a thread belonging to this guild, by ID.
  *
  * The cached threads are checked first, and then a request is made.
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
+ * It may also throw [ParentGuildMismatchException] if the channel isn't from the same guild.
  *
- * @see retrieveThreadChannelByIdOrNull
+ * @see Guild.retrieveThreadChannelByIdOrNull
  */
 fun Guild.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> {
     return retrieveThreadChannelById(MiscUtil.parseSnowflake(id))
 }
 
 /**
- * Retrieves a thread by ID.
+ * Retrieves a thread belonging to this guild, by ID.
  *
  * The cached threads are checked first, and then a request is made.
  *
- * The returned thread may be null if:
+ * The returned thread may be `null` if:
  * - It doesn't exist
  * - The bot doesn't have access to it
  * - The channel isn't a thread
+ * - The channel isn't from the correct guild
  *
- * @see retrieveThreadChannelById
+ * @see Guild.retrieveThreadChannelById
  */
 suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
     return runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_CHANNEL, ErrorResponse.MISSING_ACCESS) {
@@ -161,21 +168,24 @@ suspend fun Guild.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
             retrieveThreadChannelById(id).await()
         } catch (_: InvalidChannelTypeException) {
             return null
+        } catch (_: ParentGuildMismatchException) {
+            return null
         }
     }
 }
 
 /**
- * Retrieves a thread by ID.
+ * Retrieves a thread belonging to this guild, by ID.
  *
  * The cached threads are checked first, and then a request is made.
  *
- * The returned thread may be null if:
+ * The returned thread may be `null` if:
  * - It doesn't exist
  * - The bot doesn't have access to it
  * - The channel isn't a thread
+ * - The channel isn't from the correct guild
  *
- * @see retrieveThreadChannelById
+ * @see Guild.retrieveThreadChannelById
  */
 suspend fun Guild.retrieveThreadChannelByIdOrNull(id: String): ThreadChannel? {
     return retrieveThreadChannelByIdOrNull(MiscUtil.parseSnowflake(id))
