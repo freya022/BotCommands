@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.requests.Route
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction
 import net.dv8tion.jda.api.utils.MiscUtil
 import net.dv8tion.jda.internal.JDAImpl
+import net.dv8tion.jda.internal.entities.GuildImpl
 import net.dv8tion.jda.internal.requests.RestActionImpl
 
 /**
@@ -123,6 +124,7 @@ suspend fun JDA.retrieveWebhookByIdOrNull(webhookId: Long): Webhook? {
  * The cached threads are checked first, and then a request is made.
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
+ * If the thread is not owned by the current shard, [GuildNotFoundException] is thrown.
  *
  * @see JDA.retrieveThreadChannelByIdOrNull
  */
@@ -137,7 +139,17 @@ fun JDA.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
                     throw InvalidChannelTypeException("Invalid channel type, expected a thread, got $channelType")
 
                 val guildId = json.getUnsignedLong("guild_id")
-                (this as JDAImpl).entityBuilder.createThreadChannel(null, json, guildId, false)
+                val guild = getGuildById(guildId) ?: run {
+                    val expectedShard = (guildId shr 22) % shardInfo.shardTotal
+                    val actualShard = shardInfo.shardId
+                    if (expectedShard.toInt() == actualShard) {
+                        throw GuildNotFoundException("Thread $id was found but its guild was not found")
+                    } else {
+                        throw GuildNotFoundException("Thread $id was found but its guild was not found as it is from a different shard")
+                    }
+                }
+
+                (this as JDAImpl).entityBuilder.createThreadChannel(guild as GuildImpl, json, guildId, false)
             }
         }
     )
@@ -149,6 +161,7 @@ fun JDA.retrieveThreadChannelById(id: Long): CacheRestAction<ThreadChannel> {
  * The cached threads are checked first, and then a request is made.
  *
  * The [RestAction] may throw [InvalidChannelTypeException] if a channel with the ID was found, but isn't a thread.
+ * If the thread is not owned by the current shard, [GuildNotFoundException] is thrown.
  *
  * @see JDA.retrieveThreadChannelByIdOrNull
  */
@@ -165,6 +178,7 @@ fun JDA.retrieveThreadChannelById(id: String): CacheRestAction<ThreadChannel> {
  * - It doesn't exist
  * - The bot doesn't have access to it
  * - The channel isn't a thread
+ * - The thread isn't owned by a guild of this shard
  *
  * @see JDA.retrieveThreadChannelById
  */
@@ -187,6 +201,7 @@ suspend fun JDA.retrieveThreadChannelByIdOrNull(id: Long): ThreadChannel? {
  * - It doesn't exist
  * - The bot doesn't have access to it
  * - The channel isn't a thread
+ * - The thread isn't owned by a guild of this shard
  *
  * @see JDA.retrieveThreadChannelById
  */
