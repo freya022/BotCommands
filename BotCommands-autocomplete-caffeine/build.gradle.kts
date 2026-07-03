@@ -1,12 +1,11 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.configureTests
 
 plugins {
     id("kotlin-conventions")
     id("publish-conventions")
     id("dokka-conventions")
 }
-
-val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // JDA
@@ -21,14 +20,9 @@ dependencies {
 
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
-    byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-
-    jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
-}
+configureTests(libs.bytebuddy.agent)
 
 kotlin {
     compilerOptions {

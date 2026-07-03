@@ -1,4 +1,5 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
+import dev.freya02.botcommands.utils.configureTests
 import dev.freya02.botcommands.utils.setMainJvmTarget
 
 plugins {
@@ -42,9 +43,7 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+configureTests(libs.bytebuddy.agent)
 
 publishedProjectEnvironment {
     configureJarArtifact(

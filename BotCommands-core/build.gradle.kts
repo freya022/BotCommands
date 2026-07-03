@@ -1,5 +1,6 @@
 import dev.freya02.botcommands.plugins.configureJarArtifact
 import dev.freya02.botcommands.tasks.GenerateBCInfoTask
+import dev.freya02.botcommands.utils.configureTests
 import dev.freya02.botcommands.utils.registerBucket4JDocs
 import dev.freya02.botcommands.utils.registerJetbrainsAnnotationsDocs
 import dev.freya02.botcommands.utils.registerSourceSet
@@ -17,8 +18,6 @@ registerSourceSet(name = "examples")
 // Use different source sets so we can use the same class names without clashes
 registerSourceSet(name = "javaDocExamples")
 registerSourceSet(name = "kotlinDocExamples")
-
-val byteBuddyAgent = configurations.create("byteBuddyAgent")
 
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
@@ -104,7 +103,6 @@ dependencies {
 
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
-    byteBuddyAgent(libs.bytebuddy.agent) { isTransitive = false }
 
     testImplementation(projects.botCommandsMethodAccessors.classfile)
     testImplementation(projects.botCommandsLocalization)
@@ -112,11 +110,7 @@ dependencies {
     testImplementation(libs.kotlin.metadata)
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-
-    jvmArgs("-javaagent:${byteBuddyAgent.asPath}")
-}
+configureTests(libs.bytebuddy.agent)
 
 val generateInfo = tasks.register<GenerateBCInfoTask>("generateInfo") {
     description = "Generates the BCInfo data"
