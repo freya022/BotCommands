@@ -14,13 +14,13 @@ import kotlin.test.fail
 abstract class AbstractFeatureConditionalPresenceTest {
     protected fun checkForMissingFeatureConditions(requiredAnnotation: KClass<out Annotation>) {
         ClassGraph()
-            .rejectClasses("*.*Test*")
+            // Ignore test classes
+            .filterClasspathElements { !it.endsWith("test") }
+            // Ignore other modules
             .disableJarScanning()
             .disableModuleScanning()
             .disableNestedJarScanning()
             .enableClassInfo()
-            .enableMethodInfo()
-            .enableAnnotationInfo()
             .scan()
             .use { scan ->
                 val classes = scan.allStandardClasses
