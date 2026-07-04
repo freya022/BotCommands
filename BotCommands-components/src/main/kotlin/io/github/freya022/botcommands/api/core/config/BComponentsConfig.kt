@@ -1,5 +1,6 @@
 package io.github.freya022.botcommands.api.core.config
 
+import io.github.freya022.botcommands.api.components.utils.ComponentsSchemaMigrator
 import io.github.freya022.botcommands.api.core.service.annotations.InjectedService
 import io.github.freya022.botcommands.internal.core.config.ConfigDSL
 
@@ -27,19 +28,8 @@ import io.github.freya022.botcommands.internal.core.config.ConfigDSL
  * ## Setting up the database schema
  * The tables required to store components are defined by the scripts in `db/bc-migration/components`.
  *
- * It is recommended to use a migration tool to run these automatically, for example with Flyway:
- *
- * ```java
- * Flyway.configure(getClass().getClassLoader())
- *      .dataSource(source)
- *      .schemas("bc_components")
- *      .locations("db/bc-migration/components/generic", "db/bc-migration/components/<vendor>")
- *      .load()
- *      .migrate();
- * ```
- * This will run all the migration scripts required to set up your database,
- * where `<vendor>` is either `postgresql` or `h2`,
- * you can run this in the same class as your connection supplier.
+ * It is recommended to use a migration tool to run these automatically, for example,
+ * you can use Flyway using [ComponentsSchemaMigrator] in the same class as your connection supplier.
  *
  * @see [BComponentsConfig.builder]
  * @see [registerComponents]

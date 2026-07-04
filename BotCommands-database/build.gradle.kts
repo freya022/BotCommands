@@ -29,6 +29,9 @@ dependencies {
     // SQL connection pooling
     compileOnly(libs.hikaricp) // Optional
 
+    // Schema migration (optional)
+    compileOnly(libs.flyway.core)
+
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)

@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.commands.application.annotations.Requi
 import io.github.freya022.botcommands.api.commands.application.annotations.Test
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.annotations.ForceAutocompleteCache
 import io.github.freya022.botcommands.api.commands.application.slash.autocomplete.cache.factory.builder.AutocompleteCacheFactoryBuilder
+import io.github.freya022.botcommands.api.commands.application.utils.AppCommandsCacheSchemaMigrator
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.Logging
 import io.github.freya022.botcommands.api.core.config.application.cache.ApplicationCommandsCacheConfig
@@ -352,18 +353,8 @@ class BApplicationConfigBuilder private constructor() : BApplicationConfigProps 
      * ## Setting up the database schema
      * The tables required to store components are defined by the scripts in `db/bc-migration/app-commands`.
      *
-     * It is recommended to use a migration tool to run these automatically, for example with Flyway:
-     *
-     * ```java
-     * Flyway.configure(getClass().getClassLoader())
-     *      .dataSource(source)
-     *      .schemas("bc_commands_app")
-     *      .locations("db/bc-migration/app-commands/postgresql")
-     *      .load()
-     *      .migrate();
-     * ```
-     * This will run all the migration scripts required to set up your database,
-     * you can run this in the same class as your connection supplier.
+     * It is recommended to use a migration tool to run these automatically,
+     * for example you can use Flyway using [AppCommandsCacheSchemaMigrator] in the same class as your connection supplier.
      */
     fun databaseCache(block: ReceiverConsumer<DatabaseApplicationCommandsCacheConfigBuilder> = ReceiverConsumer.noop()) {
         cache = DatabaseApplicationCommandsCacheConfigBuilder().apply(block)

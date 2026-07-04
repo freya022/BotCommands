@@ -58,6 +58,8 @@ dependencies {
 
     // JUnit + Mockk + Logback
     testImplementation(projects.testCommons)
+
+    testRuntimeOnly(projects.botCommandsDatabase)
 }
 
 configureTests(libs.bytebuddy.agent)

@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.components.Buttons
 import io.github.freya022.botcommands.api.core.config.registerComponents
 import io.github.freya022.botcommands.api.core.config.registerDatabase
 import io.github.freya022.botcommands.api.core.service.getService
-import io.github.freya022.botcommands.helpers.db.TestH2Source
 import io.github.freya022.botcommands.internal.components.controller.ComponentController
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -19,7 +18,7 @@ object ComponentTests : AbstractIntegrationTest() {
     @Test
     suspend fun `Group delete results in owned components deleted`() {
         createTest {
-            addClass<TestH2Source>()
+            addClass<ComponentsTestH2Source>()
 
             registerDatabase()
             registerComponents()
@@ -37,7 +36,7 @@ object ComponentTests : AbstractIntegrationTest() {
     @Test
     suspend fun `Component delete results in owner group deleted`() {
         createTest {
-            addClass<TestH2Source>()
+            addClass<ComponentsTestH2Source>()
 
             registerDatabase()
             registerComponents()

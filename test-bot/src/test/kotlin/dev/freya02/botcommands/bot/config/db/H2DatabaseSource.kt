@@ -3,6 +3,7 @@ package dev.freya02.botcommands.bot.config.db
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.freya02.botcommands.bot.switches.TestDatabase
+import io.github.freya022.botcommands.api.components.utils.ComponentsSchemaMigrator
 import io.github.freya022.botcommands.api.core.db.HikariSourceSupplier
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -24,7 +25,7 @@ class H2DatabaseSource : HikariSourceSupplier {
 
     init {
         //Migrate BC tables
-        createFlyway("bc_components", scriptLocations = arrayOf("db/bc-migration/components/generic", "db/bc-migration/components/h2")).migrate()
+        ComponentsSchemaMigrator.of(source).migrate()
 
         //You can use the same function for your database, you just have to change the schema and scripts location
         //Migrate BC test tables
