@@ -351,7 +351,7 @@ class BApplicationConfigBuilder private constructor() : BApplicationConfigProps 
      * The database must be a PostgreSQL instance, any recent version should do.
      *
      * ## Setting up the database schema
-     * The tables required to store components are defined by the scripts in `db/bc-migration/app-commands`.
+     * The tables required to store components are defined by the scripts in `db/bc-migration/app-commands-cache`.
      *
      * It is recommended to use a migration tool to run these automatically,
      * for example you can use Flyway using [AppCommandsCacheSchemaMigrator] in the same class as your connection supplier.
