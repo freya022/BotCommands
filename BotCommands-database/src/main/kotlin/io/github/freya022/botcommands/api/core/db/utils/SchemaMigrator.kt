@@ -1,6 +1,7 @@
 package io.github.freya022.botcommands.api.core.db.utils
 
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.FlywayException
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import javax.annotation.CheckReturnValue
 
@@ -20,10 +21,7 @@ interface SchemaMigrator {
     /**
      * Runs the migration.
      *
-     * This requires the `org.flywaydb:flyway-core` module,
-     * PostgreSQL support additionally requires `org.flywaydb:flyway-database-postgresql`.
-     *
-     * @throws IllegalStateException If the required Flyway dependencies are not present
+     * @throws FlywayException If migration fails
      */
     fun migrate()
 

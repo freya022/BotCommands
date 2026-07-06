@@ -11,6 +11,11 @@ import javax.sql.DataSource
 /**
  * Manages the database tables required by the components module.
  *
+ * ## Requirements
+ *
+ * You are required to include the `BotCommands-database` module, as well as `org.flywaydb:flyway-core`,
+ * PostgreSQL support additionally requires `org.flywaydb:flyway-database-postgresql`.
+ *
  * @see of
  */
 object ComponentsSchemaMigrator {
