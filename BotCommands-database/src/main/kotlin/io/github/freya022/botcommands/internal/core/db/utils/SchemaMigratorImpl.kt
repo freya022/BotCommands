@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.db.utils.SchemaMigrator
 import io.github.freya022.botcommands.api.core.utils.mapToArray
 import io.github.freya022.botcommands.internal.utils.throwState
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.configuration.FluentConfiguration
 import javax.sql.DataSource
 
 class SchemaMigratorImpl(
@@ -24,6 +25,10 @@ class SchemaMigratorImpl(
     }
 
     override fun migrate() {
+        createFlyway().migrate()
+    }
+
+    override fun createFlyway(configure: FluentConfiguration.() -> FluentConfiguration): Flyway {
         val dbName = dataSource.connection.use { connection -> connection.metaData.databaseProductName }
         val vendor = when {
             dbName.startsWith("PostgreSQL") -> Vendor.POSTGRESQL
@@ -35,18 +40,17 @@ class SchemaMigratorImpl(
             "${vendor.databaseName} is not supported by this schema"
         }
 
-        checkModuleClassIsPresent(className = "org.flywaydb.core.Flyway", moduleName = "org.flywaydb:flyway-core")
         vendor.checkModuleIsPresent()
 
-        Flyway.configure(classLoader ?: javaClass.classLoader)
+        return Flyway.configure(classLoader ?: javaClass.classLoader)
             .dataSource(dataSource)
             .schemas(schemaName)
             .locations(*locations.mapToArray { it.replace("{vendor_name}", vendor.folderName) })
             .validateMigrationNaming(true)
             .failOnMissingLocations(true)
             .loggers("slf4j")
+            .let(configure)
             .load()
-            .migrate()
     }
 
     enum class Vendor(val databaseName: String, val folderName: String) {
@@ -70,9 +74,9 @@ class SchemaMigratorImpl(
         abstract fun checkModuleIsPresent()
     }
 
-    internal companion object {
+    private companion object {
 
-        internal fun checkModuleClassIsPresent(className: String, moduleName: String) {
+        private fun checkModuleClassIsPresent(className: String, moduleName: String) {
             try {
                 Class.forName(className, false, Thread.currentThread().contextClassLoader)
             } catch (_: ClassNotFoundException) {

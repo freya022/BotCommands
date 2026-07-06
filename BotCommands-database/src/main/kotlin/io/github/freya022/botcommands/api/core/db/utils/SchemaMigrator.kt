@@ -1,5 +1,7 @@
 package io.github.freya022.botcommands.api.core.db.utils
 
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.configuration.FluentConfiguration
 import javax.annotation.CheckReturnValue
 
 /**
@@ -24,4 +26,18 @@ interface SchemaMigrator {
      * @throws IllegalStateException If the required Flyway dependencies are not present
      */
     fun migrate()
+
+    /**
+     * Creates a [Flyway] instance configured for this schema.
+     * Mainly useful to baseline or repair the schema history.
+     */
+    fun createFlyway(): Flyway = createFlyway { this }
+
+    /**
+     * Creates a [Flyway] instance configured for this schema.
+     * Mainly useful to baseline or repair the schema history.
+     *
+     * @param configure A block to further configure Flyway
+     */
+    fun createFlyway(configure: FluentConfiguration.() -> FluentConfiguration): Flyway
 }
