@@ -15,6 +15,10 @@ class SchemaMigratorImpl(
 
     private var classLoader: ClassLoader? = null
 
+    init {
+        checkModuleClassIsPresent(className = "org.flywaydb.core.Flyway", moduleName = "org.flywaydb:flyway-core")
+    }
+
     override fun setClassLoader(classLoader: ClassLoader): SchemaMigrator = apply {
         this.classLoader = classLoader
     }
