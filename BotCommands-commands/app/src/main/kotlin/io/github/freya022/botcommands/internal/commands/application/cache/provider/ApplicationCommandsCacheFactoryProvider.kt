@@ -18,9 +18,11 @@ import io.github.freya022.botcommands.internal.core.db.DatabaseSchemaHelper
 import io.github.freya022.botcommands.internal.utils.classRef
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwInternal
+import io.github.freya022.botcommands.internal.utils.throwState
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.User
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.nio.file.Path
@@ -42,6 +44,13 @@ internal open class ApplicationCommandsCacheFactoryProvider {
         val cacheConfig = applicationConfig.cache
             ?: return NullApplicationCommandsCacheFactory // Logged in [[BApplicationConfigBuilder#build]]
 
+        fun createFallbackCache(): ApplicationCommandsCacheFactory {
+            if (User.UserFlag.VERIFIED_BOT in jda.selfUser.flags) {
+                throwState("Attempted to use an in-memory application commands cache as a fallback, but it is forbidden in large (verified) bots as it would send a lot of requests, please fix the issued warning")
+            }
+            return MemoryApplicationCommandsCacheFactory(cacheConfig)
+        }
+
         when (cacheConfig) {
             is FileApplicationCommandsCacheConfig -> {
                 fun Path.absolutePathStringOrFallback(): String {
@@ -57,11 +66,11 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                 if (dataDirectory.exists() && !dataDirectory.isWritable()) {
                     // Don't use absolutePathString in case it also produces an exception
                     logger.warn { "Cannot write to '${dataDirectory.absolutePathStringOrFallback()}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
-                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                    return createFallbackCache()
                 } else if (!dataDirectory.parent.isWritable()) {
                     // Don't use absolutePathString in case it also produces an exception
                     logger.warn { "Cannot create directory at '${dataDirectory.absolutePathStringOrFallback()}', try setting a different path in ${BApplicationConfigBuilder::fileCache.shortSignatureNoSrc}, falling back to an in-memory store" }
-                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                    return createFallbackCache()
                 }
 
                 logger.debug { "Using file-based application commands cache @ ${dataDirectory.absolutePathStringOrFallback()}" }
@@ -71,7 +80,7 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                 val database = serviceContainer.getServiceOrNull<Database>()
                 if (database == null) {
                     logger.warn { "Cannot use a database as application commands cache as no database is present, see ${classRef<BDatabaseConfig>()}" }
-                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                    return createFallbackCache()
                 }
 
                 // Can't move to method due to reflection loading `Database` (which is `compileOnly`)
@@ -87,7 +96,7 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                     )
                 }
                 if (!isSchemaValid) {
-                    return MemoryApplicationCommandsCacheFactory(cacheConfig)
+                    return createFallbackCache()
                 }
 
                 logger.debug { "Using database-based application commands cache" }
