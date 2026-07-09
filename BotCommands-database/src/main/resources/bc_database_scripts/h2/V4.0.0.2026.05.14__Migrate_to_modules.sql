@@ -8,10 +8,12 @@ SET version = '4.0.0-alpha.1'
 WHERE one_row = TRUE;
 
 ------------------ Application commands ------------------
+-- Technically H2 isn't supported by the app commands cache anymore
+-- but at least the migration would be done if it were to be added back
 
-CREATE SCHEMA bc_commands_app;
+CREATE SCHEMA bc_commands_app_cache;
 
-SET SCHEMA bc_commands_app;
+SET SCHEMA bc_commands_app_cache;
 
 CREATE TABLE schema_version
 (

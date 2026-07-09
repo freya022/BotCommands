@@ -7,9 +7,9 @@ WHERE one_row = TRUE;
 
 ------------------ Application commands ------------------
 
-CREATE SCHEMA bc_commands_app;
+CREATE SCHEMA bc_commands_app_cache;
 
-SET search_path TO bc_commands_app;
+SET search_path TO bc_commands_app_cache;
 
 CREATE TABLE schema_version
 (
@@ -24,7 +24,7 @@ INSERT INTO schema_version
 VALUES (TRUE, '4.0.0-alpha.1');
 
 ALTER TABLE bc.application_commands_cache
-    SET SCHEMA bc_commands_app;
+    SET SCHEMA bc_commands_app_cache;
 
 RESET search_path;
 

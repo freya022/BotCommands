@@ -88,7 +88,7 @@ internal open class ApplicationCommandsCacheFactoryProvider {
                     DatabaseSchemaHelper.validateSchemaVersion(
                         logger,
                         database,
-                        schemaName = "bc_commands_app",
+                        schemaName = "bc_commands_app_cache",
                         // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
                         latestVersion = "4.0.0-alpha.1", // Change in the latest migration script too
                         featureName = "application commands",

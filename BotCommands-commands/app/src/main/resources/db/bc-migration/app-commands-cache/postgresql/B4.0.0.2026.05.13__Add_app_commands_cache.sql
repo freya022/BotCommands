@@ -1,4 +1,4 @@
-SET search_path TO bc_commands_app;
+SET search_path TO bc_commands_app_cache;
 
 -- region Setup
 CREATE TABLE schema_version

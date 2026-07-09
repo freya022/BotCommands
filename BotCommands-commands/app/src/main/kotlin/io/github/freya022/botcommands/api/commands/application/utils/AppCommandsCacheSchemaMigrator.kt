@@ -31,7 +31,7 @@ object AppCommandsCacheSchemaMigrator {
         return SchemaMigratorImpl(
             dataSource,
             supportedDatabases = enumSetOf(Vendor.POSTGRESQL),
-            schemaName = "bc_commands_app",
+            schemaName = "bc_commands_app_cache",
             locations = listOf(
                 "db/bc-migration/app-commands-cache/generic",
                 "db/bc-migration/app-commands-cache/{vendor_name}",

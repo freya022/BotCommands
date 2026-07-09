@@ -14,7 +14,7 @@ internal class DatabaseApplicationCommandsCache internal constructor(
         database.preparedStatement(
             """
                 select data, metadata
-                from bc_commands_app.application_commands_cache
+                from bc_commands_app_cache.application_commands_cache
                 where application_id = ?
                   and guild_id is not distinct from ?
             """.trimIndent(),
@@ -29,7 +29,7 @@ internal class DatabaseApplicationCommandsCache internal constructor(
     override suspend fun write(commandBytes: ByteArray, metadataBytes: ByteArray) {
         database.preparedStatement(
             """
-                insert into bc_commands_app.application_commands_cache (application_id, guild_id, data, metadata)
+                insert into bc_commands_app_cache.application_commands_cache (application_id, guild_id, data, metadata)
                 values (?, ?, ?, ?)
                 on conflict(application_id, guild_id) do update set data     = excluded.data,
                                                                     metadata = excluded.metadata
