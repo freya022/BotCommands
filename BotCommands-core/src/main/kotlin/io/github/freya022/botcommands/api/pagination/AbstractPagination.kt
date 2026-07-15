@@ -8,6 +8,7 @@ import io.github.freya022.botcommands.api.components.data.InteractionConstraints
 import io.github.freya022.botcommands.api.core.BContext
 import io.github.freya022.botcommands.api.core.objectLogger
 import io.github.freya022.botcommands.api.core.service.getService
+import io.github.freya022.botcommands.api.core.utils.shortQualifiedName
 import io.github.freya022.botcommands.internal.core.ExceptionHandler
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.entities.Message
@@ -112,9 +113,17 @@ abstract class AbstractPagination<T : AbstractPagination<T>> protected construct
 
     private fun onTimeoutHandlerException(e: Throwable) {
         if (e is CancellationException)
-            return logger.trace(e) { "Pagination timeout handler was cancelled" }
+            return logger.trace(e) { "Pagination '${javaClass.shortQualifiedName}' timeout handler was cancelled" }
 
-        ExceptionHandler(context, logger).handleException(null, e, "timeout handler", emptyMap())
+        ExceptionHandler(context, logger).handleException(
+            event = null,
+            e,
+            locationDescription = "timeout handler",
+            extraContext = mapOf(
+                "Pagination type" to javaClass.name,
+                "Timeout handler" to timeout?.onTimeout?.javaClass?.name,
+            )
+        )
     }
 
     protected open fun preProcess(builder: MessageCreateBuilder) { }
