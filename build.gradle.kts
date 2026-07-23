@@ -62,14 +62,6 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-    }
-}
-
 publishedProjectEnvironment {
     configureArtifact(
         artifactId = "BotCommands",

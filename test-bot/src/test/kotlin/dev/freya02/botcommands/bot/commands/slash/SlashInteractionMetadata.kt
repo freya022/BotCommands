@@ -35,7 +35,7 @@ class SlashInteractionMetadata(
                 it.hook.sendMessage("Followup from button").queue()
             }
         }
-        event.reply_("Message from slash command", components = listOf(row(modalButton, messageButton)), ephemeral = true).queue()
+        event.reply_("Message from slash command", components = [row(modalButton, messageButton)], ephemeral = true).queue()
 
         val buttonEvent = modalButton.await()
         val modal = modals.create("Interaction metadata") {

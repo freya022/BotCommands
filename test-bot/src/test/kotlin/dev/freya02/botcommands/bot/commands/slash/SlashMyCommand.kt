@@ -99,7 +99,7 @@ class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvid
                     option("stringOption", "string") {
                         description = "Option description"
 
-                        choices = listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
+                        choices = [Choice("a", "a"), Choice("b", "b"), Choice("c", "c")]
                     }
 
                     option("intOption", "int") {
@@ -107,7 +107,7 @@ class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvid
 
                         valueRange = 1 range 2
 
-                        choices = listOf(Choice("1", 1L), Choice("2", 2L))
+                        choices = [Choice("1", 1L), Choice("2", 2L)]
                     }
 
                     option("doubleOption", "double") {

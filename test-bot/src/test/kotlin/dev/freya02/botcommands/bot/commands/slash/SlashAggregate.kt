@@ -63,7 +63,7 @@ class SlashAggregate : GlobalApplicationCommandProvider, AutocompleteHandlerProv
             this.showUserInput = false
 
             caffeineCache {
-                compositeKeys = listOf("string", "nested_double")
+                compositeKeys = ["string", "nested_double"]
             }
         }
     }

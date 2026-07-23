@@ -46,7 +46,7 @@ internal class ClasspathWatcher private constructor() {
             registerDirectories(classRoot)
         }
 
-        thread(name = "Classpath watcher", isDaemon = true) {
+        val _ = thread(name = "Classpath watcher", isDaemon = true) {
             while (true) {
                 val key = try {
                     watchService.take() // Wait for a change

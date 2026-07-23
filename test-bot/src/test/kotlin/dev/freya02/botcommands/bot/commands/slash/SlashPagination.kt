@@ -35,7 +35,7 @@ private val logger = KotlinLogging.logger { }
 @Command
 @RequiresComponents
 class SlashPagination(private val paginators: Paginators, private val buttons: Buttons) {
-    private val menuEntries = listOf("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve")
+    private val menuEntries = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"]
 
     init {
         Paginator.Defaults.firstPageButtonContent = ButtonContent.fromLabel(ButtonStyle.SECONDARY, "[Default] First")

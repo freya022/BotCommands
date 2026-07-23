@@ -54,7 +54,7 @@ class SlashComponentsV2(
                 accessory = buttons.success("Button in a section").ephemeral {
                     bindTo { buttonEvent ->
                         buttonEvent.reply_(
-                            components = listOf(TextDisplay("My reference ID is ${buttonEvent.component.uniqueId}")),
+                            components = [TextDisplay("My reference ID is ${buttonEvent.component.uniqueId}")],
                             useComponentsV2 = true,
                             ephemeral = true,
                         ).await()
