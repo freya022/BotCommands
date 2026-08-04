@@ -26,7 +26,7 @@ internal sealed class ClassPathFunction {
         if (this === other) return true
         if (other !is ClassPathFunction) return false
 
-        return function == other.function
+        return instance === other.instance && function == other.function
     }
 
     override fun hashCode(): Int {
