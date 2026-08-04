@@ -40,7 +40,7 @@ object EventListenerRegistryTests {
             )
         }
 
-        assertContains(ex.message.orEmpty(), "Function must have a first parameter with a superclass of: [GenericEvent, BGenericEvent]")
+        assertContains(ex.message.orEmpty(), "Function cannot have a first parameter of type: [Object]")
     }
 
     @Test
@@ -157,5 +157,39 @@ object EventListenerRegistryTests {
         )
 
         assertEquals(4, registry[EmojiUpdateNameEvent::class.java][RunMode.SHARED]!!.size)
+    }
+
+    @Test
+    fun `Custom events are dispatched to listeners of all subclasses`() {
+        abstract class MyGenericEvent
+        abstract class MyGenericUpdateEvent : MyGenericEvent()
+        class MyEvent : MyGenericUpdateEvent()
+
+        class A {
+            @BEventListener
+            fun a(@Suppress("unused") event: MyEvent) {}
+            @BEventListener
+            fun b(@Suppress("unused") event: MyGenericUpdateEvent) {}
+            @BEventListener
+            fun c(@Suppress("unused") event: MyGenericEvent) {}
+        }
+
+        val registry = EventListenerRegistry(
+            BConfigBuilder().build(),
+            mockk<ServiceContainer>(),
+            mockk<JDAService> {
+                every { intents } returns setOf()
+            },
+            mockk<FunctionAnnotationsMap> {
+                val instance = A()
+                every { get<BEventListener>() } returns listOf(
+                    ClassPathFunction(instance, A::a),
+                    ClassPathFunction(instance, A::b),
+                    ClassPathFunction(instance, A::c),
+                )
+            },
+        )
+
+        assertEquals(3, registry[MyEvent::class.java][RunMode.SHARED]!!.size)
     }
 }
