@@ -10,7 +10,6 @@ import io.github.freya022.botcommands.api.core.utils.enumSetOf
 import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
 import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
-import io.github.freya022.botcommands.internal.core.exceptions.InternalException
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.github.freya022.botcommands.internal.core.service.canCreateWrappedService
@@ -35,18 +34,16 @@ private val logger = KotlinLogging.logger { }
 internal class EventListenerRegistry internal constructor(
     private val config: BConfig,
     private val serviceContainer: ServiceContainer,
-    private val eventTreeService: EventTreeService,
     private val jdaService: JDAService,
     functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
 
-    private typealias ClassName = String
-    private typealias EventMap = MutableMap<ClassName, EventListenerList>
-
     private val defaultTimeout: Duration = config.eventManagerConfig.defaultTimeout ?: Duration.INFINITE
 
-    private val map: EventMap = ConcurrentHashMap()
-    private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
+    /** Listener instance -> handlers */
+    private val listenerFunctionMap: MutableMap<Any, List<EventHandlerFunction>> = ConcurrentHashMap()
+    /** Maps event types to the listener subtypes they can fire to */
+    private val resolvedListeners: MutableMap<Class<*>, EventListenerList> = ConcurrentHashMap()
 
     init {
         functionAnnotationsMap
@@ -54,8 +51,19 @@ internal class EventListenerRegistry internal constructor(
             .addAsEventListeners()
     }
 
-    internal operator fun get(eventType: Class<*>): EventListenerList? {
-        return map[eventType.name]
+    internal operator fun get(eventType: Class<*>): EventListenerList {
+        return resolvedListeners.computeIfAbsent(eventType) { eventType ->
+            // Create the list of handlers that are to be fired by the provided event type
+            val list = EventListenerList()
+            for (handlerFunction in listenerFunctionMap.values.flatten()) {
+                val eventErasure = handlerFunction.eventType
+                if (eventErasure.isAssignableFrom(eventType)) {
+                    list.add(handlerFunction)
+                }
+            }
+
+            list
+        }
     }
 
     internal fun addEventListener(listener: Any) {
@@ -64,17 +72,17 @@ internal class EventListenerRegistry internal constructor(
             .withFilter(FunctionFilter.annotation<BEventListener>())
             .toClassPathFunctions(listener)
             .addAsEventListeners()
+
+        // Clear the "event type -> handlers" associations, since we added a new listener, the handlers need to be recomputed
+        resolvedListeners.clear()
     }
 
     internal fun removeEventListener(listener: Any) {
-        listeners.remove(listener.javaClass)?.let { instanceMap ->
-            instanceMap.forEach { (kClass, functions) ->
-                val functionMap = map[kClass]
-                    ?: throwInternal("Listener was registered without having its functions added to the listener map")
-                if (!functionMap.removeAll(functions)) {
-                    logger.error(InternalException("Unable to remove listener functions from registered functions")) { "An exception occurred while removing event listener $listener" }
-                }
-            }
+        val handlerFunctions = listenerFunctionMap.remove(listener) ?: return
+
+        // Remove handlers of the provided listener from the resolved listeners
+        for (listenerList in resolvedListeners.values) {
+            listenerList.removeAll(handlerFunctions)
         }
     }
 
@@ -113,7 +121,9 @@ internal class EventListenerRegistry internal constructor(
                         )
                     }
                 }
-            val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
+            val eventHandlerFunction = EventHandlerFunction(
+                eventType = eventErasure,
+                classPathFunction = classPathFunc,
                 runMode = annotation.mode,
                 timeout = getTimeout(annotation),
                 priority = annotation.priority,
@@ -122,18 +132,9 @@ internal class EventListenerRegistry internal constructor(
                     eventParameters.map { serviceContainer.tryGetWrappedService(it).getOrThrow() }
                 })
 
-            val allEventTypes = eventTreeService.getSubclasses(eventErasure) + eventErasure.name
-            classPathFunc.javaClazz.let { clazz ->
-                val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
-
-                allEventTypes.forEach {
-                    instanceMap.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
-                }
-            }
-
-            allEventTypes.forEach {
-                map.computeIfAbsent(it) { EventListenerList() }.add(eventHandlerFunction)
-            }
+            // Create or update list of handlers owned by the listener
+            // This is effectively the same as a CopyOnWriteArrayList, but takes advantage of the ConcurrentHashMap's locking
+            listenerFunctionMap.merge(classPathFunc.instance, listOf(eventHandlerFunction), List<EventHandlerFunction>::plus)
         }
 
     private fun getTimeout(annotation: BEventListener): Duration? {

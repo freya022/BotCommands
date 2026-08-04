@@ -44,6 +44,7 @@ object EventDispatcherTests {
                 every { get(any<BEventListener.RunMode>()) } returns emptyList()
                 every { get(BEventListener.RunMode.BLOCKING) } returns listOf(
                     EventHandlerFunction(
+                        BReadyEvent::class.java,
                         ClassPathFunction(expectedInstance, expectedFunction),
                         priority = 0,
                         runMode = BEventListener.RunMode.BLOCKING,
