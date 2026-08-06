@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfig
 import io.github.freya022.botcommands.api.core.events.BEvent
+import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.hooks.custom.CustomEventRequirementsProvider
 import io.github.freya022.botcommands.api.core.hooks.custom.annotations.ExperimentalCustomEvents
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
@@ -19,6 +20,7 @@ import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KFunction
@@ -109,6 +111,16 @@ internal class EventListenerRegistry internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure: Class<out Any> = parameters.first().type.jvmErasure.java
+            if (eventErasure.isSubclassOf<GenericEvent>()) {
+                check(eventErasure.packageName.startsWith("net.dv8tion.jda.api.events")) {
+                    "Custom events must not implement ${GenericEvent::class.java.name}!"
+                }
+            } else if (eventErasure.isSubclassOf<BGenericEvent>()) {
+                check(eventErasure.packageName.startsWith("io.github.freya022.botcommands.api")) {
+                    "Custom events must not implement ${BGenericEvent::class.java.name}!"
+                }
+            }
+
             if (!annotation.ignoreIntents && !checkIntents(function, eventErasure, annotation.ignoredIntents.toEnumSet())) {
                 return@forEach
             }
