@@ -12,6 +12,12 @@ inline fun <reified T : Enum<T>> enumSetOfAll(): EnumSet<T> = EnumSet.allOf(T::c
 inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSetOf<T>().apply { addAll(elems) }
 inline fun <reified T : Enum<T>, V> enumMapOf(): EnumMap<T, V> = EnumMap<T, V>(T::class.java)
 
+inline fun <reified T : Enum<T>> Array<T>.toEnumSet(): EnumSet<T> = enumSetOf<T>().apply { addAll(this@toEnumSet) }
+inline fun <reified T : Enum<T>> Collection<T>.toEnumSet(): EnumSet<T> = when (this) {
+    is EnumSet<T> -> EnumSet.copyOf(this)
+    else -> enumSetOf<T>().also { it.addAll(this) }
+}
+
 fun <T> Collection<T>.unmodifiableView(): Collection<T> {
     return Collections.unmodifiableCollection(this)
 }

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
 
 /**
- * Dispatches JDA and BC events to [@BEventListener][BEventListener] methods.
+ * Dispatches JDA and BC events to [@BEventListener][BEventListener] methods. Custom events are also supported.
  */
 @InterfacedService(acceptMultiple = false)
 abstract class EventDispatcher internal constructor() {
