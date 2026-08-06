@@ -157,8 +157,8 @@ internal class EventListenerRegistry internal constructor(
 
             // Cannot check for RawGatewayEvent as JDA is not present yet and there is no config for it
         } else if (!eventErasure.isSubclassOf<BEvent>()) {
-            if (customEventRequirementsProviders.isEmpty()) {
-                throwState("No ${classRef<CustomEventRequirementsProvider>()} are available (custom event listener at ${function.shortSignature})")
+            check(customEventRequirementsProviders.isNotEmpty()) {
+                "No ${classRef<CustomEventRequirementsProvider>()} are available (custom event listener at ${function.shortSignature})"
             }
 
             val passedRequirementProviders = ArrayList<CustomEventRequirementsProvider>(1)
