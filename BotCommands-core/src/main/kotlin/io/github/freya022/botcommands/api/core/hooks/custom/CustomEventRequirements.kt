@@ -5,6 +5,7 @@ import io.github.freya022.botcommands.api.core.utils.toEnumSet
 import io.github.freya022.botcommands.internal.core.hooks.custom.CustomEventRequirementsImpl
 import io.github.freya022.botcommands.internal.core.hooks.custom.EmptyCustomEventRequirements
 import io.github.freya022.botcommands.internal.core.hooks.custom.UnknownCustomEventRequirements
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 /**
@@ -47,6 +48,36 @@ interface CustomEventRequirements {
                 return none()
 
             return CustomEventRequirementsImpl(intents)
+        }
+
+        /**
+         * Creates an instance from the intents required by the given events.
+         *
+         * This is a shortcut to as `from(GatewayIntent.fromEvents(events))`.
+         */
+        @JvmStatic
+        fun fromEvents(vararg events: Class<out GenericEvent>): CustomEventRequirements {
+            return from(GatewayIntent.fromEvents(*events))
+        }
+
+        /**
+         * Creates an instance from the intents required by the given events.
+         *
+         * This is a shortcut to as `from(GatewayIntent.fromEvents(events))`.
+         */
+        @JvmStatic
+        fun fromEvents(events: Collection<Class<out GenericEvent>>): CustomEventRequirements {
+            return from(GatewayIntent.fromEvents(events))
+        }
+
+        /**
+         * Creates an instance from the intents required by the given events.
+         *
+         * This is a shortcut to as `from(GatewayIntent.fromEvents(E::class.java))`.
+         */
+        @JvmSynthetic
+        inline fun <reified E : GenericEvent> fromEvent(): CustomEventRequirements {
+            return from(GatewayIntent.fromEvents(E::class.java))
         }
 
         /**
