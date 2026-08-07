@@ -35,7 +35,7 @@ interface CustomEventRequirements {
          * Creates an instance from the given intents.
          */
         @JvmStatic
-        fun from(intents: Array<GatewayIntent>): CustomEventRequirements {
+        fun from(vararg intents: GatewayIntent): CustomEventRequirements {
             return from(intents.toEnumSet())
         }
 
@@ -56,6 +56,7 @@ interface CustomEventRequirements {
          * This is a shortcut to as `from(GatewayIntent.fromEvents(events))`.
          */
         @JvmStatic
+        @SafeVarargs
         fun fromEvents(vararg events: Class<out GenericEvent>): CustomEventRequirements {
             return from(GatewayIntent.fromEvents(*events))
         }
