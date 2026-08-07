@@ -6,6 +6,8 @@ import dev.freya02.botcommands.method.accessors.internal.MethodAccessorFactory
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.hooks.EventDispatcherImpl
 import io.github.freya022.botcommands.internal.core.hooks.EventHandlerFunction
@@ -54,7 +56,9 @@ object EventDispatcherTests {
             }
         }
 
-        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), listenerRegistry)
+        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), mockk<ServiceContainer> {
+            every { getService<EventListenerRegistry>() } returns listenerRegistry
+        })
 
         assertThrows<ExpectedException> { dispatcher.dispatchEventJava(mockk<BReadyEvent>()) }
     }

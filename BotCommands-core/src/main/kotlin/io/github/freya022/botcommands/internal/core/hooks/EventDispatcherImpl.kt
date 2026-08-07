@@ -5,7 +5,9 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.objectLogger
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
+import io.github.freya022.botcommands.api.core.service.lazy
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.internal.utils.shortSignature
@@ -21,11 +23,14 @@ private val logger = KotlinLogging.loggerOf<EventDispatcher>()
 @BService
 internal class EventDispatcherImpl internal constructor(
     coroutineScopesConfig: BCoroutineScopesConfig,
-    private val eventListenerRegistry: EventListenerRegistry,
+    serviceContainer: ServiceContainer,
 ) : EventDispatcher() {
 
     private val eventManagerCoroutineScope: CoroutineScope = coroutineScopesConfig.eventManagerScope
     private val asyncCoroutineScope: CoroutineScope = coroutineScopesConfig.eventDispatcherScope
+
+    // Registry may fetch classes that also dispatch events, causing a circular dependency
+    private val eventListenerRegistry: EventListenerRegistry by serviceContainer.lazy()
 
     internal fun onEvent(event: GenericEvent) {
         // No need to check for `event` type as if it's in the map, then it's recognized
