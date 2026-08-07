@@ -1,36 +1,37 @@
 package io.github.freya022.botcommands.core.hooks
 
-import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
 import io.github.freya022.botcommands.api.core.config.BConfigBuilder
-import io.github.freya022.botcommands.api.core.events.BGenericEvent
-import io.github.freya022.botcommands.api.core.hooks.custom.CustomEventRequirements
-import io.github.freya022.botcommands.api.core.hooks.custom.CustomEventRequirementsProvider
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
-import io.github.freya022.botcommands.api.core.utils.isSubclassOf
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.hooks.EventListenerRegistry
+import io.github.freya022.botcommands.internal.core.hooks.EventListenerRequirementsVerifier
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent
 import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateNameEvent
 import net.dv8tion.jda.api.events.emoji.update.GenericEmojiUpdateEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
 import kotlin.reflect.KFunction
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 object EventListenerRegistryTests {
+
+    private val NOOP_VERIFIER = object : EventListenerRequirementsVerifier {
+        override fun verifyFor(
+            function: KFunction<*>,
+            locallySkipIntentChecks: Boolean,
+            locallySkippedIntents: Set<GatewayIntent>,
+            eventErasure: Class<*>
+        ): Boolean = true
+    }
+
     @Test
     fun `Listeners of Any are forbidden`() {
         class TestListener {
@@ -41,8 +42,7 @@ object EventListenerRegistryTests {
             EventListenerRegistry(
                 BConfigBuilder().build(),
                 mockk<ServiceContainer>(),
-                mockk<JDAService>(),
-                customEventRequirementsProviders = emptyList(),
+                NOOP_VERIFIER,
                 mockk<FunctionAnnotationsMap> {
                     every { get<BEventListener>() } returns listOf(
                         ClassPathFunction(TestListener(), TestListener::onReady),
@@ -67,10 +67,7 @@ object EventListenerRegistryTests {
         val registry = EventListenerRegistry(
             BConfigBuilder().build(),
             mockk<ServiceContainer>(),
-            mockk<JDAService> {
-                every { intents } returns setOf(GatewayIntent.GUILD_EXPRESSIONS)
-            },
-            customEventRequirementsProviders = emptyList(),
+            NOOP_VERIFIER,
             mockk<FunctionAnnotationsMap> {
                 every { get<BEventListener>() } returns listOf(
                     ClassPathFunction(A(), A::foo),
@@ -120,10 +117,7 @@ object EventListenerRegistryTests {
         val registry = EventListenerRegistry(
             BConfigBuilder().build(),
             mockk<ServiceContainer>(),
-            mockk<JDAService> {
-                every { intents } returns setOf()
-            },
-            customEventRequirementsProviders = emptyList(),
+            NOOP_VERIFIER,
             mockk<FunctionAnnotationsMap> {
                 every { get<BEventListener>() } returns listOf(
                     ClassPathFunction(a1, A::foo),
@@ -155,10 +149,7 @@ object EventListenerRegistryTests {
         val registry = EventListenerRegistry(
             BConfigBuilder().build(),
             mockk<ServiceContainer>(),
-            mockk<JDAService> {
-                every { intents } returns setOf(GatewayIntent.GUILD_EXPRESSIONS)
-            },
-            customEventRequirementsProviders = emptyList(),
+            NOOP_VERIFIER,
             mockk<FunctionAnnotationsMap> {
                 val instance = A()
                 every { get<BEventListener>() } returns listOf(
@@ -191,17 +182,7 @@ object EventListenerRegistryTests {
         val registry = EventListenerRegistry(
             BConfigBuilder().build(),
             mockk<ServiceContainer>(),
-            mockk<JDAService> {
-                every { intents } returns setOf()
-            },
-            customEventRequirementsProviders = listOf(object : CustomEventRequirementsProvider {
-                override fun get(handledEventType: Class<*>): CustomEventRequirements {
-                    if (handledEventType.isSubclassOf<MyGenericEvent>()) {
-                        return CustomEventRequirements.none()
-                    }
-                    return CustomEventRequirements.unknown()
-                }
-            }),
+            NOOP_VERIFIER,
             mockk<FunctionAnnotationsMap> {
                 val instance = A()
                 every { get<BEventListener>() } returns listOf(
@@ -213,138 +194,5 @@ object EventListenerRegistryTests {
         )
 
         assertEquals(3, registry[MyEvent::class.java][RunMode.SHARED]!!.size)
-    }
-
-    @Test
-    fun `Custom event requirement provider should be checked for implementation correctness`() {
-        // Make sure the registry tests all CustomEventRequirementsProvider do not return requirements for other events than theirs
-
-        class CorrectProvider : CustomEventRequirementsProvider {
-            override fun get(handledEventType: Class<*>): CustomEventRequirements = CustomEventRequirements.unknown()
-        }
-
-        class WrongProvider : CustomEventRequirementsProvider {
-            override fun get(handledEventType: Class<*>): CustomEventRequirements = CustomEventRequirements.none()
-        }
-
-        val ex = assertThrows<IllegalStateException> {
-            EventListenerRegistry(
-                BConfigBuilder().build(),
-                mockk<ServiceContainer>(),
-                mockk<JDAService>(),
-                customEventRequirementsProviders = listOf(CorrectProvider(), WrongProvider()),
-                mockk<FunctionAnnotationsMap>(),
-            )
-        }
-
-        assertEquals(
-            $$"Custom event requirement providers are required to return 'CustomEventRequirements.unknown()' on unhandled events, and 'i.g.f.b.c.h.EventListenerRegistryTests$Custom event requirement provider should be checked for implementation correctness$WrongProvider' fails that",
-            ex.message,
-        )
-
-        assertDoesNotThrow {
-            EventListenerRegistry(
-                BConfigBuilder().build(),
-                mockk<ServiceContainer>(),
-                mockk<JDAService>(),
-                customEventRequirementsProviders = listOf(CorrectProvider()),
-                mockk<FunctionAnnotationsMap>(relaxed = true),
-            )
-        }
-
-        assertDoesNotThrow {
-            EventListenerRegistry(
-                BConfigBuilder().build(),
-                mockk<ServiceContainer>(),
-                mockk<JDAService>(),
-                customEventRequirementsProviders = listOf(),
-                mockk<FunctionAnnotationsMap>(relaxed = true),
-            )
-        }
-    }
-
-    @Test
-    fun `Throw when multiple requirements providers return known requirements`() {
-        class MyEvent
-
-        class Provider : CustomEventRequirementsProvider {
-            override fun get(handledEventType: Class<*>): CustomEventRequirements {
-                if (handledEventType == MyEvent::class.java) {
-                    return CustomEventRequirements.none()
-                }
-                return CustomEventRequirements.unknown()
-            }
-        }
-
-        class A {
-            @BEventListener
-            fun foo(@Suppress("UNUSED_PARAMETER") event: MyEvent) {}
-        }
-
-        val ex = assertThrows<IllegalStateException> {
-            EventListenerRegistry(
-                BConfigBuilder().build(),
-                mockk<ServiceContainer>(),
-                mockk<JDAService> {
-                    every { intents } returns setOf()
-                },
-                customEventRequirementsProviders = listOf(Provider(), Provider()),
-                mockk<FunctionAnnotationsMap> {
-                    every { get<BEventListener>() } returns listOf(
-                        ClassPathFunction(A(), A::foo),
-                    )
-                },
-            )
-        }
-
-        assertEquals(
-            true,
-            ex.message?.startsWith($$"Multiple CustomEventRequirementsProvider returned requirements for 'i.g.f.b.c.h.EventListenerRegistryTests$Throw when multiple requirements providers return known requirements$MyEvent'")
-        )
-    }
-
-    @ParameterizedTest
-    @MethodSource("customEventsWithIllegalSubclass")
-    fun `Custom events cannot extend JDA and BC events`(instance: Any, function: KFunction<*>, eventType: Class<*>) {
-        class Provider : CustomEventRequirementsProvider {
-            override fun get(handledEventType: Class<*>): CustomEventRequirements = CustomEventRequirements.unknown()
-        }
-
-        val ex = assertThrows<IllegalStateException> {
-            EventListenerRegistry(
-                BConfigBuilder().build(),
-                mockk<ServiceContainer>(),
-                mockk<JDAService> {
-                    every { intents } returns setOf()
-                },
-                customEventRequirementsProviders = listOf(Provider()),
-                mockk<FunctionAnnotationsMap> {
-                    every { get<BEventListener>() } returns listOf(
-                        ClassPathFunction(instance, function),
-                    )
-                },
-            )
-        }
-
-        assertEquals("Custom events must not implement ${eventType.name}!", ex.message)
-    }
-
-    @JvmStatic
-    fun customEventsWithIllegalSubclass(): List<Arguments> {
-        abstract class JdaEvent : GenericEvent
-        abstract class BcEvent : BGenericEvent
-
-        class A {
-            @BEventListener
-            fun jda(@Suppress("UNUSED_PARAMETER") event: JdaEvent) {}
-
-            @BEventListener
-            fun bc(@Suppress("UNUSED_PARAMETER") event: BcEvent) {}
-        }
-
-        return listOf(
-            Arguments.argumentSet("JDA", A(), A::jda, GenericEvent::class.java),
-            Arguments.argumentSet("BC", A(), A::bc, BGenericEvent::class.java),
-        )
     }
 }

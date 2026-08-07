@@ -1,15 +1,11 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
-import io.github.freya022.botcommands.api.core.JDAService
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BConfig
-import io.github.freya022.botcommands.api.core.events.BEvent
-import io.github.freya022.botcommands.api.core.events.BGenericEvent
-import io.github.freya022.botcommands.api.core.hooks.custom.CustomEventRequirementsProvider
-import io.github.freya022.botcommands.api.core.hooks.custom.annotations.ExperimentalCustomEvents
 import io.github.freya022.botcommands.api.core.service.ServiceContainer
 import io.github.freya022.botcommands.api.core.service.annotations.BService
-import io.github.freya022.botcommands.api.core.utils.*
+import io.github.freya022.botcommands.api.core.utils.findAnnotationRecursive
+import io.github.freya022.botcommands.api.core.utils.toEnumSet
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.requiredFilter
 import io.github.freya022.botcommands.internal.core.service.FunctionAnnotationsMap
@@ -18,27 +14,18 @@ import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.core.toClassPathFunctions
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private val logger = KotlinLogging.logger { }
-
 @BService
-@OptIn(ExperimentalCustomEvents::class)
 internal class EventListenerRegistry internal constructor(
-    private val config: BConfig,
+    config: BConfig,
     private val serviceContainer: ServiceContainer,
-    private val jdaService: JDAService,
-    private val customEventRequirementsProviders: List<CustomEventRequirementsProvider>,
+    private val requirementsVerifier: EventListenerRequirementsVerifier,
     functionAnnotationsMap: FunctionAnnotationsMap,
 ) {
 
@@ -50,15 +37,6 @@ internal class EventListenerRegistry internal constructor(
     private val resolvedListeners: MutableMap<Class<*>, EventListenerList> = ConcurrentHashMap()
 
     init {
-        // Try to enforce requirement providers to only return requirements for events they truly know about
-        // in other words, forbid implementations from returning fake requirements.
-        for (requirementsProvider in customEventRequirementsProviders) {
-            val eventRequirements = requirementsProvider.get(FakeEvent::class.java)
-            check(eventRequirements.areUnknown()) {
-                "Custom event requirement providers are required to return 'CustomEventRequirements.unknown()' on unhandled events, and '${requirementsProvider.javaClass.shortQualifiedName}' fails that"
-            }
-        }
-
         functionAnnotationsMap
             .get<BEventListener>()
             .addAsEventListeners()
@@ -111,19 +89,7 @@ internal class EventListenerRegistry internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure: Class<out Any> = parameters.first().type.jvmErasure.java
-            if (eventErasure.isSubclassOf<GenericEvent>()) {
-                check(eventErasure.packageName.startsWith("net.dv8tion.jda.api.events")) {
-                    "Custom events must not implement ${GenericEvent::class.java.name}!"
-                }
-            } else if (eventErasure.isSubclassOf<BGenericEvent>()) {
-                check(eventErasure.packageName.startsWith("io.github.freya022.botcommands.api")) {
-                    "Custom events must not implement ${BGenericEvent::class.java.name}!"
-                }
-            }
-
-            if (!annotation.ignoreIntents && !checkIntents(function, eventErasure, annotation.ignoredIntents.toEnumSet())) {
-                return@forEach
-            }
+            requirementsVerifier.verifyFor(function, annotation.ignoreIntents, annotation.ignoredIntents.toEnumSet(), eventErasure)
 
             val eventParameters = parameters.drop(1)
                 // The main risk was with injected services, as they may not be available at that point,
@@ -153,57 +119,6 @@ internal class EventListenerRegistry internal constructor(
             listenerFunctionMap.merge(classPathFunc.instance, listOf(eventHandlerFunction), List<EventHandlerFunction>::plus)
         }
 
-    private fun checkIntents(function: KFunction<*>, eventErasure: Class<*>, ignoredIntents: Set<GatewayIntent>): Boolean {
-        fun getMissingIntents(requiredIntents: Set<GatewayIntent>): Set<GatewayIntent> {
-            return requiredIntents - jdaService.intents - config.ignoredIntents - ignoredIntents
-        }
-
-        if (eventErasure.isSubclassOf<Event>()) {
-            @Suppress("UNCHECKED_CAST")
-            val requiredIntents = GatewayIntent.fromEvents(eventErasure as Class<out Event>)
-            val missingIntents = getMissingIntents(requiredIntents)
-            if (missingIntents.isNotEmpty()) {
-                logger.debug { "Skipping JDA event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
-                return false
-            }
-
-            // Cannot check for RawGatewayEvent as JDA is not present yet and there is no config for it
-        } else if (!eventErasure.isSubclassOf<BEvent>()) {
-            check(customEventRequirementsProviders.isNotEmpty()) {
-                "No ${classRef<CustomEventRequirementsProvider>()} are available (custom event listener at ${function.shortSignature})"
-            }
-
-            val passedRequirementProviders = ArrayList<CustomEventRequirementsProvider>(1)
-            for (requirementsProvider in customEventRequirementsProviders) {
-                val eventRequirements = requirementsProvider.get(eventErasure)
-                if (eventRequirements.areUnknown()) {
-                    continue
-                } else if (eventRequirements.isEmpty()) {
-                    passedRequirementProviders.add(requirementsProvider)
-                    continue
-                }
-
-                val missingIntents = getMissingIntents(eventRequirements.getIntents())
-                if (missingIntents.isNotEmpty()) {
-                    logger.debug { "Skipping custom event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
-                    return false
-                }
-
-                passedRequirementProviders.add(requirementsProvider)
-            }
-
-            if (passedRequirementProviders.size > 1) {
-                throwState("Multiple ${classRef<CustomEventRequirementsProvider>()} returned requirements for '${eventErasure.shortQualifiedName}':\n${passedRequirementProviders.joinAsList { it.javaClass.shortQualifiedName }}")
-            } else if (passedRequirementProviders.isNotEmpty()) {
-                return true
-            } else {
-                throwState("No ${classRef<CustomEventRequirementsProvider>()} returned requirements for '${eventErasure.shortQualifiedName}', available providers:\n${customEventRequirementsProviders.joinAsList { it.javaClass.shortQualifiedName }}")
-            }
-        }
-
-        return true
-    }
-
     private fun getTimeout(annotation: BEventListener): Duration? {
         if (annotation.timeout < 0) return Duration.INFINITE
 
@@ -211,6 +126,4 @@ internal class EventListenerRegistry internal constructor(
             it.takeIfFinite() ?: defaultTimeout.takeIfFinite()
         }
     }
-
-    private interface FakeEvent
 }
