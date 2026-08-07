@@ -119,15 +119,6 @@ private class FallbackLazyServiceImpl<out T : Any>(
     }
 }
 
-private class CompletedLazyService<T : Any>(override val value: T) : LazyService<T> {
-
-    override fun canCreateService(): Boolean = true
-
-    override fun getServiceError(): ServiceError? = null
-
-    override fun isInitialized(): Boolean = true
-}
-
 internal fun <T : Any> ServiceContainer.implicitlyNamedLazyService(clazz: KClass<T>, name: String?): LazyService<T> =
     ImplicitNamedLazyServiceImpl(this, clazz, name)
 
@@ -138,5 +129,3 @@ internal fun <T : Any> ServiceContainer.lazyService(clazz: KClass<T>, name: Stri
 @PublishedApi
 internal fun <T : Any, R : T> ServiceContainer.lazyServiceOrElse(clazz: KClass<T>, name: String?, block: () -> R): LazyService<T> =
     FallbackLazyServiceImpl(this, clazz, name, block)
-
-internal fun <T : Any> lazyServiceOf(value: T): LazyService<T> = CompletedLazyService(value)

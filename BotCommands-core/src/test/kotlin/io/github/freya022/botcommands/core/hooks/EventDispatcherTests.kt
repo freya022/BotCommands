@@ -12,7 +12,6 @@ import io.github.freya022.botcommands.internal.core.hooks.EventHandlerFunction
 import io.github.freya022.botcommands.internal.core.hooks.EventListenerList
 import io.github.freya022.botcommands.internal.core.hooks.EventListenerRegistry
 import io.github.freya022.botcommands.internal.core.method.accessors.MethodAccessorFactoryProvider
-import io.github.freya022.botcommands.internal.core.service.lazyServiceOf
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -55,7 +54,7 @@ object EventDispatcherTests {
             }
         }
 
-        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), lazyServiceOf(listenerRegistry))
+        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), listenerRegistry)
 
         assertThrows<ExpectedException> { dispatcher.dispatchEventJava(mockk<BReadyEvent>()) }
     }

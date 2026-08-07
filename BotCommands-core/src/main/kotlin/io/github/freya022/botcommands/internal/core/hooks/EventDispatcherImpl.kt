@@ -5,7 +5,6 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.events.InitializationEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
 import io.github.freya022.botcommands.api.core.objectLogger
-import io.github.freya022.botcommands.api.core.service.LazyService
 import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.utils.loggerOf
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
@@ -22,13 +21,11 @@ private val logger = KotlinLogging.loggerOf<EventDispatcher>()
 @BService
 internal class EventDispatcherImpl internal constructor(
     coroutineScopesConfig: BCoroutineScopesConfig,
-    eventListenerRegistry: LazyService<EventListenerRegistry>,
+    private val eventListenerRegistry: EventListenerRegistry,
 ) : EventDispatcher() {
 
     private val eventManagerCoroutineScope: CoroutineScope = coroutineScopesConfig.eventManagerScope
     private val asyncCoroutineScope: CoroutineScope = coroutineScopesConfig.eventDispatcherScope
-
-    private val eventListenerRegistry: EventListenerRegistry by eventListenerRegistry
 
     internal fun onEvent(event: GenericEvent) {
         // No need to check for `event` type as if it's in the map, then it's recognized
