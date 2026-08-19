@@ -1,14 +1,13 @@
-name: Deploy KDocs to Pages
+name: Check main branch KDocs
 
 on:
   push:
-    branches: ["3.X"]
+    branches:
+      - 3.X
   workflow_dispatch:
 
-# Allow one concurrent deployment
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   build-docs:
@@ -32,29 +31,3 @@ jobs:
 
       - name: Generate KDocs
         run: ./gradlew :dokkaGenerate
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: ./build/dokka/html
-
-  publish-docs:
-    name: Publish docs
-    runs-on: ubuntu-latest
-
-    needs: build-docs
-
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
