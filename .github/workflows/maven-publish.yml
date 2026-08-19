@@ -11,6 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
+      - name: Checkout docs repo
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.repository }}-Docs
+          token: ${{ secrets.DOCS_REPO_TOKEN }}
+          path: repo-docs
+
       - name: Set up JDK 25
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
@@ -28,6 +35,39 @@ jobs:
       - name: Compile and test
         run: ./gradlew build --no-configuration-cache
 
+      # Generate all docs and the root aggregate before publishing
+      # This way we can catch errors and be sure all docs will be available
+      # for both maven central and online
+      - name: Generate KDocs
+        run: ./gradlew :dokkaGenerate --no-configuration-cache
+
+      # Move the generated docs to the docs repository, in the correct version folder
+      # We do that before the release as, unlike releases, this step is repeateable
+      - name: Get project version
+        id: get-version
+        run: ./gradlew :getVersion --no-configuration-cache
+
+      - name: Move generated docs to docs repository
+        working-directory: repo-docs
+        env:
+          DOC_VERSION_NAME: ${{ steps.get-version.outputs.MAJOR_VERSION }}.X
+        run: |
+          rm -rf $DOC_VERSION_NAME
+          mkdir $DOC_VERSION_NAME
+          mv ../build/dokka/html/* $DOC_VERSION_NAME 
+
+      - name: Push docs
+        working-directory: repo-docs
+        env:
+          FULL_VERSION: ${{ steps.get-version.outputs.FULL_VERSION }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy https://github.com/freya022/BotCommands/releases/tag/v$FULL_VERSION" --allow-empty
+          git push
+
+      # Do the release
       - name: Release
         run: ./gradlew publishToMavenCentral --no-configuration-cache
         env:
