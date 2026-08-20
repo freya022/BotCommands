@@ -25,7 +25,7 @@ interface MessageContextParameterResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns a resolved object from this message context interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
      * @param option The option currently being resolved
@@ -37,7 +37,7 @@ interface MessageContextParameterResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns a resolved object from this message context interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
      * @param option The option currently being resolved

@@ -74,7 +74,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns a resolved object for this [OptionMapping].
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the interaction is ignored,
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
@@ -91,7 +91,7 @@ interface SlashParameterResolver<T, R : Any> : IParameterResolver<T>
     /**
      * Returns a resolved object for this [OptionMapping].
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the interaction is ignored,
      * and you should reply if this is a [SlashCommandInteractionEvent].
      *
