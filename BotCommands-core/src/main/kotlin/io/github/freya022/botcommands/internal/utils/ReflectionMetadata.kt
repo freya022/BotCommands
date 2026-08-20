@@ -343,7 +343,7 @@ internal val KClass<*>.sourceFile: String
 internal val KClass<*>.sourceFileOrNull: String?
     get() = this.java.sourceFileOrNull
 
-internal val KParameter.isNullable: Boolean
+val KParameter.isNullable: Boolean
     get() {
         val isNullableAnnotated = ReflectionMetadata.instance.getMethodMetadata(function).nullabilities[index]
         return isNullableAnnotated || type.isMarkedNullable

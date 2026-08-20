@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
+import io.github.freya022.botcommands.internal.utils.isNullable
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.slf4j.LoggerFactory
 import java.lang.classfile.ClassBuilder
@@ -140,7 +141,7 @@ internal object LocalizedContentFunctionGenerator {
                 "Optional parameters are not supported! $parameter"
             }
 
-            require(!parameter.type.isMarkedNullable, ::UnsupportedParameterException) {
+            require(!parameter.isNullable, ::UnsupportedParameterException) {
                 "Nullable parameters are not allowed! $parameter"
             }
         }
@@ -153,7 +154,7 @@ internal object LocalizedContentFunctionGenerator {
         }
 
         val preferredLocale = function.findAnnotation<PreferLocale>()?.preference ?: declaringClass.findAnnotation<PreferLocale>()?.preference
-        if (preferredLocale != null && localeParameter?.type?.isMarkedNullable == false) {
+        if (preferredLocale != null && localeParameter?.isNullable == false) {
             // If there is a preferred locale annotation, it makes no sense to also have a mandatory locale parameter
             val logger = LoggerFactory.getLogger(declaringClass.java)
             logger.warn("@${PreferLocale::class.java.simpleName} is ignored on ${function.getSignature(source = false)} because it has a non-null ${localeParameter.type.jvmErasure.simpleName} parameter")
