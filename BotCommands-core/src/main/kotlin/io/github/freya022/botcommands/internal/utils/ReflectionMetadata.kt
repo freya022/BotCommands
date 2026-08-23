@@ -344,10 +344,7 @@ internal val KClass<*>.sourceFileOrNull: String?
     get() = this.java.sourceFileOrNull
 
 val KParameter.isNullable: Boolean
-    get() {
-        val isNullableAnnotated = ReflectionMetadata.instance.getMethodMetadata(function).nullabilities[index]
-        return isNullableAnnotated || type.isMarkedNullable
-    }
+    get() = ReflectionMetadata.instance.getMethodMetadata(function).nullabilities[index]
 
 internal val KFunction<*>.lineNumber: Int
     get() = ReflectionMetadata.instance.getMethodMetadata(this).line
