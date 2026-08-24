@@ -343,7 +343,7 @@ internal val KClass<*>.sourceFile: String
 internal val KClass<*>.sourceFileOrNull: String?
     get() = this.java.sourceFileOrNull
 
-val KParameter.isNullable: Boolean
+internal val KParameter.isNullable: Boolean
     get() = ReflectionMetadata.instance.getMethodMetadata(function).nullabilities[index]
 
 internal val KFunction<*>.lineNumber: Int
