@@ -259,11 +259,7 @@ private class ReflectionMetadataScanner private constructor(
         kClass: KClass<out Any>,
     ) {
         for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
-            //Don't inspect methods with generics
-            if (methodInfo.parameterInfo
-                    .map { it.typeSignatureOrTypeDescriptor }
-                    .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
-            ) continue
+            if (shouldSkipMethod(methodInfo)) continue
 
             val method: Executable = tryGetExecutable(methodInfo) ?: continue
             val nullabilities = getMethodParameterNullabilities(methodInfo, method)
@@ -273,6 +269,50 @@ private class ReflectionMetadataScanner private constructor(
             val isServiceFactory = bootstrap.isServiceFactory(methodInfo)
             classGraphProcessors.forEach { it.processMethod(bootstrap.serviceContainer, methodInfo, method, classInfo, kClass, isServiceFactory) }
         }
+    }
+
+    private fun shouldSkipMethod(methodInfo: MethodInfo): Boolean {
+        // Compiler-generated bridges
+        if (methodInfo.isBridge) {
+            return true
+        }
+
+        if (methodInfo.isSynthetic) {
+            // Accessor methods
+            if (methodInfo.name.startsWith("access$")) {
+                return true
+            }
+
+            // Method which fetches defaults
+            if (methodInfo.name.endsWith($$"$default")) {
+                return true
+            }
+
+            // Suspend methods in interfaces
+            if (methodInfo.name.endsWith($$"$suspendImpl")) {
+                return true
+            }
+
+            // Default (generated) constructors
+            val lastParamSig =
+                methodInfo.parameterInfo.lastOrNull()?.typeSignatureOrTypeDescriptor as? ClassRefTypeSignature
+            if (lastParamSig != null && lastParamSig.baseClassName.endsWith("DefaultConstructorMarker")) {
+                return true
+            }
+        }
+
+        // Position-based destructuring
+        if (methodInfo.name.startsWith("component") && methodInfo.name.asSequence().drop(9).all(Char::isDigit)) {
+            return true
+        }
+
+        //Don't inspect methods with generics
+        if (methodInfo.parameterInfo
+                .map { it.typeSignatureOrTypeDescriptor }
+                .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
+        ) return true
+
+        return false
     }
 
     private fun tryGetExecutable(methodInfo: MethodInfo): Executable? {
