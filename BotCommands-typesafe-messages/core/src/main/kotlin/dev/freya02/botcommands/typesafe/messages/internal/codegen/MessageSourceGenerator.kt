@@ -15,6 +15,7 @@ import io.github.freya022.botcommands.api.core.utils.getSignature
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.freya022.botcommands.api.localization.arguments.FormattableArgument
 import io.github.freya022.botcommands.internal.core.restarter.RestartClassLoaderAdapter
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import org.slf4j.LoggerFactory
 import java.lang.classfile.ClassBuilder
@@ -124,6 +125,8 @@ internal object MessageSourceGenerator {
 
 internal object LocalizedContentFunctionGenerator {
 
+    private val logger = KotlinLogging.logger { }
+
     internal fun create(thisClass: ClassDesc, classBuilder: ClassBuilder, declaringClass: KClass<out IMessageSource>, function: KFunction<*>) {
         require(!function.isSuspend, ::UnsupportedFunctionException) {
             "Suspend functions are not supported! ${function.getSignature(qualifiedClass = true, source = false)}"
@@ -135,12 +138,17 @@ internal object LocalizedContentFunctionGenerator {
 
         val annotation = function.findAnnotation<LocalizedContent>()
             ?: error("Function was to be implemented but annotation is absent")
+
+        val nullableIndexes = NullabilityHelper.getNullableParameterIndexes(logger, declaringClass, function)
+        // -1 to account for the instance parameter (which is always present as all functions are interface methods)
+        fun isNullable(parameter: KParameter): Boolean = parameter.index - 1 in nullableIndexes
+
         val templateParameters = getTemplateArgumentParameters(function).onEach { parameter ->
             require(parameter.isRequired, ::UnsupportedParameterException) {
                 "Optional parameters are not supported! $parameter"
             }
 
-            require(!parameter.type.isMarkedNullable, ::UnsupportedParameterException) {
+            require(!isNullable(parameter), ::UnsupportedParameterException) {
                 "Nullable parameters are not allowed! $parameter"
             }
         }
@@ -153,7 +161,7 @@ internal object LocalizedContentFunctionGenerator {
         }
 
         val preferredLocale = function.findAnnotation<PreferLocale>()?.preference ?: declaringClass.findAnnotation<PreferLocale>()?.preference
-        if (preferredLocale != null && localeParameter?.type?.isMarkedNullable == false) {
+        if (preferredLocale != null && localeParameter != null && !isNullable(localeParameter)) {
             // If there is a preferred locale annotation, it makes no sense to also have a mandatory locale parameter
             val logger = LoggerFactory.getLogger(declaringClass.java)
             logger.warn("@${PreferLocale::class.java.simpleName} is ignored on ${function.getSignature(source = false)} because it has a non-null ${localeParameter.type.jvmErasure.simpleName} parameter")

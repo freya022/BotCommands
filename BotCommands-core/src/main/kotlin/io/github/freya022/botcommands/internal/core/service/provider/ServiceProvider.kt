@@ -14,6 +14,7 @@ import io.github.freya022.botcommands.internal.core.service.canCreateWrappedServ
 import io.github.freya022.botcommands.internal.core.service.tryGetWrappedService
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.resolveBestReference
+import io.github.freya022.botcommands.internal.utils.isNullable
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -274,7 +275,7 @@ internal fun KFunction<*>.checkConstructingFunction(serviceContainer: BCServiceC
     this.nonInstanceParameters.forEach {
         serviceContainer.canCreateWrappedService(it)?.let { serviceError ->
             when {
-                it.type.isMarkedNullable -> return@forEach //Ignore
+                it.isNullable -> return@forEach //Ignore
                 it.isOptional -> return@forEach //Ignore
                 else -> return ErrorType.UNAVAILABLE_PARAMETER.toError(
                     errorMessage = "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
@@ -306,7 +307,7 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: BCServiceCo
         //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
         val dependencyResult = serviceContainer.tryGetWrappedService(parameter)
         args[index] = dependencyResult.service ?: when {
-            parameter.type.isMarkedNullable -> null
+            parameter.isNullable -> null
             parameter.isOptional -> return@forEachIndexed
             else -> throw ServiceException(
                 ErrorType.UNAVAILABLE_PARAMETER.toError(
