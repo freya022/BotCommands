@@ -79,7 +79,7 @@ internal class ComponentsListener(
             return event.reply(messagesFactory.get(event).componentNotAllowed(event)).setEphemeral(true).queue()
         }
 
-        component.filters.onEach { filter ->
+        component.filters.forEach { filter ->
             require(!filter.global) {
                 "Global filter ${filter.javaClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"
             }

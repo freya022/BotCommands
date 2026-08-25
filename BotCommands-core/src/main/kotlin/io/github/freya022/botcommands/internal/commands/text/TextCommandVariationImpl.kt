@@ -78,7 +78,7 @@ internal class TextCommandVariationImpl internal constructor(
 
     internal suspend fun tryParseOptionValues(event: BaseCommandEvent, matchResult: MatchResult?): Map<OptionImpl, Any?>? {
         val groupsIterator = matchResult?.groups?.iterator()
-        groupsIterator?.next() //Skip the entire match
+        val _ = groupsIterator?.next() //Skip the entire match
 
         return parameters.mapOptions { option ->
             if (tryInsertOption(event, this, option, groupsIterator) == InsertOptionResult.ABORT)
