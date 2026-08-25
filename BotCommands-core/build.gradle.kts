@@ -136,10 +136,6 @@ dokka {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-
         optIn.addAll(
             "io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi"
         )

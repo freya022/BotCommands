@@ -59,11 +59,3 @@ dependencies {
 tasks.withType<Test> {
     enabled = false
 }
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-    }
-}

@@ -38,14 +38,6 @@ dependencies {
 
 configureTests(libs.bytebuddy.agent)
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xcontext-parameters",
-        )
-    }
-}
-
 publishedProjectEnvironment {
     configureJarArtifact(
         artifactId = "BotCommands-commands-core",
