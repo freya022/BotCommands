@@ -47,7 +47,7 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMar
     /**
      * Returns a resolved object from this text command.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
      *
      * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.
@@ -62,7 +62,7 @@ interface TextParameterResolver<T, R : Any> : IParameterResolver<T>, ResolverMar
     /**
      * Returns a resolved object from this text command.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler goes to the next command variation.
      *
      * See the [@JDATextCommandVariation][JDATextCommandVariation] documentation for more details about text command variations.

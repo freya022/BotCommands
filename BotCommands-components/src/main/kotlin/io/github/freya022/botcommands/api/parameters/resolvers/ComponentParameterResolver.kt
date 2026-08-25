@@ -50,7 +50,7 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>, Resolv
     /**
      * Returns a resolved object from this component interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *
@@ -64,7 +64,7 @@ interface ComponentParameterResolver<T, R : Any> : IParameterResolver<T>, Resolv
     /**
      * Returns a resolved object from this component interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], the handler is ignored,
      * but the interaction **must** be acknowledged.
      *

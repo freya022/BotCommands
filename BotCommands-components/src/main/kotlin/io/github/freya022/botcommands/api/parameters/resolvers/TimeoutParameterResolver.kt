@@ -41,7 +41,7 @@ interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>, Resolver
     /**
      * Returns a resolved object for this argument.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], the handler is ignored.
      *
      * @param option The option currently being resolved
@@ -53,7 +53,7 @@ interface TimeoutParameterResolver<T, R : Any> : IParameterResolver<T>, Resolver
     /**
      * Returns a resolved object for this argument.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], the handler is ignored.
      *
      * @param option The option currently being resolved

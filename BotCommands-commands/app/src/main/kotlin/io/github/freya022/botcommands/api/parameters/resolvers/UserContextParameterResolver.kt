@@ -36,7 +36,7 @@ interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>, Reso
     /**
      * Returns a resolved object from this user context interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
      * @param option The option currently being resolved
@@ -48,7 +48,7 @@ interface UserContextParameterResolver<T, R : Any> : IParameterResolver<T>, Reso
     /**
      * Returns a resolved object from this user context interaction.
      *
-     * If this returns `null`, and the parameter is required, i.e., not [nullable][KType.isMarkedNullable]
+     * If this returns `null`, and the parameter is required, i.e., not nullable
      * or [optional][KParameter.isOptional], then the handler will throw.
      *
      * @param option The option currently being resolved
