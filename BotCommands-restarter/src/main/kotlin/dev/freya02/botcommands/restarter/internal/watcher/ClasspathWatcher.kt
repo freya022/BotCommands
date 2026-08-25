@@ -46,7 +46,7 @@ internal class ClasspathWatcher private constructor() {
             registerDirectories(classRoot)
         }
 
-        thread(name = "Classpath watcher", isDaemon = true) {
+        val _ = thread(name = "Classpath watcher", isDaemon = true) {
             while (true) {
                 val key = try {
                     watchService.take() // Wait for a change
@@ -70,7 +70,11 @@ internal class ClasspathWatcher private constructor() {
                 }
 
                 restartFuture.cancel(/* mayInterruptIfRunning = */ false)
-                restartFuture = scheduler.schedule(::tryRestart, Restarter.config.restartDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+                restartFuture = scheduler.schedule(
+                    ::tryRestart,
+                    Restarter.config.restartDelay.inWholeMilliseconds,
+                    TimeUnit.MILLISECONDS
+                )
             }
         }
     }

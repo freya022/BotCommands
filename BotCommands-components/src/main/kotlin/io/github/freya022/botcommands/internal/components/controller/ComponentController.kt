@@ -77,7 +77,7 @@ internal class ComponentController(
             }
         }
 
-        builder.filters.onEach { filter ->
+        builder.filters.forEach { filter ->
             val filterClass = filter.javaClass
             require(!filter.global) {
                 "Global filter ${filterClass.simpleNestedName} cannot be used explicitly, see ${Filter::global.reference}"

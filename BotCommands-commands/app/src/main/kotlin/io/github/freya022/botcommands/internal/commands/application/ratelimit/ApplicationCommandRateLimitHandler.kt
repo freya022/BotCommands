@@ -23,12 +23,12 @@ internal class ApplicationCommandRateLimitHandler internal constructor(
     internal suspend fun tryRun(commandInfo: ApplicationCommandInfoImpl, event: GenericCommandInteractionEvent, block: suspend (CancellableRateLimit) -> Boolean) {
         val rateLimitInfo = commandInfo.rateLimitInfo
         if (rateLimitInfo == null) {
-            block(NullCancellableRateLimit)
+            val _ = block(NullCancellableRateLimit)
             return
         }
 
         if (enableOwnerBypass && event.user in botOwners) {
-            block(NullCancellableRateLimit)
+            val _ = block(NullCancellableRateLimit)
             return
         }
 

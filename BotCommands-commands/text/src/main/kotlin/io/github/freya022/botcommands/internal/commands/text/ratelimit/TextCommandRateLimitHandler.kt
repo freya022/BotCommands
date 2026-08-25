@@ -23,12 +23,12 @@ internal class TextCommandRateLimitHandler internal constructor(
     internal suspend fun tryRun(commandInfo: TextCommandInfoImpl, event: MessageReceivedEvent, block: suspend (CancellableRateLimit) -> Boolean) {
         val rateLimitInfo = commandInfo.rateLimitInfo
         if (rateLimitInfo == null) {
-            block(NullCancellableRateLimit)
+            val _ = block(NullCancellableRateLimit)
             return
         }
 
         if (enableOwnerBypass && event.author in botOwners) {
-            block(NullCancellableRateLimit)
+            val _ = block(NullCancellableRateLimit)
             return
         }
 

@@ -89,7 +89,7 @@ internal class AppEmojisLoader internal constructor(
             }
 
             val oldCount = toLoad.size
-            clazz.objectInstance // Force initialization (and thus registration)
+            val _ = clazz.objectInstance // Force initialization (and thus registration)
             if (oldCount == toLoad.size) {
                 logger.info { "No emojis were registered by ${clazz.simpleNestedName}" }
             }
