@@ -151,6 +151,10 @@ internal object LocalizedContentFunctionGenerator {
             require(!isNullable(parameter), ::UnsupportedParameterException) {
                 "Nullable parameters are not allowed! $parameter"
             }
+
+            require(!parameter.type.jvmErasure.java.isBoxedPrimitive(), ::UnsupportedParameterException) {
+                "Boxed primitive parameters are not allowed! $parameter"
+            }
         }
         val localeParameter = getLocaleParameter(function)
 
@@ -266,6 +270,20 @@ internal object LocalizedContentFunctionGenerator {
                     LocalePreference.GUILD -> callWithGuildLocale()
                 }
             }
+        }
+    }
+
+    private fun Class<*>.isBoxedPrimitive(): Boolean {
+        return when (this.name) {
+            "java.lang.Boolean" -> true
+            "java.lang.Character" -> true
+            "java.lang.Byte" -> true
+            "java.lang.Short" -> true
+            "java.lang.Integer" -> true
+            "java.lang.Float" -> true
+            "java.lang.Long" -> true
+            "java.lang.Double" -> true
+            else -> false
         }
     }
 
