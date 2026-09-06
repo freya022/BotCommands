@@ -16,7 +16,7 @@ dependencies {
     api(libs.mockk)
 
     // Logging
-    runtimeOnly(libs.logback.classic)
+    runtimeOnly(libs.logbackClassic)
 
     // Database
     implementation(libs.h2)

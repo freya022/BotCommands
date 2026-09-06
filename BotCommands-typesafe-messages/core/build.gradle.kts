@@ -15,10 +15,10 @@ dependencies {
     implementation(projects.botCommandsLocalization)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // Spring annotations
-    compileOnly(libs.spring.boot.autoconfigure)
+    compileOnly(libs.springBoot.autoconfigure)
 
     // -------------------- TEST DEPENDENCIES --------------------
 
@@ -27,7 +27,7 @@ dependencies {
     testImplementation(libs.jda)
 
     testImplementation(libs.mockk)
-    testImplementation(libs.logback.classic)
+    testImplementation(libs.logbackClassic)
 }
 
 setMainJvmTarget(target = 24)

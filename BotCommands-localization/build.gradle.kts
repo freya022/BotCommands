@@ -22,7 +22,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // JDA
     compileOnly(libs.jda)

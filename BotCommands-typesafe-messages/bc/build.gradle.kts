@@ -14,7 +14,7 @@ dependencies {
     api(projects.botCommandsTypesafeMessages.core)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     implementation(libs.classgraph)
 

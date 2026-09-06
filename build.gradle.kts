@@ -8,7 +8,7 @@ plugins {
 
     id("org.jetbrains.dokka")
 
-    alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.versionCatalogUpdate)
 }
 
 versionCatalogUpdate {

@@ -12,7 +12,7 @@ dependencies {
 
     // Logging
     implementation(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // Efficient data structures
     implementation(libs.trove4j.core)

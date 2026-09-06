@@ -14,7 +14,7 @@ dependencies {
     testImplementation(projects.botCommandsComponents)
     testImplementation(projects.botCommandsModals)
     testImplementation(projects.botCommandsPagination)
-    testImplementation(libs.kotlin.logging)
+    testImplementation(libs.kotlinLogging)
     testImplementation(projects.botCommandsJdaKtx)
 
     // Deserialization
@@ -22,7 +22,7 @@ dependencies {
     testImplementation(libs.jackson.module.kotlin)
 
     // Logging
-    testImplementation(libs.logback.classic)
+    testImplementation(libs.logbackClassic)
 
     // Database
     testRuntimeOnly(libs.postgresql)
@@ -52,8 +52,8 @@ dependencies {
     testImplementation(projects.botCommandsSpring)
 
     // Spring Boot
-    testImplementation(libs.spring.boot.starter)
-    testRuntimeOnly(libs.spring.boot.devtools)
+    testImplementation(libs.springBoot.starter)
+    testRuntimeOnly(libs.springBoot.devtools)
 }
 
 tasks.withType<Test> {

@@ -28,7 +28,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // JDA
     compileOnly(libs.jda)
@@ -51,18 +51,18 @@ dependencies {
     // -------------------- EMOJI DEPENDENCIES --------------------
 
     // JDA-specific emojis
-    api(libs.jda.emojis)
+    api(libs.jdaEmojis)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
-    compileOnly(libs.spring.boot) // Optional
-    compileOnly(libs.spring.boot.autoconfigure) // Optional
+    compileOnly(libs.springBoot) // Optional
+    compileOnly(libs.springBoot.autoconfigure) // Optional
 
     // -------------------- ANNOTATION DEPENDENCIES --------------------
 
     api(libs.jsr305)
-    compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.jetbrainsAnnotations)
     api(libs.jspecify)
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
@@ -74,7 +74,7 @@ dependencies {
     // -------------------- EXAMPLES DEPENDENCIES --------------------
 
     // Logging
-    "examplesImplementation"(libs.logback.classic)
+    "examplesImplementation"(libs.logbackClassic)
 
     // Database
     "examplesImplementation"(libs.hikaricp)

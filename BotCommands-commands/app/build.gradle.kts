@@ -24,7 +24,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // JDA
     compileOnly(libs.jda)
@@ -44,7 +44,7 @@ dependencies {
     // -------------------- GLOBAL DEPENDENCIES --------------------
 
     // Fuzzy matching
-    implementation(libs.java.string.similarity)
+    implementation(libs.javaStringSimilarity)
 
     // Efficient data structures
     implementation(libs.trove4j.core)
@@ -52,7 +52,7 @@ dependencies {
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
-    compileOnly(libs.spring.boot.autoconfigure) // Optional
+    compileOnly(libs.springBoot.autoconfigure) // Optional
 
     // -------------------- TEST DEPENDENCIES --------------------
 

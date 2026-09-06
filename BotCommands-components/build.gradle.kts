@@ -22,7 +22,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // JDA
     compileOnly(libs.jda)
@@ -47,7 +47,7 @@ dependencies {
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
-    compileOnly(libs.spring.boot.autoconfigure) // Optional
+    compileOnly(libs.springBoot.autoconfigure) // Optional
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
 
