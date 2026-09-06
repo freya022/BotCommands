@@ -1,3 +1,5 @@
+import nl.littlerobots.vcu.plugin.resolver.ModuleVersionCandidate
+import nl.littlerobots.vcu.plugin.resolver.ModuleVersionSelector
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import kotlin.io.path.Path
 import kotlin.io.path.writeText
@@ -13,7 +15,15 @@ plugins {
 }
 
 versionCatalogUpdate {
-    versionSelector(VersionSelectors.STABLE)
+    versionSelector(object : ModuleVersionSelector {
+        override fun select(candidate: ModuleVersionCandidate): Boolean {
+            // Don't update major
+            if (candidate.currentVersion[0] != candidate.candidate.version[0])
+                return false
+
+            return VersionSelectors.STABLE.select(candidate)
+        }
+    })
 }
 
 // The root project script is used to produce an aggregated POM
