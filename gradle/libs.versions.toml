@@ -1,29 +1,29 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 [versions]
-bucket4j = "8.14.0"
-bytebuddy = "1.17.5"
-caffeine = "3.2.3"
-classgraph = "4.8.184"
-flyway = "12.1.0"
-h2 = "2.3.232"
-hikaricp = "6.2.1"
-jackson = "2.22.0"
+bucket4j = "8.19.0"
+bytebuddy = "1.18.13"
+caffeine = "3.2.4"
+classgraph = "4.8.194"
+flyway = "13.5.0"
+h2 = "2.5.250"
+hikaricp = "7.1.0"
+jackson = "2.22.2"
 javaStringSimilarity = "2.0.0"
 jda = "6.5.0"
 jdaEmojis = "3.0.0"
-jemoji = "1.7.5"
-jetbrainsAnnotations = "26.0.2"
+jemoji = "1.7.6"
+jetbrainsAnnotations = "26.1.0"
 jsr305 = "3.0.2"
-junit = "6.0.1"
+junit = "6.1.3"
 konsist = "0.17.3"
 kotlin = "2.4.20"
-kotlinLogging = "7.0.3"
+kotlinLogging = "7.0.14"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
-logbackClassic = "1.5.16"
-mockk = "1.14.4"
-postgresql = "42.7.7"
-slf4j-api = "2.0.16"
+logbackClassic = "1.6.3"
+mockk = "1.14.11"
+postgresql = "42.7.13"
+slf4j-api = "2.0.19"
 # @pin For compatibility with Spring Boot 3
 spring = "6.2.14"
 # @pin Our code is compatible with Spring Boot 4, don't upgrade dependencies to avoid unexpected breakages
@@ -36,7 +36,7 @@ jmh = "me.champeau.jmh:0.7.3"
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 mavenPublish = "com.vanniktech.maven.publish:0.37.0"
-versionCatalogUpdate = "nl.littlerobots.version-catalog-update:1.1.0"
+versionCatalogUpdate = "nl.littlerobots.version-catalog-update:1.1.1"
 
 [libraries]
 bucket4j-jdk17-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j" }
@@ -57,7 +57,7 @@ jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
 jdaEmojis = { module = "dev.freya02:jda-emojis", version.ref = "jdaEmojis" }
 jemoji = { module = "net.fellbaum:jemoji", version.ref = "jemoji" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version.ref = "jetbrainsAnnotations" }
-jspecify = "org.jspecify:jspecify:1.0.0"
+jspecify = "org.jspecify:jspecify:1.0.1"
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
