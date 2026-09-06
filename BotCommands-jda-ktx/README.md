@@ -38,8 +38,8 @@ inline fun <reified T : Event> EventWaiter.of(): EventWaiterBuilder<T>
 // mentions.getChannels<TextChannel>()
 inline fun <reified T : GuildChannel> Mentions.getChannels(): List<T>
 
-// mentions.getChannelsBag<TextChannel>()
-inline fun <reified T : GuildChannel> Mentions.getChannelsBag(): Bag<T>
+// mentions.getChannelsMultiSet<TextChannel>()
+inline fun <reified T : GuildChannel> Mentions.getChannelsMultiSet(): MultiSet<T>
 
 // jda.listenOnce<MessageReceivedEvent>()
 inline fun <reified E : GenericEvent> JDA.listenOnce(): Once.Builder<E>
