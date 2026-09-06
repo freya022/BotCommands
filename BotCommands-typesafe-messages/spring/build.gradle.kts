@@ -15,10 +15,10 @@ dependencies {
     api(projects.botCommandsTypesafeMessages.core)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
-    implementation(libs.spring.boot)
-    implementation(libs.spring.boot.autoconfigure)
+    implementation(libs.springBoot)
+    implementation(libs.springBoot.autoconfigure)
 
     // -------------------- TEST DEPENDENCIES --------------------
 
@@ -27,10 +27,10 @@ dependencies {
     testImplementation(libs.jda)
 
     testImplementation(libs.mockk)
-    testImplementation(libs.logback.classic)
+    testImplementation(libs.logbackClassic)
 
     testImplementation(projects.botCommandsSpring)
-    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.springBoot.starter.test)
 }
 
 setMainJvmTarget(target = 24)

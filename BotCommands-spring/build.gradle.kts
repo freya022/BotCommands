@@ -14,15 +14,15 @@ dependencies {
     api(projects.botCommandsCore)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot
-    api(libs.spring.boot)
-    api(libs.spring.boot.autoconfigure)
+    api(libs.springBoot)
+    api(libs.springBoot.autoconfigure)
 
-    compileOnly(libs.spring.boot.devtools)
+    compileOnly(libs.springBoot.devtools)
 }
 
 dokka {

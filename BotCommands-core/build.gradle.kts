@@ -31,7 +31,7 @@ dependencies {
 
     // Logging
     api(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // JDA
     compileOnly(libs.jda)
@@ -65,14 +65,14 @@ dependencies {
     // All Unicode emojis
     api(libs.jemoji)
     // JDA-specific emojis
-    api(libs.jda.emojis) {
+    api(libs.jdaEmojis) {
         exclude(module = "JDA")
     }
 
     // -------------------- AUTOCOMPLETE DEPENDENCIES --------------------
 
     // Fuzzy matching
-    implementation(libs.java.string.similarity)
+    implementation(libs.javaStringSimilarity)
 
     // Caching
     implementation(libs.caffeine)
@@ -80,13 +80,13 @@ dependencies {
     // -------------------- SPRING DEPENDENCIES --------------------
 
     // Spring Boot (only for compatibility that cannot be put in a different module)
-    compileOnly(libs.spring.boot) // Optional
-    compileOnly(libs.spring.boot.autoconfigure) // Optional
+    compileOnly(libs.springBoot) // Optional
+    compileOnly(libs.springBoot.autoconfigure) // Optional
 
     // -------------------- ANNOTATION DEPENDENCIES --------------------
 
     api(libs.jsr305)
-    compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.jetbrainsAnnotations)
     api(libs.jspecify)
 
     // -------------------- DOC EXAMPLES DEPENDENCIES --------------------
@@ -102,7 +102,7 @@ dependencies {
     // -------------------- EXAMPLES DEPENDENCIES --------------------
 
     // Logging
-    "examplesImplementation"(libs.logback.classic)
+    "examplesImplementation"(libs.logbackClassic)
 
     // Database
     "examplesImplementation"(libs.h2)

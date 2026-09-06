@@ -15,7 +15,7 @@ dependencies {
     api(projects.botCommandsCore)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 
     // Spring annotations
     compileOnly(libs.spring.context)
@@ -27,7 +27,7 @@ dependencies {
     testImplementation(libs.jda)
 
     testImplementation(libs.mockk)
-    testImplementation(libs.logback.classic)
+    testImplementation(libs.logbackClassic)
 }
 
 setMainJvmTarget(target = 24)

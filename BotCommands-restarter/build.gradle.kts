@@ -11,7 +11,7 @@ dependencies {
     api(projects.botCommandsCore)
 
     // Logging
-    implementation(libs.kotlin.logging)
+    implementation(libs.kotlinLogging)
 }
 
 kotlin {

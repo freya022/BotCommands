@@ -8,11 +8,11 @@ plugins {
 dependencies {
     testImplementation(libs.jda)
     testImplementation(projects.botCommandsCore)
-    testImplementation(libs.kotlin.logging)
+    testImplementation(libs.kotlinLogging)
     testImplementation(projects.botCommandsJdaKtx)
 
     // Logging
-    testImplementation(libs.logback.classic)
+    testImplementation(libs.logbackClassic)
 
     // Database
     testRuntimeOnly(libs.postgresql)
@@ -42,8 +42,8 @@ dependencies {
     testImplementation(projects.botCommandsSpring)
 
     // Spring Boot
-    testImplementation(libs.spring.boot.starter)
-    testRuntimeOnly(libs.spring.boot.devtools)
+    testImplementation(libs.springBoot.starter)
+    testRuntimeOnly(libs.springBoot.devtools)
 }
 
 tasks.withType<Test> {
