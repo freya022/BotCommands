@@ -4,7 +4,6 @@ bucket4j = "8.14.0"
 bytebuddy = "1.17.5"
 caffeine = "3.2.3"
 classgraph = "4.8.184"
-dokkaPlugin = "2.2.0"
 flyway = "12.1.0"
 h2 = "2.3.232"
 hikaricp = "6.2.1"
@@ -22,7 +21,6 @@ kotlinLogging = "7.0.3"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 logbackClassic = "1.5.16"
-mavenPublishPlugin = "0.36.0"
 mockk = "1.14.4"
 postgresql = "42.7.7"
 slf4j-api = "2.0.16"
@@ -33,10 +31,12 @@ springBoot = "3.5.8"
 trove4j-core = "3.1.0"
 
 [plugins]
+dokka = "org.jetbrains.dokka:2.2.0"
 jmh = "me.champeau.jmh:0.7.3"
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 versionCatalogUpdate = "nl.littlerobots.version-catalog-update:1.1.0"
+mavenPublish = "com.vanniktech.maven.publish:0.37.0"
 
 [libraries]
 bucket4j-jdk17-core = { module = "com.bucket4j:bucket4j_jdk17-core", version.ref = "bucket4j" }
@@ -45,7 +45,6 @@ bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
 bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
-dokkaPlugin = { module = "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin", version.ref = "dokkaPlugin" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
@@ -65,14 +64,12 @@ junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref 
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 kotlinLogging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlinLogging" }
 kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackClassic" }
-mavenPublishPlugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "mavenPublishPlugin" }
 mockk = { module = "io.mockk:mockk-jvm", version.ref = "mockk" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
