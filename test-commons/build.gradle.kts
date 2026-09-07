@@ -1,5 +1,4 @@
 plugins {
-    id("repositories-conventions")
     id("kotlin-conventions")
 }
 

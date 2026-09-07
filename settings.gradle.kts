@@ -2,6 +2,15 @@ rootProject.name = "BotCommands"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+@Suppress("UnstableApiUsage")
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositories {
+        mavenCentral()
+    }
+}
+
 include(":test-commons")
 include(":BotCommands-core")
 include(
