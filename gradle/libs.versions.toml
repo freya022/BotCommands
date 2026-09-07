@@ -3,7 +3,9 @@
 bucket4j = "8.19.0"
 bytebuddy = "1.18.13"
 caffeine = "3.2.4"
-classgraph = "4.8.194"
+# @pin 185+ fails AppEmojisTest with 'java.lang.UnsupportedOperationException: class redefinition failed: attempted to add a method'
+# If this gets solved, fix the patterns in ComponentConsistencyTest and JavaInteropTest
+classgraph = "4.8.184!!"
 flyway = "13.5.0"
 h2 = "2.5.250"
 hikaricp = "7.1.0"
