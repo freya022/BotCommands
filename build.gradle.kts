@@ -5,7 +5,6 @@ import kotlin.io.path.Path
 import kotlin.io.path.writeText
 
 plugins {
-    id("repositories-conventions")
     id("kotlin-conventions")
     id("publish-conventions")
 
