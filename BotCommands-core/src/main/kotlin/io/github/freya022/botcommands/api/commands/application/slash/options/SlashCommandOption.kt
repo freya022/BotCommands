@@ -4,6 +4,7 @@ import io.github.freya022.botcommands.api.commands.application.LengthRange
 import io.github.freya022.botcommands.api.commands.application.ValueRange
 import io.github.freya022.botcommands.api.commands.application.options.ApplicationCommandOption
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
+import net.dv8tion.jda.api.interactions.FileType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
@@ -54,6 +55,13 @@ interface SlashCommandOption : ApplicationCommandOption {
      * as their resolver's [option type][SlashParameterResolver.optionType].
      */
     val length: LengthRange?
+
+    /**
+     * The file types this [Attachment][net.dv8tion.jda.api.entities.Message.Attachment] option is accepting, if it is one.
+     *
+     * If empty, all file types are accepted.
+     */
+    val fileTypes: List<FileType>
 
     /**
      * Whether this option uses autocomplete

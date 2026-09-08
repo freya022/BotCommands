@@ -9,6 +9,7 @@ import io.github.freya022.botcommands.internal.commands.application.slash.autoco
 import io.github.freya022.botcommands.internal.commands.application.slash.options.builder.SlashCommandOptionBuilderImpl
 import io.github.freya022.botcommands.internal.utils.LocalizationUtils
 import io.github.freya022.botcommands.internal.utils.classRef
+import net.dv8tion.jda.api.interactions.FileType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
@@ -35,6 +36,7 @@ internal class SlashCommandOptionImpl internal constructor(
     override val choices: List<Command.Choice>? = optionBuilder.choices
     override val range: ValueRange? = optionBuilder.valueRange
     override val length: LengthRange? = optionBuilder.lengthRange
+    override val fileTypes: List<FileType> = optionBuilder.fileTypes.list
 
     init {
         choices?.forEach {
