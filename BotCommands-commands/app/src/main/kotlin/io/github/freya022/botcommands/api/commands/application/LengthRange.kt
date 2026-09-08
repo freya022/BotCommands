@@ -16,6 +16,7 @@ class LengthRange private constructor(val min: Int, val max: Int) {
         @JvmStatic
         fun of(min: Int, max: Int) = LengthRange(min, max)
 
+        @Deprecated("Prefer using the 'lengthRange' function of the option builder")
         @JvmSynthetic
         infix fun Int.range(maxLength: Int) = LengthRange(this, maxLength)
     }

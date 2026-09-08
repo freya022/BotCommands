@@ -22,12 +22,15 @@ class ValueRange private constructor(val min: Number, val max: Number) {
         fun ofDouble(minValue: Double, maxValue: Double) =
             ValueRange(minValue, maxValue)
 
+        @Deprecated("Prefer using the 'valueRange' function of the option builder")
         @JvmSynthetic
         infix fun Long.range(maxValue: Long) = ValueRange(this, maxValue)
 
+        @Deprecated("Prefer using the 'valueRange' function of the option builder")
         @JvmSynthetic
         infix fun Int.range(maxValue: Int) = ValueRange(this, maxValue)
 
+        @Deprecated("Prefer using the 'valueRange' function of the option builder")
         @JvmSynthetic
         infix fun Double.range(maxValue: Double) = ValueRange(this, maxValue)
     }
