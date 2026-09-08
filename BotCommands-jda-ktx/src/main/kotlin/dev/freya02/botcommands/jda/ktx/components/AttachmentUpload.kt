@@ -53,12 +53,16 @@ class InlineAttachmentUpload(
     /**
      * The file types this attachment upload is accepting, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES].
      *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
      * @see FileType
      */
     val fileTypes = FileTypeAccumulator()
 
     /**
      * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
@@ -73,6 +77,8 @@ class InlineAttachmentUpload(
 
     /**
      * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
@@ -89,6 +95,8 @@ class InlineAttachmentUpload(
      * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
      * Leave the arguments empty to remove file type filtering.
      *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
      * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
@@ -104,6 +112,8 @@ class InlineAttachmentUpload(
     /**
      * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
      * Leave the arguments empty to remove file type filtering.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *

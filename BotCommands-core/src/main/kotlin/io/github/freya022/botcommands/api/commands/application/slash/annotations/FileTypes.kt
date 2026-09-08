@@ -9,7 +9,9 @@ package io.github.freya022.botcommands.api.commands.application.slash.annotation
 @Retention(AnnotationRetention.RUNTIME)
 annotation class FileTypes(
     /**
-     * Extensions to filter for.
+     * Extensions to filter for. Must match `[\w\-.]+`.
+     *
+     * Examples: `zip`, `tar.zst`
      */
     vararg val extensions: String,
     /**

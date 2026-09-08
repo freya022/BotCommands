@@ -91,12 +91,16 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * The file types this [Attachment][net.dv8tion.jda.api.entities.Message.Attachment] option is accepting, if it is one;
      * up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES].
      *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
      * @see FileType
      */
     val fileTypes: FileTypeAccumulator
 
     /**
      * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
@@ -111,6 +115,8 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
 
     /**
      * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
@@ -127,6 +133,8 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
      * Leave the arguments empty to remove file type filtering.
      *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *
      * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
@@ -142,6 +150,8 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
     /**
      * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
      * Leave the arguments empty to remove file type filtering.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
      *
      * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
      *

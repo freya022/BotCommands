@@ -58,6 +58,8 @@ interface SlashCommandOption : ApplicationCommandOption {
 
     /**
      * The file types this [Attachment][net.dv8tion.jda.api.entities.Message.Attachment] option is accepting, if it is one.
+     *
+     * If empty, all file types are accepted.
      */
     val fileTypes: List<FileType>
 
