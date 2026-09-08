@@ -1,9 +1,11 @@
 package io.github.freya022.botcommands.api.commands.application.slash.annotations
 
 import io.github.freya022.botcommands.api.commands.application.slash.options.builder.SlashCommandOptionBuilder
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 /**
  * Sets the minimum and maximum values on the specified [@SlashOption][SlashOption].
+ * Must be between [OptionData.MIN_NEGATIVE_NUMBER] and [OptionData.MAX_POSITIVE_NUMBER].
  *
  * **Note:** This is only for integer types!
  *
