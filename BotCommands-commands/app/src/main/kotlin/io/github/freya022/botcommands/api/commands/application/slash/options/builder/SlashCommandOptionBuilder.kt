@@ -80,6 +80,36 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
     var valueRange: ValueRange?
 
     /**
+     * Sets the minimum and maximum values on the specified option.
+     * Must be between [OptionData.MIN_NEGATIVE_NUMBER] and [OptionData.MAX_POSITIVE_NUMBER].
+     *
+     * **Note:** This is only for integer/number types!
+     */
+    fun valueRange(range: IntRange) {
+        this.valueRange = ValueRange.ofLong(range.first.toLong(), range.last.toLong())
+    }
+
+    /**
+     * Sets the minimum and maximum values on the specified option.
+     * Must be between [OptionData.MIN_NEGATIVE_NUMBER] and [OptionData.MAX_POSITIVE_NUMBER].
+     *
+     * **Note:** This is only for integer/number types!
+     */
+    fun valueRange(range: kotlin.ranges.LongRange) {
+        this.valueRange = ValueRange.ofLong(range.first, range.last)
+    }
+
+    /**
+     * Sets the minimum and maximum values on the specified option.
+     * Must be between [OptionData.MIN_NEGATIVE_NUMBER] and [OptionData.MAX_POSITIVE_NUMBER].
+     *
+     * **Note:** This is only for integer/number types!
+     */
+    fun valueRange(range: ClosedFloatingPointRange<Double>) {
+        this.valueRange = ValueRange.ofDouble(range.start, range.endInclusive)
+    }
+
+    /**
      * Sets the minimum and maximum string length on the specified option.
      *
      * **Note:** This is only for string types!
@@ -87,6 +117,15 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      * @see Length
      */
     var lengthRange: LengthRange?
+
+    /**
+     * Sets the minimum and maximum string length on the specified option.
+     *
+     * **Note:** This is only for string types!
+     */
+    fun lengthRange(range: IntRange) {
+        this.lengthRange = LengthRange.of(range.first, range.last)
+    }
 
     /**
      * The file types this [Attachment][net.dv8tion.jda.api.entities.Message.Attachment] option is accepting, if it is one;

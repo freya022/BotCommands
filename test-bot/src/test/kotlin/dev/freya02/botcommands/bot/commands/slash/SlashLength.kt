@@ -21,7 +21,7 @@ class SlashLength : GlobalApplicationCommandProvider {
     override fun declareGlobalApplicationCommands(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("length", function = ::onSlashLength) {
             option("string") {
-                lengthRange = LengthRange.of(1, 5)
+                lengthRange(1..5)
             }
         }
     }
