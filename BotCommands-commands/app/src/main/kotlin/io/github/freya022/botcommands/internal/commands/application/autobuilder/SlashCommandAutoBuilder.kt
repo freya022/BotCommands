@@ -41,6 +41,7 @@ import io.github.freya022.botcommands.internal.parameters.ResolverContainer
 import io.github.freya022.botcommands.internal.utils.*
 import io.github.freya022.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.FileType
 import net.dv8tion.jda.api.interactions.InteractionContextType
 import net.dv8tion.jda.api.interactions.commands.Command as JDACommand
 import kotlin.reflect.KClass
@@ -361,6 +362,16 @@ internal class SlashCommandAutoBuilder(
         parameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
         parameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
         parameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
+
+        parameter.findAnnotation<FileTypes>()?.let { fileTypes ->
+            if (fileTypes.image)
+                this.fileTypes += FileType.IMAGE
+            if (fileTypes.video)
+                this.fileTypes += FileType.VIDEO
+            if (fileTypes.audio)
+                this.fileTypes += FileType.AUDIO
+            this.fileTypes += fileTypes.extensions.asList()
+        }
 
         processAutocomplete(optionAnnotation)
 

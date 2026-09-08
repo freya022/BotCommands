@@ -115,6 +115,8 @@ internal object SlashUtils {
             }
         }
 
+        data.setFileTypes(option.fileTypes)
+
         data.isRequired = option.isRequired
     }
 }

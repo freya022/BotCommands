@@ -13,6 +13,8 @@ import io.github.freya022.botcommands.api.commands.application.slash.autocomplet
 import io.github.freya022.botcommands.api.core.config.BApplicationConfigBuilder
 import io.github.freya022.botcommands.api.parameters.resolvers.SlashParameterResolver
 import io.github.freya022.botcommands.internal.core.annotations.SkipJavaReflectionOverload
+import net.dv8tion.jda.api.interactions.FileType
+import net.dv8tion.jda.api.interactions.IFilterableFileTypes
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
@@ -86,6 +88,84 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
     var lengthRange: LengthRange?
 
     /**
+     * The file types this [Attachment][net.dv8tion.jda.api.entities.Message.Attachment] option is accepting, if it is one;
+     * up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES].
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
+     * @see FileType
+     */
+    val fileTypes: FileTypeAccumulator
+
+    /**
+     * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
+     * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
+     *
+     * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
+     *                                  or, an extension is empty or isn't alphanumeric
+     *
+     * @see FileType
+     */
+    fun addFileTypeExtensions(extensions: List<String>) {
+        fileTypes += extensions
+    }
+
+    /**
+     * Adds up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
+     * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
+     *
+     * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
+     *                                  or, an extension is empty or isn't alphanumeric
+     *
+     * @see FileType
+     */
+    fun addFileTypeExtensions(vararg extensions: String) {
+        fileTypes += extensions.asList()
+    }
+
+    /**
+     * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     * Leave the arguments empty to remove file type filtering.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
+     * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
+     *
+     * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
+     *                                  or, an extension is empty or isn't alphanumeric
+     *
+     * @see FileType
+     */
+    fun setFileTypeExtensions(extensions: List<String>) {
+        fileTypes.clear()
+        fileTypes += extensions
+    }
+
+    /**
+     * Sets up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] file extensions to filter for.
+     * Leave the arguments empty to remove file type filtering.
+     *
+     * The extensions must match `[\w\-.]+`. For example: `zip`, `tar.zst`.
+     *
+     * @param  extensions The extensions, up to [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES]
+     *
+     * @throws IllegalArgumentException There are more than [MAX_FILE_TYPES][IFilterableFileTypes.MAX_FILE_TYPES] extensions,
+     *                                  or, an extension is empty or isn't alphanumeric
+     *
+     * @see FileType
+     */
+    fun setFileTypeExtensions(vararg extensions: String) {
+        fileTypes.clear()
+        fileTypes += extensions.asList()
+    }
+
+    /**
      * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name].
      *
      * Must match an autocomplete handler created from a named [@AutocompleteHandler][AutocompleteHandler]
@@ -103,4 +183,37 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
      */
     @SkipJavaReflectionOverload
     fun autocompleteByFunction(function: KFunction<Collection<Any>>)
+
+    class FileTypeAccumulator internal constructor() {
+        internal val list: List<FileType>
+            field = arrayListOf<FileType>()
+
+        @JvmName("plusAssignExtensions")
+        operator fun plusAssign(extensions: Collection<String>) {
+            require(list.size + extensions.size <= OptionData.MAX_FILE_TYPES) {
+                "Cannot filter with more than ${OptionData.MAX_FILE_TYPES} file types"
+            }
+            list += extensions.map(FileType::ofExtension)
+        }
+
+        operator fun plusAssign(extension: String) {
+            this += listOf(extension)
+        }
+
+        @JvmName("plusAssignFileTypes")
+        operator fun plusAssign(extensions: Collection<FileType>) {
+            require(list.size + extensions.size <= OptionData.MAX_FILE_TYPES) {
+                "Cannot filter with more than ${OptionData.MAX_FILE_TYPES} file types"
+            }
+            list += extensions
+        }
+
+        operator fun plusAssign(extension: FileType) {
+            this += listOf(extension)
+        }
+
+        fun clear() {
+            list.clear()
+        }
+    }
 }

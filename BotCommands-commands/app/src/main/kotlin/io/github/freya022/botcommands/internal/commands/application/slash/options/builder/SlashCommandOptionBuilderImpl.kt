@@ -13,7 +13,9 @@ import io.github.freya022.botcommands.internal.commands.application.slash.builde
 import io.github.freya022.botcommands.internal.parameters.OptionParameter
 import io.github.freya022.botcommands.internal.utils.shortSignatureNoSrc
 import io.github.freya022.botcommands.internal.utils.throwArgument
+import net.dv8tion.jda.api.interactions.FileType
 import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KFunction
 
 internal class SlashCommandOptionBuilderImpl internal constructor(
@@ -52,6 +54,8 @@ internal class SlashCommandOptionBuilderImpl internal constructor(
     override var valueRange: ValueRange? = null
 
     override var lengthRange: LengthRange? = null
+
+    override val fileTypes = SlashCommandOptionBuilder.FileTypeAccumulator()
 
     internal var autocompleteInfo: AutocompleteInfoImpl? = null
         private set
