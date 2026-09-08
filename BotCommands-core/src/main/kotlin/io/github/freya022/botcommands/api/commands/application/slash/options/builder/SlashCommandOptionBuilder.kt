@@ -70,8 +70,9 @@ interface SlashCommandOptionBuilder : ApplicationCommandOptionBuilder {
 
     /**
      * Sets the minimum and maximum values on the specified option.
+     * Must be between [OptionData.MIN_NEGATIVE_NUMBER] and [OptionData.MAX_POSITIVE_NUMBER].
      *
-     * **Note:** This is only for floating point number types!
+     * **Note:** This is only for integer/number types!
      *
      * @see DoubleRange
      * @see LongRange
