@@ -5,19 +5,22 @@ import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfig
 import io.github.freya022.botcommands.api.core.config.BEventManagerConfig
 import io.github.freya022.botcommands.api.core.events.BGenericEvent
 import io.github.freya022.botcommands.api.core.hooks.EventDispatcher
+import io.github.freya022.botcommands.api.core.hooks.custom.CustomEventRequirementsProvider
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.concurrent.TimeUnit
 
 /**
- * Annotates a function as an event listener for a JDA or BC event.
+ * Annotates a function as an event listener for a JDA, BC, or custom event.
  *
  * Remember to always check the requirements of the events you're listening to!
+ * If an event does not fulfill their requirements, and they are not ignored, then the listener will be disabled!
  *
  * ### Requirements
  * - The declaring class must be a service
  * - The function must not be static
- * - The first argument must be a subclass of [GenericEvent] or [BGenericEvent]
+ * - The first argument is typically a subclass of [GenericEvent] or [BGenericEvent], but can be anything other than `Any`/`Object`
+ * - If the event being listened to is a custom event, then a [CustomEventRequirementsProvider] service must be available.
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

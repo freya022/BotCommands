@@ -1,7 +1,7 @@
 package io.github.freya022.botcommands.internal.core.hooks
 
 import io.github.freya022.botcommands.api.core.annotations.BEventListener.RunMode
-import java.util.*
+import io.github.freya022.botcommands.api.core.utils.enumMapOf
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -9,7 +9,9 @@ internal class EventListenerList {
 
     // Only protect modification operations, traversal is fine
     private val lock = ReentrantLock()
-    private var map: Map<RunMode, MutableList<EventHandlerFunction>> = emptyMap()
+    private var map: Map<RunMode, List<EventHandlerFunction>> = emptyMap()
+
+    val isEmpty: Boolean get() = map.isEmpty()
 
     operator fun get(mode: RunMode): List<EventHandlerFunction>? = map[mode]
 
@@ -26,23 +28,19 @@ internal class EventListenerList {
         this.map = newMap
     }
 
-    fun removeAll(removedList: EventListenerList): Boolean = lock.withLock {
+    fun removeAll(handlers: Collection<EventHandlerFunction>) = lock.withLock {
         val newMap = newMap()
 
-        var removedAny = false
-        removedList.map.forEach { (mode, handlers) ->
-            val newHandlers = newMap[mode] ?: return@forEach
-            removedAny = removedAny || newHandlers.removeAll(handlers)
-        }
+        // Likely more efficient to do bulk operations on a few lists than getting the right list and removing items one by one
+        newMap.values.forEach { newHandlers -> newHandlers.removeAll(handlers) }
 
         // Remove entries containing an empty list
         RunMode.entries.forEach { mode -> newMap.remove(mode, emptyList()) }
 
         this.map = newMap
-        return removedAny
     }
 
-    private fun newMap() = EnumMap<RunMode, MutableList<EventHandlerFunction>>(RunMode::class.java).apply {
+    private fun newMap() = enumMapOf<RunMode, MutableList<EventHandlerFunction>>().apply {
         map.forEach { (mode, handlers) ->
             put(mode, handlers.toMutableList() /* copy */)
         }

@@ -6,6 +6,7 @@ import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import kotlin.time.Duration
 
 internal class EventHandlerFunction(
+    val eventType: Class<*>,
     val classPathFunction: ClassPathFunction,
     val priority: Int,
     val runMode: BEventListener.RunMode,

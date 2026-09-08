@@ -18,6 +18,12 @@ fun <E : Enum<E>> Collection<E>.toImmutableEnumSet(enumType: Class<E>): Set<E> {
     return Collections.unmodifiableSet(set)
 }
 
+inline fun <reified T : Enum<T>> Array<out T>.toEnumSet(): EnumSet<T> = enumSetOf<T>().apply { addAll(this@toEnumSet) }
+inline fun <reified T : Enum<T>> Collection<T>.toEnumSet(): EnumSet<T> = when (this) {
+    is EnumSet<T> -> EnumSet.copyOf(this)
+    else -> enumSetOf<T>().also { it.addAll(this) }
+}
+
 fun <T> Collection<T>.unmodifiableView(): Collection<T> {
     return Collections.unmodifiableCollection(this)
 }

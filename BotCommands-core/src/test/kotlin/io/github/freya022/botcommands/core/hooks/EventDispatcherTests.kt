@@ -6,6 +6,8 @@ import dev.freya02.botcommands.method.accessors.internal.MethodAccessorFactory
 import io.github.freya022.botcommands.api.core.annotations.BEventListener
 import io.github.freya022.botcommands.api.core.config.BCoroutineScopesConfigBuilder
 import io.github.freya022.botcommands.api.core.events.BReadyEvent
+import io.github.freya022.botcommands.api.core.service.ServiceContainer
+import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.internal.core.ClassPathFunction
 import io.github.freya022.botcommands.internal.core.hooks.EventDispatcherImpl
 import io.github.freya022.botcommands.internal.core.hooks.EventHandlerFunction
@@ -40,10 +42,10 @@ object EventDispatcherTests {
         val expectedInstance = ReadyTestListener()
         val expectedFunction = ReadyTestListener::onReady
         val listenerRegistry = mockk<EventListenerRegistry> {
-            every { get(BReadyEvent::class.java) } returns mockk<EventListenerList> {
-                every { get(any<BEventListener.RunMode>()) } returns emptyList()
-                every { get(BEventListener.RunMode.BLOCKING) } returns listOf(
+            every { get(BReadyEvent::class.java) } returns EventListenerList().apply {
+                add(
                     EventHandlerFunction(
+                        BReadyEvent::class.java,
                         ClassPathFunction(expectedInstance, expectedFunction),
                         priority = 0,
                         runMode = BEventListener.RunMode.BLOCKING,
@@ -54,7 +56,9 @@ object EventDispatcherTests {
             }
         }
 
-        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), listenerRegistry)
+        val dispatcher = EventDispatcherImpl(BCoroutineScopesConfigBuilder().build(), mockk<ServiceContainer> {
+            every { getService<EventListenerRegistry>() } returns listenerRegistry
+        })
 
         assertThrows<ExpectedException> { dispatcher.dispatchEventJava(mockk<BReadyEvent>()) }
     }

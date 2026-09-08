@@ -4,6 +4,7 @@ import dev.freya02.botcommands.utils.configureTests
 import dev.freya02.botcommands.utils.registerBucket4JDocs
 import dev.freya02.botcommands.utils.registerJetbrainsAnnotationsDocs
 import dev.freya02.botcommands.utils.registerSourceSet
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("kotlin-conventions")
@@ -138,6 +139,14 @@ kotlin {
     compilerOptions {
         optIn.addAll(
             "io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi"
+        )
+    }
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    compilerOptions {
+        optIn.addAll(
+            "io.github.freya022.botcommands.api.core.hooks.custom.annotations.ExperimentalCustomEvents"
         )
     }
 }
