@@ -65,6 +65,17 @@ internal abstract class FunctionFilter {
             override fun filter(function: Function): Boolean = hasFirstArg(function, types)
         }
 
+        fun firstArgNot(vararg types: KClass<*>) = object : FunctionFilter() {
+            override val errorMessage: String
+                get() = "Function cannot have a first parameter of type: ${types.toTypesArrayString()}"
+
+            override fun filter(function: Function): Boolean = function.nonInstanceParameters.none { param ->
+                val erasure = param.type.jvmErasure
+                // If an erasure of parameter is any of supplied types
+                types.any { erasure == it }
+            }
+        }
+
         fun static() = object : FunctionFilter() {
             override val errorMessage: String
                 get() = "Function must be static"
