@@ -6,7 +6,6 @@ import io.github.freya022.botcommands.api.commands.annotations.GeneratedOption
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplier
 import io.github.freya022.botcommands.api.commands.application.ApplicationGeneratedValueSupplierProvider
 import io.github.freya022.botcommands.api.commands.application.SlashOptionChoiceProvider
-import io.github.freya022.botcommands.api.commands.application.ValueRange.Companion.range
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandManager
 import io.github.freya022.botcommands.api.commands.application.provider.GlobalApplicationCommandProvider
 import io.github.freya022.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -104,7 +103,7 @@ class SlashMyCommand : GlobalApplicationCommandProvider, SlashOptionChoiceProvid
                     option("intOption", "int") {
                         description = "An integer"
 
-                        valueRange = 1 range 2
+                        valueRange(1.0..2.0)
 
                         choices = listOf(Choice("1", 1L), Choice("2", 2L))
                     }
