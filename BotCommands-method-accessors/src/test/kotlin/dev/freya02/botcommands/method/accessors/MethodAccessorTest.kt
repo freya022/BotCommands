@@ -56,8 +56,7 @@ object MethodAccessorTest {
         testCaller("Nested class constructor 0-arg", null, TestClass::NestedClass, listOf()),
         testCaller("Inner class constructor 0-arg", TestClass(), TestClass::InnerClass, listOf()),
         testCaller("Inner class constructor 1-arg", TestClass(), TestClass::InnerClassOneArg, listOf("foobar")),
-        // TODO enable when KT-14990 is fixed in Kotlin 2.4.0
-//        testCaller("Inner class constructor with defaults", TestClass(), TestClass::InnerClassWithDefaults, listOf()),
+        testCaller("Inner class constructor with defaults", TestClass(), TestClass::InnerClassWithDefaults, listOf()),
         testCaller("With static modifier and instance", TestStatic, TestStatic::run, listOf()),
         testCaller("With defaults", TestClass(), TestClass::runWithDefaults, listOf()),
         testCaller("With inline class default", TestClass(), TestClass::runWithDefaultInlineClassArg, listOf()),
