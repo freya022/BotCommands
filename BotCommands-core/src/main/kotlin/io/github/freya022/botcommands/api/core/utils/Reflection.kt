@@ -108,7 +108,18 @@ val KType.shortQualifiedName: String
     }
 
 val Class<*>.shortQualifiedName
-    get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
+    get() = buildShortQualifiedName(packageName, simpleNestedName)
+
+internal fun buildShortQualifiedName(packageName: String, simpleNestedName: String): String = buildString {
+    append(packageName[0])
+    packageName.forEachIndexed { index, ch ->
+        if (ch == '.') {
+            append('.').append(packageName[index + 1])
+        }
+    }
+
+    append('.').append(simpleNestedName)
+}
 
 inline val KClass<*>.shortQualifiedName
     get() = this.java.shortQualifiedName

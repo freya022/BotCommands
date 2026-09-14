@@ -2,12 +2,13 @@ package io.github.freya022.botcommands.internal.utils
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
+import io.github.freya022.botcommands.api.core.utils.buildShortQualifiedName
 
 val ClassInfo.simpleNestedName
     get() = name.dropWhile { !it.isUpperCase() }
 
 val ClassInfo.shortQualifiedName
-    get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
+    get() = buildShortQualifiedName(packageName, simpleNestedName)
 
 val MethodInfo.shortSignatureNoSrc: String
     get() {
