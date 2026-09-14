@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * - [@LongRange][LongRange]/[@DoubleRange][DoubleRange]: Changes the allowed value range
  * - [@Length][Length]: Changes the allowed string length
  * - [@ChannelTypes][ChannelTypes]: Changes the allowed channel types, see the `GuildChannel` support on [SlashParameterResolver]
+ * - [@FileTypes][FileTypes]: Changes the allowed file types
  * - Any `@Nullable` annotation: Makes the parameter optional
  *
  * ### Choices
