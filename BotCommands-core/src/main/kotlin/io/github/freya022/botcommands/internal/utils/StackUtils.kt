@@ -47,15 +47,41 @@ fun findCaller(skip: Long = 0): StackFrame {
 
 val StackFrame.sourceFile: String
     get() = fileName
-        ?: declaringClass.sourceFileOrNull
-        ?: buildString {
-            append("${declaringClass.canonicalName.split('.').first { it.any(Char::isUpperCase) }}.")
-            if (declaringClass.isAnnotationPresent(Metadata::class.java)) {
-                append("kt")
-            } else {
-                append("java")
-            }
-        }
+//        ?: declaringClass.sourceFileOrNull
+//        ?: declaringClass.topLevelClass?.let { topClass ->
+//            val extension: String
+//            if (declaringClass.isAnnotationPresent(Metadata::class.java)) {
+//                extension = "kt"
+//            } else {
+//                // The class name corresponds to the source file name only if the class is public
+//                if (!Modifier.isPublic(topClass.modifiers)) {
+//                    return@let null
+//                }
+//                extension = "java"
+//            }
+//
+//            "${topClass.simpleName}.$extension"
+//        }
+//        // Old code would throw NPE on hidden/local/anonymous classes,
+//        // now it should only throw on hidden classes, if we somehow get one passed, report it
+        ?: throwInternal("Unable to get source file of stack frame: $this")
+
+///**
+// * `null` for hidden classes
+// */
+//private val Class<*>.topLevelClass: Class<*>?
+//    get() {
+//        if (isArray) {
+//            return componentType.topLevelClass
+//        }
+//
+//        if (isHidden) {
+//            return null
+//        }
+//
+//        val enclosingClass = enclosingClass ?: return this
+//        return enclosingClass.topLevelClass
+//    }
 
 @PublishedApi
 internal fun StackFrame.toSignature() = "${declaringClass.simpleNestedName}.${methodName.substringBefore('$')} ($sourceFile:$lineNumber)"
