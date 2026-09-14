@@ -24,7 +24,9 @@ abstract class AbstractFeatureConditionalPresenceTest {
             .scan()
             .use { scan ->
                 val classes = scan.allStandardClasses
-                val kotlinClasses = classes.map { it.loadClass().kotlin }
+                val kotlinClasses = classes
+                    .filter { !it.isAnonymousInnerClass }
+                    .map { it.loadClass().kotlin }
 
                 val missingConditions = arrayListOf<String>()
                 for (klass in kotlinClasses) {
