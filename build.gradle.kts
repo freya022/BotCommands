@@ -14,15 +14,22 @@ plugins {
 }
 
 versionCatalogUpdate {
-    versionSelector(object : ModuleVersionSelector {
-        override fun select(candidate: ModuleVersionCandidate): Boolean {
-            // Don't update major
-            if (candidate.currentVersion[0] != candidate.candidate.version[0])
-                return false
+    // Outside of full releases, allow major version candidates
+    if (publishedProjectEnvironment.version.get().classifier != null) {
+        // Allow major updates
+        versionSelector(VersionSelectors.PREFER_STABLE)
+    } else {
+        // No major update on full releases
+        versionSelector(object : ModuleVersionSelector {
+            override fun select(candidate: ModuleVersionCandidate): Boolean {
+                // Don't update major
+                if (candidate.currentVersion[0] != candidate.candidate.version[0])
+                    return false
 
-            return VersionSelectors.STABLE.select(candidate)
-        }
-    })
+                return VersionSelectors.STABLE.select(candidate)
+            }
+        })
+    }
 }
 
 // The root project script is used to produce an aggregated POM
