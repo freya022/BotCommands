@@ -15,6 +15,7 @@ dependencies {
     implementation(plugin(libs.plugins.dokka))
 
     implementation("dev.freya02:spring-configuration-metadata-generator")
+    implementation("dev.freya02:class-list-generator")
 }
 
 tasks.withType<JavaCompile> {

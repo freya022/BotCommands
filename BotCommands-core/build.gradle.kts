@@ -20,6 +20,14 @@ registerSourceSet(name = "examples")
 registerSourceSet(name = "javaDocExamples")
 registerSourceSet(name = "kotlinDocExamples")
 
+val embedded: Configuration = configurations.create("embedded") {
+    isTransitive = false
+}
+
+configurations.compileOnly {
+    extendsFrom(embedded)
+}
+
 dependencies {
     // -------------------- CORE DEPENDENCIES --------------------
 
@@ -30,6 +38,8 @@ dependencies {
     // Logging
     api(libs.slf4j.api)
     implementation(libs.kotlinLogging)
+
+    embedded("dev.freya02:classpath-scanner-commons")
 
     // JDA
     compileOnly(libs.jda)
@@ -109,6 +119,31 @@ dependencies {
     testImplementation(projects.botCommandsLocalization)
 
     testImplementation(libs.kotlin.metadata)
+
+    testCompileOnly("dev.freya02:classpath-scanner-commons")
+}
+
+val embeddedDepsDir = layout.buildDirectory.dir("generated/bins/classpath-scanner-commons")
+
+val copyEmbeddedDependencies = tasks.register<Copy>("copyEmbeddedDependencies") {
+    group = "build"
+    description = "Copies contents of embedded dependencies"
+
+    for (file in embedded.files) {
+        from(zipTree(file)) {
+            duplicatesStrategy = DuplicatesStrategy.FAIL
+
+            exclude("META-INF/MANIFEST.MF")
+            exclude("META-INF/*.kotlin_module")
+        }
+    }
+    into(embeddedDepsDir)
+}
+
+sourceSets {
+    main {
+        output.dir(copyEmbeddedDependencies)
+    }
 }
 
 configureTests(libs.bytebuddy.agent)

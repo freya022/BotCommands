@@ -8,11 +8,13 @@ import dev.freya02.botcommands.restarter.api.BotCommandsRestarter
 import dev.freya02.botcommands.restarter.api.annotations.ExperimentalRestartApi
 import dev.freya02.botcommands.restarter.internal.utils.AppClasspath
 import io.github.freya022.botcommands.api.core.BotCommands
+import io.github.freya022.botcommands.api.core.annotations.ExperimentalCoreApi
 import io.github.freya022.botcommands.api.core.config.*
 import io.github.freya022.botcommands.api.core.utils.joinAsList
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import kotlin.io.path.absolutePathString
+import kotlin.random.Random
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -37,6 +39,11 @@ object Main {
             MethodAccessorsConfig.preferClassFileAccessors()
 
             BotCommands.create {
+                // This will produce a few (soft) errors as it will scan classes related to the Spring support,
+                // which requires some compile-only classes
+                @OptIn(ExperimentalCoreApi::class)
+                usePreprocessedLibClassList = Random.nextBoolean()
+
                 disableExceptionsInDMs = true
 
                 addSearchPath("dev.freya02.botcommands.bot")
