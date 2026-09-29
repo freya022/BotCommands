@@ -305,9 +305,8 @@ private fun areDebugProbesInstalled(): Boolean {
     return DebugProbes.isInstalled
 }
 
-@PublishedApi
 @OptIn(ExperimentalCoroutinesApi::class)
-internal fun createCoroutineDump(): String? = when {
+private fun createCoroutineDump(): String? = when {
     areDebugProbesInstalled() -> {
         val outputStream = ByteArrayOutputStream()
         DebugProbes.dumpCoroutines(PrintStream(outputStream))
@@ -319,8 +318,7 @@ internal fun createCoroutineDump(): String? = when {
     }
 }
 
-@PublishedApi
-internal fun createDumps(): String = buildString {
+private fun createDumps(): String = buildString {
     val coroutineDump = createCoroutineDump()
     if (coroutineDump != null) {
         append(coroutineDump)
