@@ -16,8 +16,11 @@ import io.github.freya022.botcommands.internal.emojis.AppEmojisLoader
 import io.mockk.*
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -27,6 +30,7 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
+import kotlin.test.assertContains
 import kotlin.test.assertTrue
 
 private const val EXAMPLE_BASE_PATH = "/my_emojis"
@@ -126,7 +130,15 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     fun `Multiple resource candidates throws`() {
         val loader = createAppEmojisLoader(MultipleCandidates::class)
 
-        withScannedResources(createDefaultResources("emojis/**", n = 2)) {
+        withScannedResources(
+            wildcard = "emojis/**",
+            resources = {
+                mockResource()
+                    .mockPathRelativeToClasspathElement()
+                mockResource()
+                    .mockPathRelativeToClasspathElement()
+            },
+        ) {
             val jda = mockk<JDA> {
                 every { retrieveApplicationEmojis().complete() } returns emptyList()
             }
@@ -144,7 +156,10 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     @Test
     fun `No resource candidates throws`() {
         val loader = createAppEmojisLoader(NoCandidate::class)
-        withScannedResources(createDefaultResources("emojis/blah", n = 0)) {
+        withScannedResources(
+            wildcard = "emojis/blah",
+            resources = { /* nothing */ },
+        ) {
             val jda = mockk<JDA> {
                 every { retrieveApplicationEmojis().complete() } returns emptyList()
             }
@@ -162,7 +177,13 @@ class AppEmojisTest : AbstractAppEmojisTest() {
     @Test
     fun `Single resource candidate`() {
         val loader = createAppEmojisLoader(SingleCandidate::class)
-        withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+        withScannedResources(
+            wildcard = "emojis/kotlin.**",
+            resources = {
+                mockResource()
+                    .mockOpen()
+            },
+        ) {
             val jda = mockk<JDA> {
                 every { retrieveApplicationEmojis().complete() } returns emptyList()
                 every { createApplicationEmoji(any(), any()).complete() } returns mockk()
@@ -196,7 +217,6 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
         val existingEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji"
-            every { timeCreated } returns OffsetDateTime.of(LocalDate.now(), LocalTime.of(0, 0), ZoneOffset.UTC)
             every { delete().complete() } returns mockk()
         }
         val jda = mockk<JDA> {
@@ -207,7 +227,13 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         mockkObject(AppEmojisLoader.Companion) {
             every { AppEmojisLoader.maxAppEmojis } returns 1
 
-            withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+            withScannedResources(
+                wildcard = "emojis/kotlin.**",
+                resources = {
+                    mockResource()
+                        .mockOpen()
+                },
+            ) {
                 assertDoesNotThrow { loader.loadEmojis(jda) }
             }
         }
@@ -229,7 +255,6 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         val keptEmoji = mockk<ApplicationEmoji> {
             every { name } returns "existing-emoji"
             every { timeCreated } returns oldestEmoji.timeCreated.plusHours(1)
-            every { delete().complete() } answers { fail("Emoji should be kept") }
         }
 
         val jda = mockk<JDA> {
@@ -245,7 +270,13 @@ class AppEmojisTest : AbstractAppEmojisTest() {
             every { AppEmojisLoader.maxAppEmojis } returns 2
 
             assertDoesNotThrow {
-                withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
+                withScannedResources(
+                    wildcard = "emojis/kotlin.**",
+                    resources = {
+                        mockResource()
+                            .mockOpen()
+                    },
+                ) {
                     loader.loadEmojis(jda)
                 }
             }
@@ -266,17 +297,16 @@ class AppEmojisTest : AbstractAppEmojisTest() {
 
         val jda = mockk<JDA> {
             every { retrieveApplicationEmojis().complete() } returns listOf(existingEmoji)
-            every { createApplicationEmoji(any(), any()).complete() } returns mockk()
         }
 
         mockkObject(AppEmojisLoader.Companion) {
             every { AppEmojisLoader.maxAppEmojis } returns 1
 
-            assertThrows<OutOfAppEmojisException> {
-                withScannedResources(createDefaultResources("emojis/kotlin.**", n = 1)) {
-                    loader.loadEmojis(jda)
-                }
+            val ex = assertThrows<OutOfAppEmojisException> {
+                loader.loadEmojis(jda)
             }
+
+            assertContains(ex.message!!, "Not enough slots to push new application emojis")
         }
 
         // Make sure no emojis were attempted to be deleted
@@ -289,40 +319,32 @@ class AppEmojisTest : AbstractAppEmojisTest() {
         return AppEmojisLoader(configBuilder.build())
     }
 
-    private fun withScannedResources(vararg resources: ClassGraphResource, block: () -> Unit) {
+    private class MockedResourceScope {
+        private val resources: MutableList<Resource> = arrayListOf()
+
+        fun mockResource(): Resource = mockk<Resource>().also { resources += it }
+        fun Resource.mockOpen() =
+            every { open() } returns ByteArrayInputStream(byteArrayOf())
+        fun Resource.mockPathRelativeToClasspathElement() =
+            every { pathRelativeToClasspathElement } returns "pathRelativeToClasspathElement"
+
+        fun toResourceList(): ResourceList = ResourceList(resources)
+    }
+
+    private fun withScannedResources(wildcard: String, resources: MockedResourceScope.() -> Unit, block: () -> Unit) {
         mockkConstructor(ClassGraph::class) {
             every { anyConstructed<ClassGraph>().scan() } returns mockk {
                 every { close() } just runs
 
-                fun createResource(configurer: Resource.() -> Unit) = mockk<Resource> {
-                    every { pathRelativeToClasspathElement } returns "pathRelativeToClasspathElement"
-                    configurer()
-                }
-
-                resources.forEach { (wildcardStr, resourceConfigurers) ->
-                    every { getResourcesMatchingWildcard(wildcardStr) } returns ResourceList(resourceConfigurers.map(::createResource))
-                }
+                val resources = MockedResourceScope()
+                    .apply(resources)
+                    .toResourceList()
+                every { getResourcesMatchingWildcard(wildcard) } returns ResourceList(resources)
             }
 
             block()
         }
     }
-
-    private fun createDefaultResources(wildcard: String, n: Int): ClassGraphResource {
-        val configurers: Array<Resource.() -> Unit> = Array(n) {
-            {
-                every { open() } returns ByteArrayInputStream(byteArrayOf())
-            }
-        }
-
-        return createResources(wildcard, *configurers)
-    }
-
-    private fun createResources(wildcard: String, vararg resourceConfigurers: Resource.() -> Unit): ClassGraphResource {
-        return ClassGraphResource(wildcard, resourceConfigurers.asList())
-    }
-
-    private data class ClassGraphResource(val wildcard: String, val resourceConfigurers: List<Resource.() -> Unit>)
 }
 
 class AppEmojiRegistrationValuesTest : AbstractAppEmojisTest() {
