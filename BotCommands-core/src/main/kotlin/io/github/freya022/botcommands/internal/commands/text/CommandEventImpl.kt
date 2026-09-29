@@ -11,8 +11,6 @@ import io.github.freya022.botcommands.api.localization.text.LocalizableTextComma
 import io.github.freya022.botcommands.api.utils.RichTextFinder
 import io.github.freya022.botcommands.api.utils.RichTextFinder.RichText
 import io.github.freya022.botcommands.api.utils.RichTextType
-import io.github.freya022.botcommands.internal.commands.text.CommandEventImpl.Companion.component1
-import io.github.freya022.botcommands.internal.commands.text.CommandEventImpl.Companion.component2
 import io.github.freya022.botcommands.internal.commands.text.TextUtils.findEntity
 import io.github.freya022.botcommands.internal.utils.throwArgument
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -103,7 +101,7 @@ internal class CommandEventImpl private constructor(
                 if (mentionable != null) {
                     return mentionable as T
                 }
-            } catch (ignored: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw BadIdException()
             } catch (e: ErrorResponseException) {
                 if (e.errorResponse == ErrorResponse.UNKNOWN_USER || e.errorResponse == ErrorResponse.UNKNOWN_MEMBER) {

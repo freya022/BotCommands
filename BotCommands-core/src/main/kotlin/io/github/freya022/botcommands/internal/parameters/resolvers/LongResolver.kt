@@ -47,7 +47,7 @@ class LongResolver : ClassParameterResolver<LongResolver, Long>(Long::class),
     ): Long? {
         return try {
             optionMapping.asLong
-        } catch (e: NumberFormatException) { //Can't have discord to send us actual input when autocompleting lmao
+        } catch (_: NumberFormatException) { //Can't have discord to send us actual input when autocompleting lmao
             0L
         }
     }

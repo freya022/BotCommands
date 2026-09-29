@@ -147,14 +147,14 @@ internal class AutocompleteHandler(
                 JDAOptionType.INTEGER -> {
                     try {
                         Command.Choice(this, toLong())
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         null
                     }
                 }
                 JDAOptionType.NUMBER -> {
                     try {
                         Command.Choice(this, toDouble())
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         null
                     }
                 }

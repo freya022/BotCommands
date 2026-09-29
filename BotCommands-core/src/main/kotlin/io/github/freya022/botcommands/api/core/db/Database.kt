@@ -298,7 +298,7 @@ private fun releaseConnection(connection: Connection) {
 private fun areDebugProbesInstalled(): Boolean {
     try {
         Class.forName("kotlinx.coroutines.debug.DebugProbes")
-    } catch (e: ClassNotFoundException) {
+    } catch (_: ClassNotFoundException) {
         return false
     }
 

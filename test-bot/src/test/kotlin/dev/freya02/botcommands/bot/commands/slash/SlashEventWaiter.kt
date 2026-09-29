@@ -34,7 +34,7 @@ class SlashEventWaiter(private val eventWaiter: EventWaiter) {
                 .contentRaw
 
             event.hook.editOriginal("You said '$receivedContent'").queue()
-        } catch (e: TimeoutException) {
+        } catch (_: TimeoutException) {
             event.hook.editOriginal("Timeout !")
                 .deleteDelayed(5.seconds)
                 .queue()

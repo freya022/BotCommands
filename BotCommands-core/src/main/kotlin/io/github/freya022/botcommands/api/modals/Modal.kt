@@ -30,7 +30,7 @@ class Modal internal constructor(modal: JDAModal, private val modalMaps: ModalMa
     @JvmSynthetic
     suspend fun awaitOrNull(): ModalEvent? = try {
         await()
-    } catch (e: TimeoutCancellationException) {
+    } catch (_: TimeoutCancellationException) {
         null
     }
 }

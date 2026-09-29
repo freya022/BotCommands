@@ -45,7 +45,7 @@ class IntegerResolver : ClassParameterResolver<IntegerResolver, Int>(Int::class)
     ): Int? {
         return try {
             optionMapping.asInt
-        } catch (e: NumberFormatException) { //Can't have discord to send us actual input when autocompleting lmao
+        } catch (_: NumberFormatException) { //Can't have discord to send us actual input when autocompleting lmao
             0
         }
     }

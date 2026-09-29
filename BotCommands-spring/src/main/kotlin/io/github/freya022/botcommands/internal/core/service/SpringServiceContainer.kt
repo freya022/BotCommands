@@ -45,7 +45,7 @@ internal class SpringServiceContainer internal constructor(private val applicati
             if (applicationContext.getBeanProvider(clazz.java, false).ifAvailable != null) {
                 return null
             }
-        } catch (e: BeanCurrentlyInCreationException) {
+        } catch (_: BeanCurrentlyInCreationException) {
             return null // All good
         }
 
@@ -56,7 +56,7 @@ internal class SpringServiceContainer internal constructor(private val applicati
         if (applicationContext.containsBeanDefinition(name)) {
             return try {
                 applicationContext.getBeanProvider(requiredType.java, false).ifAvailable
-            } catch (e: BeanCurrentlyInCreationException) {
+            } catch (_: BeanCurrentlyInCreationException) {
                 null // All good
             }
         }
