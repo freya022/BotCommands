@@ -25,10 +25,9 @@ logbackClassic = "1.6.3"
 mockk = "1.14.11"
 postgresql = "42.7.13"
 slf4j-api = "2.0.19"
-# @pin For compatibility with Spring Boot 3
-spring = "6.2.14"
-# @pin Our code is compatible with Spring Boot 4, don't upgrade dependencies to avoid unexpected breakages
-springBoot = "3.5.8"
+spring = "6.2.19"
+springBoot = "3.5.16"
+springBoot4 = "4.1.1"
 trove4j-core = "3.1.0"
 
 [plugins]
@@ -77,8 +76,8 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
 springBoot = { module = "org.springframework.boot:spring-boot", version.ref = "springBoot" }
 springBoot-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "springBoot" }
-springBoot-devtools = "org.springframework.boot:spring-boot-devtools:4.0.0"
-springBoot-starter = "org.springframework.boot:spring-boot-starter:4.0.0"
+springBoot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot4" }
+springBoot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "springBoot4" }
 springBoot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
 trove4j-core = { module = "net.sf.trove4j:core", version.ref = "trove4j-core" }
 
