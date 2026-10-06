@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components
 
+import dev.freya02.botcommands.jda.ktx.components.exceptions.ComponentConfigurationException
 import dev.freya02.botcommands.jda.ktx.components.utils.checkInit
 import net.dv8tion.jda.api.components.buttons.Button
 import net.dv8tion.jda.api.components.section.Section
@@ -22,7 +23,7 @@ class InlineSection : InlineComponent {
     private var _accessory: SectionAccessoryComponent? = null
     /** The accessory of this section */
     var accessory: SectionAccessoryComponent
-        get() = _accessory.checkInit("accessory")
+        get() = _accessory.checkInit("Accessory component")
         set(value) {
             _accessory = value
             section = section.withAccessory(value)
@@ -49,6 +50,11 @@ class InlineSection : InlineComponent {
         this.components += TextDisplay(content, uniqueId, block)
     }
 
+    /**
+     * Builds a [Section] from the current configuration state.
+     *
+     * @throws ComponentConfigurationException If the [accessory] was not configured
+     */
     fun build(): Section {
         accessory.checkInit()
         return section.withContentComponents(components)

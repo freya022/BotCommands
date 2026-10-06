@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components
 
+import dev.freya02.botcommands.jda.ktx.components.exceptions.ComponentConfigurationException
 import dev.freya02.botcommands.jda.ktx.components.utils.checkInit
 import net.dv8tion.jda.api.components.Component
 import net.dv8tion.jda.api.components.label.Label
@@ -22,7 +23,7 @@ class InlineLabel : InlineComponent {
     private var _label: String? = null
     /** The label of this Label, see [Label.withLabel] */
     var label: String
-        get() = _label.checkInit("label content")
+        get() = _label.orEmpty()
         set(value) {
             component = component.withLabel(value)
             _label = value
@@ -40,7 +41,7 @@ class InlineLabel : InlineComponent {
     private var _child: LabelChildComponent? = null
     /** The child contained by this Label, see [Label.withChild] */
     var child: LabelChildComponent
-        get() = _child.checkInit("child")
+        get() = _child.checkInit("Child component")
         set(value) {
             component = component.withChild(value)
             _child = value
@@ -48,8 +49,13 @@ class InlineLabel : InlineComponent {
 
     val hasChild: Boolean get() = _child != null
 
+    /**
+     * Builds a [Label] from the current configuration state.
+     *
+     * @throws ComponentConfigurationException If the [label] or [child] was not configured
+     */
     fun build(): Label {
-        label.checkInit()
+        _label.checkInit("Label content")
         child.checkInit()
         return component
     }

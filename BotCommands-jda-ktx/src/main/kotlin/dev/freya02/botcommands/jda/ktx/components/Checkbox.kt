@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components
 
+import dev.freya02.botcommands.jda.ktx.components.exceptions.ComponentConfigurationException
 import dev.freya02.botcommands.jda.ktx.components.utils.checkInit
 import net.dv8tion.jda.api.components.checkbox.Checkbox
 
@@ -18,11 +19,13 @@ class InlineCheckbox : InlineComponent {
     private var _customId: String? = null
     /** The custom ID, it can be used to pass data, then be read from an interaction */
     var customId: String
-        get() = _customId.checkInit("custom ID")
+        get() = _customId.orEmpty()
         set(value) {
             component = component.withCustomId(value)
             _customId = value
         }
+
+    val hasCustomId: Boolean get() = _customId != null
 
     /**
      * Whether this checkbox is selected by default.
@@ -33,8 +36,13 @@ class InlineCheckbox : InlineComponent {
             component = component.withDefault(value)
         }
 
+    /**
+     * Builds a [Checkbox] from the current configuration state.
+     *
+     * @throws ComponentConfigurationException If the [customId] was not configured
+     */
     fun build(): Checkbox {
-        customId.checkInit()
+        _customId.checkInit("Custom ID")
         return component
     }
 }

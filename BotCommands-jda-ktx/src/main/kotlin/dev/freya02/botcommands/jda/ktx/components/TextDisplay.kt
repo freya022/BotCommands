@@ -1,5 +1,6 @@
 package dev.freya02.botcommands.jda.ktx.components
 
+import dev.freya02.botcommands.jda.ktx.components.exceptions.ComponentConfigurationException
 import dev.freya02.botcommands.jda.ktx.components.utils.checkInit
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 
@@ -18,7 +19,7 @@ class InlineTextDisplay : InlineComponent {
     private var _content: String? = null
     /** The content displayed by this component */
     var content: String
-        get() = _content.checkInit("content")
+        get() = _content.orEmpty()
         set(value) {
             textDisplay = textDisplay.withContent(value)
             _content = value
@@ -26,8 +27,13 @@ class InlineTextDisplay : InlineComponent {
 
     val hasContent: Boolean get() = _content != null
 
+    /**
+     * Builds a [TextDisplay] from the current configuration state.
+     *
+     * @throws ComponentConfigurationException If the [content] was not configured
+     */
     fun build(): TextDisplay {
-        content.checkInit()
+        _content.checkInit("Content")
         return textDisplay
     }
 }
