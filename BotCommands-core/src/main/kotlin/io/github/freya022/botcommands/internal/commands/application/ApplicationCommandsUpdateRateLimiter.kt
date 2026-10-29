@@ -11,7 +11,6 @@ import net.dv8tion.jda.internal.JDAImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.util.concurrent.Executors
-import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -30,8 +29,10 @@ private object NullApplicationCommandsUpdateRateLimiter : ApplicationCommandsUpd
 
 private class DefaultApplicationCommandsUpdateRateLimiter : ApplicationCommandsUpdateRateLimiter {
     // Whatever, there will be no code running on it at all, apart from resuming the coroutine
-    private val updateRateLimitScheduler = Executors.newSingleThreadScheduledExecutor {
-        thread(name = "Command update RateLimiter", start = false, isDaemon = true) {}
+    private val updateRateLimitScheduler = Executors.newSingleThreadScheduledExecutor { runnable ->
+        Thread(runnable, "Command update RateLimiter").apply {
+            isDaemon = true
+        }
     }
     // 20/s
     private val updateBucket = Bucket.builder()
