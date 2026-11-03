@@ -5,6 +5,9 @@ import io.github.freya022.botcommands.api.components.annotations.JDASelectMenuLi
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.exceptions.ComponentSerializationException
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.events.BShutdownEvent
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.simpleNestedName
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
@@ -56,8 +59,8 @@ internal class PersistentHandler private constructor(val handlerName: String, va
     }
 }
 
-// It ain't much but hey
-private object PersistentHandlerComponentDataOptionCache {
+@BService
+internal object PersistentHandlerComponentDataOptionCache {
     private val cache = ConcurrentHashMap<CacheKey, List<ComponentHandlerOption>>()
 
     private data class CacheKey(private val componentType: ComponentType, private val handlerName: String)
@@ -74,6 +77,11 @@ private object PersistentHandlerComponentDataOptionCache {
             }
             descriptor.allOptionsOrdered.filterIsInstance<ComponentHandlerOption>().unmodifiableView()
         }
+    }
+
+    @BEventListener
+    fun onShutdown(event: BShutdownEvent) {
+        cache.clear()
     }
 }
 

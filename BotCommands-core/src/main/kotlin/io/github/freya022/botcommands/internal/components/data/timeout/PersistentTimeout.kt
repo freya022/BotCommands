@@ -3,6 +3,9 @@ package io.github.freya022.botcommands.internal.components.data.timeout
 import io.github.freya022.botcommands.api.components.serialization.SerializedComponentData
 import io.github.freya022.botcommands.api.components.serialization.exceptions.ComponentSerializationException
 import io.github.freya022.botcommands.api.core.BContext
+import io.github.freya022.botcommands.api.core.annotations.BEventListener
+import io.github.freya022.botcommands.api.core.events.BShutdownEvent
+import io.github.freya022.botcommands.api.core.service.annotations.BService
 import io.github.freya022.botcommands.api.core.service.getService
 import io.github.freya022.botcommands.api.core.utils.unmodifiableView
 import io.github.freya022.botcommands.api.parameters.resolvers.TimeoutParameterResolver
@@ -55,8 +58,8 @@ internal class PersistentTimeout private constructor(
     }
 }
 
-// It ain't much but hey
-private object PersistentTimeoutComponentDataOptionCache {
+@BService
+internal object PersistentTimeoutComponentDataOptionCache {
     private val cache = ConcurrentHashMap<CacheKey, List<TimeoutHandlerOption>>()
 
     private data class CacheKey(private val componentType: ComponentType, private val handlerName: String)
@@ -71,5 +74,10 @@ private object PersistentTimeoutComponentDataOptionCache {
             val descriptor = container[handlerName] ?: throwArgument("No timeout handler named '$handlerName' exists")
             descriptor.allOptionsOrdered.filterIsInstance<TimeoutHandlerOption>().unmodifiableView()
         }
+    }
+
+    @BEventListener
+    fun onShutdown(event: BShutdownEvent) {
+        cache.clear()
     }
 }
