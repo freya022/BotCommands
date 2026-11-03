@@ -68,6 +68,7 @@ class BotCommandsMessagesTests : AbstractIntegrationTest() {
             methodCall(messages::nsfwOnly) { this(mockk()) },
             methodCall(messages::componentNotAllowed) { this(mockk()) },
             methodCall(messages::componentExpired) { this(mockk()) },
+            methodCall(messages::componentIncompatible) { this(mockk()) },
             methodCall(messages::modalExpired) { this(mockk()) },
         )
 

@@ -24,6 +24,7 @@
 
     "components.not_allowed": "You are not allowed to use this",
     "components.expired": "This component is not usable anymore",
+    "components.incompatible": "This component is no longer compatible",
 
     "modals.expired": "This modal is no longer available"
 }

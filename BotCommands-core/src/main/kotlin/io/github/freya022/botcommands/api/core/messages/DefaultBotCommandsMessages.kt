@@ -113,6 +113,10 @@ open class DefaultBotCommandsMessages(
         return getLocalizationTemplate("components.expired").localize().toMessage()
     }
 
+    override fun componentIncompatible(event: GenericComponentInteractionCreateEvent): MessageCreateData {
+        return getLocalizationTemplate("components.incompatible").localize().toMessage()
+    }
+
     override fun modalExpired(event: ModalInteractionEvent): MessageCreateData {
         return getLocalizationTemplate("modals.expired").localize().toMessage()
     }

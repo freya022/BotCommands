@@ -59,7 +59,7 @@ internal class ComponentHandlerExecutor internal constructor(
                         Component raw data: $userData
                     """.trimIndent()
                 }
-                event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+                event.reply(messagesFactory.get(event).componentIncompatible(event)).setEphemeral(true).queue()
                 return false
             }
 

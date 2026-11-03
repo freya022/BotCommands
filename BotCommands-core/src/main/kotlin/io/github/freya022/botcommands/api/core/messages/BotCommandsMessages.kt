@@ -106,6 +106,13 @@ interface BotCommandsMessages {
     fun componentExpired(event: GenericComponentInteractionCreateEvent): MessageCreateData
 
     /**
+     * @return Message to display when a user tries to use a component which's handler isn't compatible anymore
+     */
+    fun componentIncompatible(event: GenericComponentInteractionCreateEvent): MessageCreateData {
+        return MessageCreateData.fromContent("This component is no longer compatible")
+    }
+
+    /**
      * @return Message to display when a user tries to use a modal which has reached timeout
      */
     fun modalExpired(event: ModalInteractionEvent): MessageCreateData

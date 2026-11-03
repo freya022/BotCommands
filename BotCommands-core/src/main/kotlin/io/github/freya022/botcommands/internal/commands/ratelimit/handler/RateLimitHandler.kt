@@ -90,7 +90,7 @@ internal class RateLimitHandler internal constructor(
         val rateLimitInfo = rateLimitContainer[group]
             ?: run {
                 componentsListenerLogger.warn { "Could not find a rate limiter named '$group'" }
-                event.reply(messagesFactory.get(event).componentExpired(event)).setEphemeral(true).queue()
+                event.reply(messagesFactory.get(event).componentIncompatible(event)).setEphemeral(true).queue()
                 return
             }
 
