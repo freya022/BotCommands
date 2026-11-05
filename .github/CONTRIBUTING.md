@@ -1,11 +1,9 @@
 [//]: # (most of it is from https://kotlinlang.org/docs/jvm-api-guidelines-introduction.html)
 
 ### Commits
-Wiki commits must be with `Wiki: Commit text`
-Examples commits must be with `Examples: Commit text`
+Try to have commit titles not too long, and use the commit body to explain your reasoning.
 
-If these commits are in a PR, the commits can omit this format, 
-but the PR merge commit must contain the prefix.
+If your PR updates multiple features, or if it could be unclear what features a commit updates, prepend the name of the affected feature, for example: `components: fix [...]`
 
 ### Documentation
 - Document `@return` on boolean annotations or non-trivial returns (such as `the time in [timeUnit]`)
@@ -35,13 +33,13 @@ but the PR merge commit must contain the prefix.
 
 ### Backward compatibility
 - Avoid data classes in API
-- Return the best type; don't narrow
+- Return wider types as much without sacrificing functionality, for example, returning a `Collection` instead of a `List` might make sense if random access isn't required, and allows for future updates to return a different collection type without breakages
 
 ## Building locally
 You can build the library and publish it to your *local* Maven repository by running `./gradlew publishToMavenLocal`,
 at which point you can use the library with the build tool of your choice, 
 with the artifact `io.github.freya022:BotCommands:$version`, 
-where `$version` is usually the latest version (defined [here](../buildSrc/src/main/kotlin/BotCommands-publish-conventions.gradle.kts)), suffixed with `_DEV`.
+where `$version` is the latest version suffixed with `_DEV`.
 
 ## Running the test bot
 
@@ -54,4 +52,4 @@ where `$version` is usually the latest version (defined [here](../buildSrc/src/m
 Go to `/test-files/test` from the project root, duplicate the `config-template` folder as `dev-config`,
 and edit the `config.json`, with your bot token, prefixes, owner ID and the database details.
 
-You can then run the `Main` class of the `test` package.
+You can then run the `Main` class of the `test-bot` module.
