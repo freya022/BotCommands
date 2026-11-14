@@ -89,7 +89,7 @@ private val logger = KotlinLogging.logger { }
  * - Calling [SuspendingPreparedStatement.addBatch].
  *
  * Repeat those two steps for all your statements,
- * then call [SuspendingPreparedStatement.executeBatch] to run all of them.
+ * then call [SuspendingPreparedStatement.executeBatch_] to run all of them.
  *
  * **Note:** To read returned columns (like an `INSERT INTO ... RETURNING {column}` in PostgreSQL),
  * you must specify the column indexes/names when creating your statement,
