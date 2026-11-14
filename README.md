@@ -324,8 +324,10 @@ the library could introduce breaking changes to allow quick adoption of newer fe
 While attempting to reduce breaking changes by using deprecation mechanisms,
 it is not always possible or practical to use deprecations.
 
-Small breaking/deprecating changes should be noticed via an increase of the **minor** version (`3.0.Z` -> `3.1.0`),
-while larger breaking changes should be seing an increase of the **major** version (`3.Y.Z` -> `4.0.0`).
+An increase of the **minor** version (`3.0.Z` -> `3.1.0`) might contain small breaking changes/deprecations,
+which will be documented in the release notes.
+
+Larger breaking changes should be noticed by an increase of the **major** version (`3.Y.Z` -> `4.0.0`).
 
 ## 🛠️ Contributing
 If you want to contribute, make sure to base your branch on `3.X`, and create your PR from it.
